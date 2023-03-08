@@ -1,0 +1,34 @@
+ctrl + alt + cmd - r : launchctl kickstart -k "gui/${UID}/homebrew.mxcl.yabai"
+
+alt - return : bash $HOME/.local/bin/open_iterm.sh
+alt - w : /Applications/Chromium.app/Contents/MacOS/Chromium
+alt - m : /Applications/Spotify.app/Contents/MacOS/Spotify
+alt - d : /Applications/Spark.app/Contents/MacOS/Spark
+alt - e : /Applications/Emacs.app/Contents/MacOS/Emacs
+alt - c : open -a /System/Applications/Calendar.app/Contents/MacOS/Calendar
+# close focused window
+alt - q : ~/.local/bin/window-destroy-and-focus-display.sh
+
+# focus window
+alt - h : yabai -m window --focus west || yabai -m display --focus west
+alt - j : yabai -m window --focus south || yabai -m display --focus south
+alt - k : yabai -m window --focus north || yabai -m display --focus north
+alt - l : yabai -m window --focus east || yabai -m display --focus east
+
+alt - 0 : brew services restart yabai
+
+# swap window
+shift + alt - h : yabai -m window --swap west || ~/.local/bin/move-display.sh west
+shift + alt - j : yabai -m window --swap south || ~/.local/bin/move-display.sh south
+shift + alt - k : yabai -m window --swap north || ~/.local/bin/move-display.sh north
+shift + alt - l : yabai -m window --swap east || ~/.local/bin/move-display.sh east
+
+shift + alt - 1 : ~/.local/bin/move-space.sh 1
+shift + alt - 2 : ~/.local/bin/move-space.sh 2
+shift + alt - 3 : ~/.local/bin/move-space.sh 3
+shift + alt - 4 : ~/.local/bin/move-space.sh 4
+shift + alt - 5 : ~/.local/bin/move-space.sh 5
+shift + alt - 6 : ~/.local/bin/move-space.sh 6
+shift + alt - 7 : ~/.local/bin/move-space.sh 7
+shift + alt - 8 : ~/.local/bin/move-space.sh 8
+shift + alt - 9 : ~/.local/bin/move-space.sh 9

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: media query
+# key: media
+# --
+@media screen and (max-width: $1px) {
+  $2
+}

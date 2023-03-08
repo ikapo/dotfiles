@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: React Functional Component
+# key: drfc
+# --
+
+function ${1:Component}() {
+  return (
+    <>
+      $2
+    </>
+  );
+}
+
+export default $1;

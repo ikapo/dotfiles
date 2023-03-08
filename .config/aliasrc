@@ -1,0 +1,29 @@
+#!/bin/sh
+alias ka="killall" \
+	mkd="mkdir -pv" \
+	mpv="mpv --input-ipc-server=/tmp/mpvsoc$(date +%s)" \
+	own="sudo chown -R $USER:$USER" \
+	g="git" \
+	sv="brew services" \
+	e="$EDITOR" \
+	d="docker" \
+	doc="docker-compose" \
+	find="fd" \
+	ls="exa" \
+	l="exa" \
+	la="exa -a" \
+	ll="exa -la" \
+	du="du -sh" \
+	df="df -h" \
+	cp="cp -r" \
+	rm="rm -rf" \
+	grep="grep --color=auto" \
+	diff="diff --color=auto" \
+	cat="bat" \
+	ffmpeg="ffmpeg -hide_banner" \
+	doom="~/.emacs.d/bin/doom" \
+	gs="git status" \
+	ga="git add" \
+	gall="git add ." \
+	gc="git commit -m" \
+	gp="git push"

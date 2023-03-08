@@ -1,0 +1,21 @@
+* Ikapo's Dotfiles
+
+These are my dotfiles.
+
+I use MacOS.
+
+I edit with [[https://github.com/doomemacs/doomemacs][Doom Emacs]].
+
+I window manage with [[https://github.com/koekeishiya/yabai][yabai]] and[[https://github.com/koekeishiya/skhd][ skhd]].
+
+I manage packages with [[https://brew.sh/][Homebrew]]
+
+* How to install
+1. [[https://brew.sh/][Install Homebrew]]
+2. Install dependencies: ~brew install koekeishiya/formulae/yabai koekeishiya/formulae/skhd ranger stow ripgrep fd exa node@18 zsh-syntax-highlighting zsh-autosuggestions iterm2~
+3. Clone the repository: ~git clone https://github.com/ikapo/dotfiles~
+4. Symlink the dotfiles: ~cd dotfiles && stow ./ -t ~/~
+5. Start services: ~brew services start skhd && brew services start yabai~
+6. Install Emacs: ~brew tap d12frosted/emacs-plus && brew install emacs-plus@28 --with-native-comp --with-nobu417-big-sur-icon~
+7. Clone Doom Emacs: ~git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.emacs.d~
+8. Install Doom: ~doom install~

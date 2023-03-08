@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+# name: React Functional Component
+# key: rfc
+# --
+
+interface $1Props {
+  children: React.ReactNode;
+}
+
+export function ${1:Component}({ children }: $1Props) {
+  return (
+    <>
+      $2
+    </>
+  );
+}
