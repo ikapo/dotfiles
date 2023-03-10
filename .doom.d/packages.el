@@ -44,5 +44,6 @@
 (package! prettier)
 (package! eslintd-fix)
 (package! lsp-tailwindcss :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
+(package! treemacs-material-icons :recipe (:host github :repo "ikapo/treemacs-material-icons"))
 (package! copilot
   :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))

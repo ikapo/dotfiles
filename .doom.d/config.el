@@ -13,7 +13,8 @@
 (setq-default indent-tabs-mode nil)
 
 ; Set treemacs theme
-(setq doom-themes-treemacs-theme "doom-atom")
+(require 'treemacs-material-icons)
+(setq doom-themes-treemacs-theme "material-icons")
 (doom-themes-treemacs-config)
 
 ; Set relative line numbers
