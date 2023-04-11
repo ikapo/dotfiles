@@ -15,7 +15,13 @@ alt - j : yabai -m window --focus south || yabai -m display --focus south
 alt - k : yabai -m window --focus north || yabai -m display --focus north
 alt - l : yabai -m window --focus east || yabai -m display --focus east
 
+# restart yabai
 alt - 0 : brew services restart yabai
+
+# stacking
+shift + alt - s : yabai -m window --insert stack
+alt - n : yabai -m window --focus stack.next
+alt - m : yabai -m window --focus stack.prev
 
 # swap window
 shift + alt - h : yabai -m window --swap west || ~/.local/bin/move-display.sh west
