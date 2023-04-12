@@ -58,21 +58,7 @@
   :defer t
   :config
 (setq lsp-idle-delay 0.500
-       lsp-enable-file-watchers nil)
-
- ;; Fix null character error, TODO remove this once on Emacs 29
- (advice-add 'json-parse-string :around
-             (lambda (orig string &rest rest)
-               (apply orig (s-replace "\\u0000" "" string)
-                      rest)))
-
- (advice-add 'json-parse-buffer :around
-             (lambda (oldfn &rest args)
-               (save-excursion
-                 (while (search-forward "\\u0000" nil t)
-                   (replace-match "" nil t)))
-        	 (apply oldfn args)))
- )
+       lsp-enable-file-watchers nil))
 
 ;; Emacsclient persp mode config
 (after! persp-mode
