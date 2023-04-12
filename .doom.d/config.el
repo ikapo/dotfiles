@@ -16,6 +16,7 @@
 (require 'treemacs-material-icons)
 (setq doom-themes-treemacs-theme "material-icons")
 (doom-themes-treemacs-config)
+(add-hook 'dired-mode-hook 'treemacs-icons-dired-mode)
 
 ; Set relative line numbers
 (setq display-line-numbers-type 'relative)

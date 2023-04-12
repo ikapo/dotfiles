@@ -41,9 +41,15 @@
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
 
-(package! prettier)
-(package! eslintd-fix)
-(package! lsp-tailwindcss :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
-(package! treemacs-material-icons :recipe (:host github :repo "ikapo/treemacs-material-icons"))
+;;; Code:
 (package! copilot
   :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
+(package! eslintd-fix)
+(package! lsp-tailwindcss :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
+(package! prettier)
+(package! treemacs-material-icons :recipe (:host github :repo "ikapo/treemacs-material-icons"))
+(package! treemacs-icons-dired)
+
+;; TODO remove me once doom updates treemacs
+(package! treemacs :pin "127485317a19254ca20ba1910d10edf7dbaa2d97")
+;;; packages.el ends here
