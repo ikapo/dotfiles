@@ -2,7 +2,6 @@ ctrl + alt + cmd - r : launchctl kickstart -k "gui/${UID}/homebrew.mxcl.yabai"
 
 alt - return : bash $HOME/.local/bin/open_iterm.sh
 alt - w : /Applications/Chromium.app/Contents/MacOS/Chromium
-alt - d : /Applications/Spark.app/Contents/MacOS/Spark
 alt - e : /Applications/Emacs.app/Contents/MacOS/Emacs
 alt - c : open -a /System/Applications/Calendar.app/Contents/MacOS/Calendar
 # close focused window
