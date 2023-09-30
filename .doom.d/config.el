@@ -84,10 +84,6 @@
 (setq typescript-indent-level 2
       typescript-expr-indent-offset 2)
 
-;; Rust
-(require 'rustic)
-(setq lsp-rust-analyzer-cargo-watch-command "clippy")
-
 ;; Typescript LSP
 (setq lsp-clients-typescript-max-ts-server-memory 4096)
 (setq lsp-clients-typescript-prefer-use-project-ts-server t)
