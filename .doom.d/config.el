@@ -13,8 +13,6 @@
 (setq-default indent-tabs-mode nil)
 
 ; Set treemacs theme
-(require 'treemacs-material-icons)
-(setq doom-themes-treemacs-theme "material-icons")
 (doom-themes-treemacs-config)
 (add-hook 'dired-mode-hook 'treemacs-icons-dired-mode)
 
