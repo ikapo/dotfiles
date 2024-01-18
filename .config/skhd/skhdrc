@@ -1,8 +1,8 @@
-ctrl + alt + cmd - r : launchctl kickstart -k "gui/${UID}/homebrew.mxcl.yabai"
+ctrl + alt + cmd - r : yabai --restart-service
 
 alt - return : bash $HOME/.local/bin/open_iterm.sh
 alt - w : /Applications/Chromium.app/Contents/MacOS/Chromium
-alt - e : /Applications/Emacs.app/Contents/MacOS/Emacs
+alt - e : open -a /Applications/Emacs.app/Contents/MacOS/Emacs
 alt - c : open -a /System/Applications/Calendar.app/Contents/MacOS/Calendar
 # close focused window
 alt - q : ~/.local/bin/window-destroy-and-focus-display.sh
@@ -15,11 +15,6 @@ alt - l : yabai -m window --focus east || yabai -m display --focus east
 
 # restart yabai
 alt - 0 : yabai --restart-service
-
-# stacking
-shift + alt - s : yabai -m window --insert stack
-alt - n : yabai -m window --focus stack.next
-alt - m : yabai -m window --focus stack.prev
 
 # swap window
 shift + alt - h : yabai -m window --swap west || ~/.local/bin/move-display.sh west

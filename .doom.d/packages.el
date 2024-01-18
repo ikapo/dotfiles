@@ -46,11 +46,8 @@
   :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
 (package! eslintd-fix)
 (package! lsp-tailwindcss :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
-(package! prettier :recipe (:host github :repo "asbish/prettier.el" :branch "support-for-prettier3"))
-;; (package! prettier)
-(package! treemacs-material-icons :recipe (:host github :repo "ikapo/treemacs-material-icons"))
+(package! prettier)
+;; (package! treemacs-material-icons :recipe (:host github :repo "ikapo/treemacs-material-icons"))
 (package! treemacs-icons-dired)
-
-;; TODO remove me once doom updates treemacs
-(package! treemacs :pin "127485317a19254ca20ba1910d10edf7dbaa2d97")
+(package! prisma-mode :recipe (:host github :repo "pimeys/emacs-prisma-mode" :branch "main"))
 ;;; packages.el ends here
