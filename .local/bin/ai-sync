@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 """Sync .config/ai into Claude Code, Codex, and Zed."""
 
+import json
 import os
 import sys
 from pathlib import Path
 
 VERSION = "ai-sync 1.0"
+
+VALID_TARGETS = {"claude", "zed", "codex"}
+
+
+class ConfigError(Exception):
+    """Raised when mcp.json is unusable. Message may be multi-line."""
 
 
 def repo_root() -> Path:
@@ -22,10 +29,66 @@ def target_home() -> Path:
     return Path.home()
 
 
+def ai_dir() -> Path:
+    return repo_root() / ".config" / "ai"
+
+
+def load_servers(directory: Path) -> dict:
+    path = directory / "mcp.json"
+    try:
+        raw = path.read_text()
+    except OSError as exc:
+        raise ConfigError("cannot read %s: %s" % (path, exc)) from exc
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise ConfigError("%s is not valid JSON: %s" % (path, exc)) from exc
+
+    if not isinstance(data, dict):
+        raise ConfigError("%s: top level must be an object" % path)
+    servers = data.get("servers", {})
+    if not isinstance(servers, dict):
+        raise ConfigError("%s: 'servers' must be an object" % path)
+
+    valid = ", ".join(sorted(VALID_TARGETS))
+    errors = []
+    for name, cfg in servers.items():
+        if not isinstance(cfg, dict):
+            errors.append("%s: must be an object" % name)
+            continue
+        if not cfg.get("command"):
+            errors.append("%s: missing 'command'" % name)
+        targets = cfg.get("targets")
+        if not targets:
+            errors.append("%s: missing 'targets' (valid: %s)" % (name, valid))
+            continue
+        if not isinstance(targets, list):
+            errors.append("%s: 'targets' must be a list (valid: %s)" % (name, valid))
+            continue
+        unknown = sorted(set(targets) - VALID_TARGETS)
+        if unknown:
+            errors.append(
+                "%s: unknown target(s) %s (valid: %s)"
+                % (name, ", ".join(unknown), valid)
+            )
+    if errors:
+        raise ConfigError("\n".join(errors))
+    return servers
+
+
+def servers_for(servers: dict, target: str) -> dict:
+    return {n: c for n, c in servers.items() if target in c["targets"]}
+
+
 def main(argv):
     if "--version" in argv:
         print(VERSION)
         return 0
+    try:
+        load_servers(ai_dir())
+    except ConfigError as exc:
+        print("ai-sync: %s" % exc, file=sys.stderr)
+        return 2
     return 0
 
 

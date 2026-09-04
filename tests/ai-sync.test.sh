@@ -115,5 +115,46 @@ test_version() {
   assert_eq "prints version" "$out" "ai-sync 1.0"
 }
 
+write_mcp() { cat >"$REPO/.config/ai/mcp.json"; }
+
+test_validation() {
+  printf 'validation\n'
+
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"a": {"command": "x", "targets": ["claude", "bogus"]}}}
+JSON
+  local out rc
+  out="$(run_sync --check 2>&1)"; rc=$?
+  assert_eq "unknown target exits 2" "$rc" "2"
+  assert_contains "names the bad target" "$out" "bogus"
+  assert_contains "lists valid targets" "$out" "claude"
+
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"a": {"targets": ["claude"]}}}
+JSON
+  out="$(run_sync --check 2>&1)"; rc=$?
+  assert_eq "missing command exits 2" "$rc" "2"
+  assert_contains "names missing command" "$out" "command"
+
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"a": {"command": "x"}}}
+JSON
+  out="$(run_sync --check 2>&1)"; rc=$?
+  assert_eq "missing targets exits 2" "$rc" "2"
+  assert_contains "names missing targets" "$out" "targets"
+
+  new_sandbox
+  write_mcp <<'JSON'
+{ not json
+JSON
+  out="$(run_sync --check 2>&1)"; rc=$?
+  assert_eq "malformed json exits 2" "$rc" "2"
+  assert_contains "names the file" "$out" "mcp.json"
+}
+
 test_version
+test_validation
 report
