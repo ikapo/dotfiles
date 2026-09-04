@@ -1,5 +1,10 @@
 .git
+.githooks
 .gitignore
-LICENSE
-README.org
 install_deps.sh
+LICENSE
+README.md
+.claude
+docs
+tests
+.superpowers
