@@ -37,98 +37,27 @@ I manage packages with [Homebrew](https://brew.sh/).
 
 ## AI tool config
 
-`.config/ai` is the single source of truth for MCP servers, shared
-instructions, and skills across Claude Code, Codex, and Zed — see
-`.config/ai/README.md` for the file layout. After stowing, apply it with
-`ai-sync`:
+`.config/ai` holds the shared agent instructions, skills, and Claude Code
+settings for Claude Code and Codex. `stow` puts it at `~/.config/ai`; each tool
+then needs one symlink to the file it expects:
 
 ```sh
 stow ./ -t ~/
-ai-sync         # apply: merges Claude's servers into ~/.claude.json,
-                # patches Zed's context_servers, registers Codex MCP
-                # servers, and symlinks AGENTS.md/CLAUDE.md and skills
-ai-sync --check # report drift only; exit 1 if out of sync, 0 if clean
+
+ln -sfn ~/.config/ai/AGENTS.md            ~/.claude/CLAUDE.md
+ln -sfn ~/.config/ai/AGENTS.md            ~/.codex/AGENTS.md
+ln -sfn ~/.config/ai/skills               ~/.claude/skills
+ln -sfn ~/.config/ai/claude/settings.json ~/.claude/settings.json
 ```
 
-`ai-sync` is idempotent — re-run it any time `.config/ai` changes. Claude Code
-reads MCP servers from `~/.claude.json`, which it also rewrites as it runs, so
-`ai-sync` merges into that file rather than generating it: everything outside
-`mcpServers` is preserved, servers it does not manage are left alone, and only
-servers a previous run added are pruned. Run it with Claude Code closed, and
-restart Claude Code afterwards — it reads MCP config once at startup. Never put
-a credential in `.config/ai/mcp.json`; this file is public.
+MCP servers are not synced or generated — `.config/ai/MCP.md` lists each one
+with the command to add it, and marks the ones that need a GUI so they can be
+skipped on a headless machine. See `.config/ai/README.md` for the layout.
 
-## MCP servers
-
-Prefer a **remote** server over a local one. A remote server is a URL, the tool
-runs an OAuth flow against it, and the resulting token lands in that tool's own
-credential store — never in this repo. Nothing has to be installed, so a new
-machine reproduces the setup by running `ai-sync` and logging in once:
-
-```json
-"github": {
-  "url": "https://api.githubcopilot.com/mcp/",
-  "oauth": {"client_id": "<client id>", "callback_port": 33418},
-  "targets": ["claude", "codex"]
-}
-```
-
-The `oauth` block is only needed when the server's authorization server
-supports neither dynamic client registration nor CIMD, which is GitHub's case —
-its metadata at `github.com/.well-known/oauth-authorization-server/login/oauth`
-advertises no `registration_endpoint`. Such a server has to be handed a client
-id you registered by hand. A client id is not a secret; a client **secret** is,
-and `ai-sync` refuses one in `mcp.json`. Register a PKCE public client instead —
-GitHub advertises `code_challenge_methods_supported: ["S256"]`.
-
-Tool support for a hand-registered client id, as of 2026-09:
-
-| Tool | Remote servers | Hand-registered client id |
-|---|---|---|
-| Claude Code | yes | yes — `oauth.clientId` / `oauth.callbackPort` |
-| Codex | yes | yes — `codex mcp add --oauth-client-id` |
-| Zed 1.18 | yes | **no** |
-
-Zed only knows CIMD and dynamic registration (`crates/context_server/src/oauth.rs`,
-`determine_registration_strategy`), so it cannot authenticate against a server
-offering neither. Its only alternative is a literal `Authorization` header in
-`settings.json`, which would put a token in this repo. That is why `github`
-targets only `claude` and `codex`.
-
-### Local servers
-
-A local server is a `command` that `ai-sync` launches. Use one only when no
-remote equivalent exists — `ios-simulator` drives the local simulator, so it
-could not be remote:
-
-```json
-"ios-simulator": {
-  "command": "npx",
-  "args": ["-y", "ios-simulator-mcp"],
-  "targets": ["claude"]
-}
-```
-
-A local server that needs a credential must not name it here. Route it through
-a `.local/bin` wrapper that reads the macOS Keychain at startup and `exec`s the
-real binary, and give the wrapper's bare name as `command` — `ai-sync` rewrites
-a `~/.local/bin` name to an absolute path for the targets that launch outside a
-login shell, since Zed and the desktop apps do not inherit `$PATH`. Anything
-else stays a bare name so it keeps tracking `$PATH`.
-
-`.githooks/pre-commit` is the backstop: it blocks any commit containing a
-credential-shaped string.
-
-### Zed settings
-
-`.config/zed/settings.json` stays tracked rather than ignored, so it remains the
-single source of truth — Zed rewrites it whenever you change a setting from the
-UI, so a generated copy would drift. `ai-sync` patches only its
-`context_servers` key, preserving the leading comment header.
-
-Do not add a `"source": "custom"` key. Older Zed docs still show it, but Zed
-1.18 rejects it with `property "source" is not allowed` and its settings
-migrator strips the line.
+Never put a credential anywhere in this repository. Prefer a remote MCP server,
+whose token lives in the tool's own credential store after a browser login; a
+local server that needs one reads it from the Keychain at runtime.
+`.githooks/pre-commit` blocks commits containing credential-shaped strings.
 
 ## Packages
 

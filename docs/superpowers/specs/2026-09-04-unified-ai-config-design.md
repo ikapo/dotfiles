@@ -1,5 +1,16 @@
 # Unified AI Configuration in `.config/ai`
 
+> **Superseded, 2026-09-04.** `ai-sync` was removed the same day it shipped.
+> Its MCP half turned out to be unnecessary: remote (OAuth) servers keep no
+> secret in the repo, so the wrapper indirection this design was built around
+> stopped being needed, and `claude mcp add` / `codex mcp add` register a
+> server in one command each. Its symlink half is four `ln -sfn` calls. What
+> replaced it: `.config/ai/MCP.md` for servers, `.config/ai/README.md` for the
+> links. This document is kept for the findings in it — the Claude Code
+> settings-write behaviour, the Codex `.system/` directory, and the Zed JSONC
+> constraints are all still true.
+
+
 Date: 2026-09-04
 
 ## Problem
