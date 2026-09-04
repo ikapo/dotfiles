@@ -58,6 +58,8 @@ def load_servers(directory: Path) -> dict:
             continue
         if not cfg.get("command"):
             errors.append("%s: missing 'command'" % name)
+        elif not isinstance(cfg["command"], str):
+            errors.append("%s: 'command' must be a string" % name)
         targets = cfg.get("targets")
         if not targets:
             errors.append("%s: missing 'targets' (valid: %s)" % (name, valid))
@@ -80,15 +82,100 @@ def servers_for(servers: dict, target: str) -> dict:
     return {n: c for n, c in servers.items() if target in c["targets"]}
 
 
+class Action:
+    """One pending change. `apply` performs it."""
+
+    def __init__(self, verb, detail, run):
+        self.verb = verb
+        self.detail = detail
+        self._run = run
+
+    def apply(self):
+        self._run()
+
+    def __str__(self):
+        return "  %-6s %s" % (self.verb, self.detail)
+
+
+class Plan:
+    def __init__(self):
+        self.actions = []
+
+    def add(self, action):
+        if action is not None:
+            self.actions.append(action)
+
+    def apply(self):
+        for action in self.actions:
+            action.apply()
+
+    def render(self):
+        return "\n".join(str(a) for a in self.actions)
+
+    def __bool__(self):
+        return bool(self.actions)
+
+
+def write_file(path: Path, text: str):
+    if path.exists():
+        try:
+            if path.read_text() == text:
+                return None
+        except OSError:
+            pass
+
+    def run():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+
+    return Action("write", str(path), run)
+
+
+def render_claude(servers: dict) -> str:
+    out = {}
+    for name in sorted(servers):
+        cfg = servers[name]
+        entry = {"command": cfg["command"], "args": cfg.get("args", [])}
+        if cfg.get("env"):
+            entry["env"] = cfg["env"]
+        out[name] = entry
+    return json.dumps({"mcpServers": out}, indent=2) + "\n"
+
+
+def build_plan(servers) -> Plan:
+    plan = Plan()
+    home = target_home()
+    plan.add(
+        write_file(
+            home / ".claude" / "mcp.json",
+            render_claude(servers_for(servers, "claude")),
+        )
+    )
+    return plan
+
+
 def main(argv):
     if "--version" in argv:
         print(VERSION)
         return 0
+    check = "--check" in argv
+
     try:
-        load_servers(ai_dir())
+        servers = load_servers(ai_dir())
     except ConfigError as exc:
         print("ai-sync: %s" % exc, file=sys.stderr)
         return 2
+
+    plan = build_plan(servers)
+    if not plan:
+        if not check:
+            print("ai-sync: already in sync")
+        return 0
+
+    print(plan.render())
+    if check:
+        return 1
+    plan.apply()
     return 0
 
 

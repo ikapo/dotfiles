@@ -153,8 +153,59 @@ JSON
   out="$(run_sync --check 2>&1)"; rc=$?
   assert_eq "malformed json exits 2" "$rc" "2"
   assert_contains "names the file" "$out" "mcp.json"
+
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"a": {"command": 5, "targets": ["claude"]}}}
+JSON
+  out="$(run_sync --check 2>&1)"; rc=$?
+  assert_eq "non-string command exits 2" "$rc" "2"
+  assert_contains "names the server" "$out" "a"
+  assert_contains "names command" "$out" "command"
+}
+
+test_claude_mcp() {
+  printf 'claude mcp generation\n'
+
+  new_sandbox
+  write_mcp <<'JSON'
+{
+  "servers": {
+    "zeta":  {"command": "z-cmd", "args": ["--a"], "targets": ["claude"]},
+    "alpha": {"command": "a-cmd", "targets": ["claude"], "env": {"LOG": "debug"}},
+    "zedonly": {"command": "q", "targets": ["zed"]}
+  }
+}
+JSON
+
+  local out rc
+  out="$(run_sync --check 2>&1)"; rc=$?
+  assert_eq "check reports drift" "$rc" "1"
+  assert_contains "check names the file" "$out" "mcp.json"
+
+  run_sync >/dev/null 2>&1
+  local generated
+  generated="$(cat "$FAKEHOME/.claude/mcp.json")"
+  assert_contains "wrote alpha" "$generated" '"alpha"'
+  assert_contains "wrote zeta" "$generated" '"zeta"'
+  assert_not_contains "excluded zed-only server" "$generated" "zedonly"
+  assert_contains "wrapped in mcpServers" "$generated" '"mcpServers"'
+  assert_contains "kept env" "$generated" '"LOG": "debug"'
+  assert_contains "kept args" "$generated" '"--a"'
+
+  # Deterministic ordering: alpha sorts before zeta regardless of input order.
+  local first
+  first="$(python3 -c 'import json,sys;print(next(iter(json.load(sys.stdin)["mcpServers"])))' <"$FAKEHOME/.claude/mcp.json")"
+  assert_eq "sorted deterministically" "$first" "alpha"
+
+  out="$(run_sync --check 2>&1)"; rc=$?
+  assert_eq "check clean after sync" "$rc" "0"
+
+  out="$(run_sync 2>&1)"
+  assert_not_contains "second run is a no-op" "$out" "mcp.json"
 }
 
 test_version
 test_validation
+test_claude_mcp
 report
