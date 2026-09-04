@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Test harness for ai-sync. Run: tests/ai-sync.test.sh
-# shellcheck disable=SC2329  # helpers are the harness API for later tasks; not all are called yet
 set -uo pipefail
 
 SRC_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -18,6 +17,7 @@ assert_eq() {
   if [ "$2" = "$3" ]; then pass "$1"; else fail "$1" "expected [$3] got [$2]"; fi
 }
 
+# shellcheck disable=SC2329  # part of the harness API; called starting in a later task
 assert_link() {
   local desc="$1" link="$2" want="$3" got
   if [ ! -L "$link" ]; then
@@ -28,6 +28,7 @@ assert_link() {
   if [ "$got" = "$want" ]; then pass "$desc"; else fail "$desc" "link -> [$got] want [$want]"; fi
 }
 
+# shellcheck disable=SC2329  # part of the harness API; called starting in a later task
 assert_contains() {
   local desc="$1" haystack="$2" needle="$3"
   case "$haystack" in
@@ -36,6 +37,7 @@ assert_contains() {
   esac
 }
 
+# shellcheck disable=SC2329  # part of the harness API; called starting in a later task
 assert_not_contains() {
   local desc="$1" haystack="$2" needle="$3"
   case "$haystack" in
@@ -85,6 +87,7 @@ run_sync() {
     "$REPO/.local/bin/ai-sync" "$@"
 }
 
+# shellcheck disable=SC2329  # invoked indirectly via `trap cleanup EXIT`
 cleanup() {
   local d
   for d in "${SANDBOXES[@]+"${SANDBOXES[@]}"}"; do
