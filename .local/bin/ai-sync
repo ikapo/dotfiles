@@ -217,9 +217,15 @@ def state_path() -> Path:
 
 def read_state() -> dict:
     try:
-        return json.loads(state_path().read_text())
+        data = json.loads(state_path().read_text())
     except (OSError, json.JSONDecodeError):
         return {}
+    if not isinstance(data, dict):
+        return {}
+    codex = data.get("codex")
+    if not isinstance(codex, list) or not all(isinstance(n, str) for n in codex):
+        data.pop("codex", None)
+    return data
 
 
 def write_state(state: dict) -> None:

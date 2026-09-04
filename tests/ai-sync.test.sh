@@ -327,6 +327,20 @@ JSON
   assert_contains "removed github" "$log" "mcp remove github"
   assert_not_contains "still spared node_repl" "$log" "remove node_repl"
 
+  # A server `codex mcp list` already reports is not re-added.
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"github": {"command": "gh-mcp", "targets": ["codex"]}}}
+JSON
+  echo '# i' >"$REPO/.config/ai/AGENTS.md"
+  echo '{}' >"$REPO/.config/ai/claude/settings.json"
+  seed_codex_state <<'JSON'
+[{"name": "github", "enabled": true}]
+JSON
+  run_sync >/dev/null 2>&1
+  assert_not_contains "already-installed server is not re-added" \
+    "$(cat "$CODEX_LOG")" "mcp add github"
+
   # With Codex disabled, no CLI calls at all.
   new_sandbox
   write_mcp <<'JSON'
@@ -337,6 +351,35 @@ JSON
   AI_SYNC_REPO="$REPO" AI_SYNC_HOME="$FAKEHOME" AI_SYNC_STATE="$SANDBOX/state" \
     AI_SYNC_CODEX_BIN="" "$REPO/.local/bin/ai-sync" >/dev/null 2>&1
   assert_eq "codex disabled means no calls" "$(wc -l <"$CODEX_LOG" | tr -d ' ')" "0"
+}
+
+write_state_file() { mkdir -p "$SANDBOX/state"; cat >"$SANDBOX/state/managed.json"; }
+
+test_codex_state_bad_shapes() {
+  printf 'codex state file bad shapes\n'
+
+  local shape
+  for shape in 'null' '[]' '{"codex": "github"}' '{"codex": [1, 2]}'; do
+    new_sandbox
+    write_mcp <<'JSON'
+{"servers": {"extra": {"command": "x", "targets": ["codex"]}}}
+JSON
+    echo '# i' >"$REPO/.config/ai/AGENTS.md"
+    echo '{}' >"$REPO/.config/ai/claude/settings.json"
+    # Codex already has an app-managed server ai-sync must never touch,
+    # regardless of how unusable the on-disk state file is.
+    seed_codex_state <<'JSON'
+[{"name": "node_repl", "enabled": true}]
+JSON
+    printf '%s' "$shape" | write_state_file
+
+    local out rc
+    out="$(run_sync 2>&1)"; rc=$?
+    assert_eq "no crash for shape [$shape]" "$rc" "0"
+    assert_not_contains "no traceback for shape [$shape]" "$out" "Traceback"
+    assert_not_contains "unusable state never removes app server [$shape]" \
+      "$(cat "$CODEX_LOG")" "remove node_repl"
+  done
 }
 
 test_codex_skills_foreign_symlink_safety() {
@@ -416,6 +459,7 @@ test_claude_mcp
 test_symlinks
 test_codex_skills
 test_codex_mcp
+test_codex_state_bad_shapes
 test_codex_skills_foreign_symlink_safety
 test_link_apply_time_toctou
 report
