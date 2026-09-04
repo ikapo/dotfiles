@@ -10,6 +10,21 @@ from pathlib import Path
 
 VERSION = "ai-sync 1.0"
 
+USAGE = """usage: ai-sync [--check] [--version] [--help]
+
+Sync ~/.config/ai into Claude Code, Codex, and Zed.
+
+  (no flags)  apply all changes; idempotent
+  --check     report what would change; exit 1 on drift, 0 when clean
+  --version   print version
+  --help      print this message
+
+Source of truth: ~/.config/ai
+  AGENTS.md            shared instructions
+  mcp.json             MCP server definitions
+  skills/              personal skills
+  claude/settings.json Claude Code settings"""
+
 VALID_TARGETS = {"claude", "zed", "codex"}
 
 
@@ -168,12 +183,19 @@ def resolve_command(command: str, home: Path) -> str:
     return found or command
 
 
-def render_zed(text: str, servers: dict, home: Path) -> str:
+def render_zed(path: Path, text: str, servers: dict, home: Path) -> str:
     header, body = split_jsonc(text)
     try:
         data = json.loads(body)
     except json.JSONDecodeError as exc:
-        raise ConfigError("Zed settings.json is not valid JSONC: %s" % exc) from exc
+        raise ConfigError(
+            "%s is not valid JSONC: %s\n"
+            "ai-sync only supports comments in a leading header block, "
+            "before the opening brace; comments after the opening brace "
+            "and trailing commas are not supported there either. Move "
+            "such comments into the leading header, or remove them."
+            % (path, exc)
+        ) from exc
 
     if servers:
         data["context_servers"] = {
@@ -373,7 +395,10 @@ def build_plan(servers):
             write_file(
                 zed_settings,
                 render_zed(
-                    zed_settings.read_text(), servers_for(servers, "zed"), home
+                    zed_settings,
+                    zed_settings.read_text(),
+                    servers_for(servers, "zed"),
+                    home,
                 ),
             )
         )
@@ -385,9 +410,19 @@ def build_plan(servers):
 
 
 def main(argv):
+    if "--help" in argv or "-h" in argv:
+        print(USAGE)
+        return 0
     if "--version" in argv:
         print(VERSION)
         return 0
+
+    unknown = [a for a in argv if a != "--check"]
+    if unknown:
+        print("ai-sync: unknown argument: %s" % " ".join(unknown), file=sys.stderr)
+        print(USAGE, file=sys.stderr)
+        return 2
+
     check = "--check" in argv
 
     try:

@@ -459,6 +459,52 @@ JSON
     "$(cat "$REPO/.config/zed/settings.json")" "/opt/custom/bin/x"
 }
 
+test_zed_comment_after_brace() {
+  printf 'zed jsonc rejects comments after the opening brace\n'
+
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {}}
+JSON
+  echo '# i' >"$REPO/.config/ai/AGENTS.md"
+  echo '{}' >"$REPO/.config/ai/claude/settings.json"
+
+  cat >"$REPO/.config/zed/settings.json" <<'JSON'
+{
+  // comment after the opening brace, valid Zed JSONC, unsupported here
+  "vim_mode": true
+}
+JSON
+
+  local before after out rc
+  before="$(cat "$REPO/.config/zed/settings.json")"
+  out="$(run_sync 2>&1)"; rc=$?
+  after="$(cat "$REPO/.config/zed/settings.json")"
+
+  assert_eq "exits 2 on comment after brace" "$rc" "2"
+  assert_contains "names the leading header rule" "$out" "leading header"
+  assert_eq "file left untouched" "$after" "$before"
+}
+
+test_cli() {
+  printf 'cli surface\n'
+
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {}}
+JSON
+  local out rc
+
+  out="$(run_sync --help 2>&1)"; rc=$?
+  assert_eq "help exits 0" "$rc" "0"
+  assert_contains "help mentions --check" "$out" "--check"
+  assert_contains "help mentions usage" "$out" "usage"
+
+  out="$(run_sync --bogus 2>&1)"; rc=$?
+  assert_eq "unknown flag exits 2" "$rc" "2"
+  assert_contains "names the bad flag" "$out" "--bogus"
+}
+
 test_write_file_non_utf8() {
   printf 'write_file tolerates a non-UTF-8 existing target\n'
 
@@ -536,6 +582,8 @@ test_symlinks
 test_codex_skills
 test_codex_mcp
 test_zed
+test_zed_comment_after_brace
+test_cli
 test_write_file_non_utf8
 test_codex_state_bad_shapes
 test_codex_skills_foreign_symlink_safety
