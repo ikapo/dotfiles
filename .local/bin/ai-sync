@@ -142,15 +142,43 @@ def render_claude(servers: dict) -> str:
     return json.dumps({"mcpServers": out}, indent=2) + "\n"
 
 
+def link(path: Path, dest: Path):
+    """Symlink `path` -> `dest`. Never destroys a real file."""
+    if path.is_symlink():
+        if Path(os.readlink(path)) == dest:
+            return None
+    elif path.exists():
+        raise ConfigError(
+            "%s exists and is not a symlink; move it aside "
+            "(its content belongs in %s)" % (path, dest)
+        )
+
+    def run():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if path.is_symlink() or path.exists():
+            path.unlink()
+        path.symlink_to(dest)
+
+    return Action("link", "%s -> %s" % (path, dest), run)
+
+
 def build_plan(servers) -> Plan:
     plan = Plan()
     home = target_home()
+    src = ai_dir()
+
     plan.add(
         write_file(
             home / ".claude" / "mcp.json",
             render_claude(servers_for(servers, "claude")),
         )
     )
+
+    agents = src / "AGENTS.md"
+    plan.add(link(home / ".claude" / "skills", src / "skills"))
+    plan.add(link(home / ".claude" / "CLAUDE.md", agents))
+    plan.add(link(home / ".codex" / "AGENTS.md", agents))
+    plan.add(link(home / ".claude" / "settings.json", src / "claude" / "settings.json"))
     return plan
 
 
@@ -162,11 +190,11 @@ def main(argv):
 
     try:
         servers = load_servers(ai_dir())
+        plan = build_plan(servers)
     except ConfigError as exc:
         print("ai-sync: %s" % exc, file=sys.stderr)
         return 2
 
-    plan = build_plan(servers)
     if not plan:
         if not check:
             print("ai-sync: already in sync")

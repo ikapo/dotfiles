@@ -17,7 +17,6 @@ assert_eq() {
   if [ "$2" = "$3" ]; then pass "$1"; else fail "$1" "expected [$3] got [$2]"; fi
 }
 
-# shellcheck disable=SC2329  # part of the harness API; called starting in a later task
 assert_link() {
   local desc="$1" link="$2" want="$3" got
   if [ ! -L "$link" ]; then
@@ -205,7 +204,49 @@ JSON
   assert_not_contains "second run is a no-op" "$out" "mcp.json"
 }
 
+test_symlinks() {
+  printf 'shared symlinks\n'
+
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {}}
+JSON
+  echo '# instructions' >"$REPO/.config/ai/AGENTS.md"
+  echo '{"model": "opus"}' >"$REPO/.config/ai/claude/settings.json"
+
+  run_sync >/dev/null 2>&1
+  assert_link "claude skills dir" \
+    "$FAKEHOME/.claude/skills" "$REPO/.config/ai/skills"
+  assert_link "claude CLAUDE.md" \
+    "$FAKEHOME/.claude/CLAUDE.md" "$REPO/.config/ai/AGENTS.md"
+  assert_link "codex AGENTS.md" \
+    "$FAKEHOME/.codex/AGENTS.md" "$REPO/.config/ai/AGENTS.md"
+  assert_link "claude settings.json" \
+    "$FAKEHOME/.claude/settings.json" "$REPO/.config/ai/claude/settings.json"
+
+  local rc
+  run_sync --check >/dev/null 2>&1; rc=$?
+  assert_eq "idempotent after linking" "$rc" "0"
+
+  # A wrong existing symlink is corrected.
+  ln -sfn /nowhere "$FAKEHOME/.claude/CLAUDE.md"
+  run_sync >/dev/null 2>&1
+  assert_link "repaired wrong symlink" \
+    "$FAKEHOME/.claude/CLAUDE.md" "$REPO/.config/ai/AGENTS.md"
+
+  # A real file is never silently destroyed.
+  rm -f "$FAKEHOME/.claude/CLAUDE.md"
+  echo 'precious hand-written notes' >"$FAKEHOME/.claude/CLAUDE.md"
+  local out
+  out="$(run_sync 2>&1)"; rc=$?
+  assert_eq "refuses to clobber real file" "$rc" "2"
+  assert_contains "explains the refusal" "$out" "CLAUDE.md"
+  assert_eq "file survived" \
+    "$(cat "$FAKEHOME/.claude/CLAUDE.md")" "precious hand-written notes"
+}
+
 test_version
 test_validation
 test_claude_mcp
+test_symlinks
 report
