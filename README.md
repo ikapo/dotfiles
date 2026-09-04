@@ -61,14 +61,14 @@ local server that needs one reads it from the Keychain at runtime.
 
 ## Packages
 
-Everything I installed deliberately, as of 2026-09-03. Regenerate with
+Everything I installed deliberately, as of 2026-09-04. Regenerate with
 `brew leaves --installed-on-request` and `brew list --cask`.
 
 ### Formulae
 
 | Category | Packages |
 | --- | --- |
-| VCS & dev tools | gh, git, git-lfs, gitu, lazygit, stow, watchman |
+| VCS & dev tools | gh, git, git-lfs, github-mcp-server, gitu, lazygit, stow, watchman |
 | Languages & runtimes | bun, node@24, pnpm, python@3.9, python@3.10, pyenv, pipx, poetry, rustup, gcc, gcc@11, automake |
 | Editors & shell | neovim, d12frosted/emacs-plus/emacs-plus@29, zsh-autosuggestions, zsh-syntax-highlighting, ranger, television |
 | CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, showkey, librsync, wimlib |
@@ -83,7 +83,7 @@ Everything I installed deliberately, as of 2026-09-03. Regenerate with
 ```sh
 brew install asmvik/formulae/skhd asmvik/formulae/yabai automake bat bun ccusage \
   cocoapods coreutils d12frosted/emacs-plus/emacs-plus@29 facebook/fb/idb-companion fd \
-  fzf gcc gcc@11 gh git git-lfs gitu gnu-sed gnupg \
+  fzf gcc gcc@11 gh git git-lfs github-mcp-server gitu gnu-sed gnupg \
   gobject-introspection imagemagick ispell jq lazygit librsync lsd mpv mypy neovim \
   node@24 pandoc pgcli pinentry-mac pipx pnpm poetry postgresql@14 prettier pyenv \
   pygments python-requests python-setuptools python@3.10 python@3.9 ranger ripgrep \
@@ -97,7 +97,7 @@ brew install asmvik/formulae/skhd asmvik/formulae/yabai automake bat bun ccusage
 | --- | --- |
 | Browsers & comms | brave-browser, discord, telegram, whatsapp, thunderbird, zoom |
 | Dev | zed, iterm2, claude, claude-code@latest, codex, chatgpt, openlens, devtoys, linear, linear-linear |
-| Productivity | raycast, obsidian, google-drive, monitorcontrol, logi-options+ |
+| Productivity | raycast, obsidian, google-drive, monitorcontrol, logi-options+, openwhispr |
 | Security | bitwarden, trezor-suite |
 | Fonts | font-fira-code-nerd-font, font-mononoki-nerd-font |
 | Other | altserver, openmtp, prusaslicer, tradingview, vorssaint |
@@ -106,6 +106,7 @@ brew install asmvik/formulae/skhd asmvik/formulae/yabai automake bat bun ccusage
 brew install --cask altserver bitwarden brave-browser chatgpt claude claude-code@latest \
   codex devtoys discord font-fira-code-nerd-font font-mononoki-nerd-font google-drive \
   iterm2 linear linear-linear logi-options+ monitorcontrol obsidian openlens openmtp \
-  prusaslicer raycast telegram thunderbird tradingview trezor-suite vorssaint whatsapp \
+  openwhispr prusaslicer raycast telegram thunderbird tradingview trezor-suite vorssaint \
+  whatsapp \
   zed zoom
 ```
