@@ -3,6 +3,7 @@
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -122,7 +123,7 @@ def write_file(path: Path, text: str):
         try:
             if path.read_text() == text:
                 return None
-        except OSError:
+        except (OSError, UnicodeDecodeError):
             pass
 
     def run():
@@ -141,6 +142,51 @@ def render_claude(servers: dict) -> str:
             entry["env"] = cfg["env"]
         out[name] = entry
     return json.dumps({"mcpServers": out}, indent=2) + "\n"
+
+
+def split_jsonc(text: str):
+    """Split leading // comments and blank lines from the JSON body."""
+    lines = text.splitlines(keepends=True)
+    index = 0
+    while index < len(lines):
+        stripped = lines[index].strip()
+        if stripped == "" or stripped.startswith("//"):
+            index += 1
+            continue
+        break
+    return "".join(lines[:index]), "".join(lines[index:])
+
+
+def resolve_command(command: str, home: Path) -> str:
+    """Absolute path for `command`. GUI apps do not inherit shell PATH."""
+    if command.startswith("/"):
+        return command
+    local = home / ".local" / "bin" / command
+    if local.exists():
+        return str(local)
+    found = shutil.which(command)
+    return found or command
+
+
+def render_zed(text: str, servers: dict, home: Path) -> str:
+    header, body = split_jsonc(text)
+    try:
+        data = json.loads(body)
+    except json.JSONDecodeError as exc:
+        raise ConfigError("Zed settings.json is not valid JSONC: %s" % exc) from exc
+
+    if servers:
+        data["context_servers"] = {
+            name: {
+                "command": resolve_command(servers[name]["command"], home),
+                "args": list(servers[name].get("args", [])),
+            }
+            for name in sorted(servers)
+        }
+    else:
+        data.pop("context_servers", None)
+
+    return header + json.dumps(data, indent=2) + "\n"
 
 
 def link(path: Path, dest: Path):
@@ -320,6 +366,18 @@ def build_plan(servers):
     plan.add(link(home / ".claude" / "CLAUDE.md", agents))
     plan.add(link(home / ".codex" / "AGENTS.md", agents))
     plan.add(link(home / ".claude" / "settings.json", src / "claude" / "settings.json"))
+
+    zed_settings = repo_root() / ".config" / "zed" / "settings.json"
+    if zed_settings.exists():
+        plan.add(
+            write_file(
+                zed_settings,
+                render_zed(
+                    zed_settings.read_text(), servers_for(servers, "zed"), home
+                ),
+            )
+        )
+
     plan_codex_skills(plan, src, home)
     new_codex = plan_codex_mcp(plan, servers, state)
     state["codex"] = new_codex

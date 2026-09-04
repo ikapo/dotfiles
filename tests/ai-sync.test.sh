@@ -404,6 +404,82 @@ JSON
     "$FAKEHOME/.codex/skills/foreign" "$SANDBOX/outside-target"
 }
 
+test_zed() {
+  printf 'zed jsonc patching\n'
+
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"github": {"command": "gh-mcp", "targets": ["zed"]}}}
+JSON
+  echo '# i' >"$REPO/.config/ai/AGENTS.md"
+  echo '{}' >"$REPO/.config/ai/claude/settings.json"
+  printf '#!/bin/sh\n' >"$FAKEHOME/.local/bin/gh-mcp"
+  chmod +x "$FAKEHOME/.local/bin/gh-mcp"
+
+  cat >"$REPO/.config/zed/settings.json" <<'JSON'
+// Zed settings
+// keep this comment
+{
+  "cli_default_open_behavior": "existing_window",
+  "vim_mode": true
+}
+JSON
+
+  run_sync >/dev/null 2>&1
+  local patched
+  patched="$(cat "$REPO/.config/zed/settings.json")"
+  assert_contains "preserved comment header" "$patched" "keep this comment"
+  assert_contains "added context_servers" "$patched" '"context_servers"'
+  assert_contains "resolved absolute command" "$patched" "$FAKEHOME/.local/bin/gh-mcp"
+  assert_contains "kept unrelated key" "$patched" '"vim_mode"'
+
+  local rc
+  run_sync --check >/dev/null 2>&1; rc=$?
+  assert_eq "idempotent" "$rc" "0"
+
+  # Removing the last zed server drops the key entirely.
+  write_mcp <<'JSON'
+{"servers": {}}
+JSON
+  run_sync >/dev/null 2>&1
+  patched="$(cat "$REPO/.config/zed/settings.json")"
+  assert_not_contains "dropped empty context_servers" "$patched" "context_servers"
+  assert_contains "header still there" "$patched" "keep this comment"
+
+  # An already-absolute command is left as written.
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"x": {"command": "/opt/custom/bin/x", "targets": ["zed"]}}}
+JSON
+  echo '# i' >"$REPO/.config/ai/AGENTS.md"
+  echo '{}' >"$REPO/.config/ai/claude/settings.json"
+  printf '{\n  "vim_mode": true\n}\n' >"$REPO/.config/zed/settings.json"
+  run_sync >/dev/null 2>&1
+  assert_contains "kept absolute path verbatim" \
+    "$(cat "$REPO/.config/zed/settings.json")" "/opt/custom/bin/x"
+}
+
+test_write_file_non_utf8() {
+  printf 'write_file tolerates a non-UTF-8 existing target\n'
+
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"a": {"command": "a-cmd", "targets": ["claude"]}}}
+JSON
+  echo '# i' >"$REPO/.config/ai/AGENTS.md"
+  echo '{}' >"$REPO/.config/ai/claude/settings.json"
+  # A pre-existing target file with invalid UTF-8 bytes must not crash
+  # write_file's existing-content comparison.
+  printf '\xff\xfe garbage not utf8' >"$FAKEHOME/.claude/mcp.json"
+
+  local out rc
+  out="$(run_sync 2>&1)"; rc=$?
+  assert_eq "no crash on non-utf8 existing file" "$rc" "0"
+  assert_not_contains "no traceback" "$out" "Traceback"
+  assert_contains "wrote fresh content" \
+    "$(cat "$FAKEHOME/.claude/mcp.json")" '"a-cmd"'
+}
+
 test_link_apply_time_toctou() {
   printf 'link() apply-time re-check (TOCTOU guard)\n'
 
@@ -459,6 +535,8 @@ test_claude_mcp
 test_symlinks
 test_codex_skills
 test_codex_mcp
+test_zed
+test_write_file_non_utf8
 test_codex_state_bad_shapes
 test_codex_skills_foreign_symlink_safety
 test_link_apply_time_toctou
