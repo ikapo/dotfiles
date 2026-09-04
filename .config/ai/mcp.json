@@ -1,9 +1,8 @@
 {
   "servers": {
     "github": {
-      "command": "gh-mcp",
-      "args": [],
-      "targets": ["claude", "zed", "codex"]
+      "url": "https://api.githubcopilot.com/mcp/",
+      "targets": ["claude", "codex"]
     },
     "ios-simulator": {
       "command": "npx",

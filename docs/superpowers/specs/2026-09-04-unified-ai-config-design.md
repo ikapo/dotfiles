@@ -11,7 +11,7 @@ formats, and none of it is tracked in this repository:
 |---|---|---|
 | `~/.claude.json` | `{"mcpServers": {...}}` among Claude Code's own runtime state | `ios-simulator` |
 | `~/.claude/settings.json` | JSON | model, effort, enabled plugins, marketplaces |
-| `.config/zed/settings.json` | `context_servers` key | `github` via `gh-mcp` |
+| `.config/zed/settings.json` | `context_servers` key | `github` via a Keychain wrapper |
 | `~/.codex/config.toml` | `[mcp_servers.x]` TOML | `node_repl` (app-managed) |
 
 Consequences:
@@ -73,9 +73,9 @@ for these paths.
 {
   "servers": {
     "github": {
-      "command": "gh-mcp",
-      "args": [],
-      "targets": ["claude", "zed", "codex"]
+      "url": "https://api.githubcopilot.com/mcp/",
+      "oauth": {"client_id": "<client id>", "callback_port": 33418},
+      "targets": ["claude", "codex"]
     },
     "ios-simulator": {
       "command": "npx",
@@ -133,9 +133,23 @@ individually and removes stale links whose source no longer exists.
 
 ## Secrets
 
-`mcp.json` contains no credentials, ever. A server needing authentication gets
-a wrapper script in `.local/bin` that reads the value from Keychain at
-invocation time, following the existing `gh-mcp` pattern:
+`mcp.json` contains no credentials, ever.
+
+The preferred answer is a remote server: a `url` the tool authenticates against
+over OAuth, leaving the token in that tool's own credential store. Nothing is
+installed and nothing secret is written, which is what makes the setup portable
+to a new machine.
+
+Where the server's authorization server supports neither dynamic client
+registration nor CIMD — GitHub's case — the tool must be handed a client id
+registered by hand, carried in an `oauth` block. A client id is not a secret; a
+client secret is, and `ai-sync` rejects `oauth.client_secret` outright rather
+than trusting the hook to catch it. Zed supports only CIMD and dynamic
+registration, so it cannot reach such a server at all and is left off the
+target list rather than given a plaintext `Authorization` header.
+
+A local server needing a credential gets a wrapper script in `.local/bin` that
+reads the value from Keychain at invocation time:
 
 ```sh
 security find-generic-password -s <service> -a "$USER" -w

@@ -55,90 +55,76 @@ reads MCP servers from `~/.claude.json`, which it also rewrites as it runs, so
 `ai-sync` merges into that file rather than generating it: everything outside
 `mcpServers` is preserved, servers it does not manage are left alone, and only
 servers a previous run added are pruned. Run it with Claude Code closed, and
-restart Claude Code afterwards — it reads MCP config once at startup. Never put a
-credential in `.config/ai/mcp.json`; route it through a `.local/bin` wrapper
-that reads the macOS Keychain at startup, like `gh-mcp` (see below).
+restart Claude Code afterwards — it reads MCP config once at startup. Never put
+a credential in `.config/ai/mcp.json`; this file is public.
 
-## MCP servers (Zed)
+## MCP servers
 
-Zed's `settings.json` has no environment-variable interpolation and no secret
-references, so any token written there is plaintext in this repo. Instead, every
-MCP server is launched through a small wrapper in `.local/bin/` that reads its
-credential from the macOS Keychain at startup.
+Prefer a **remote** server over a local one. A remote server is a URL, the tool
+runs an OAuth flow against it, and the resulting token lands in that tool's own
+credential store — never in this repo. Nothing has to be installed, so a new
+machine reproduces the setup by running `ai-sync` and logging in once:
 
-The GitHub server is the worked example: `.local/bin/gh-mcp`.
+```json
+"github": {
+  "url": "https://api.githubcopilot.com/mcp/",
+  "oauth": {"client_id": "<client id>", "callback_port": 33418},
+  "targets": ["claude", "codex"]
+}
+```
 
-`settings.json` stays tracked rather than ignored, so it remains the single
-source of truth — Zed rewrites it whenever you change a setting from the UI, so
-a generated copy would drift. `.githooks/pre-commit` is the backstop: it blocks
-any commit containing a credential-shaped string.
+The `oauth` block is only needed when the server's authorization server
+supports neither dynamic client registration nor CIMD, which is GitHub's case —
+its metadata at `github.com/.well-known/oauth-authorization-server/login/oauth`
+advertises no `registration_endpoint`. Such a server has to be handed a client
+id you registered by hand. A client id is not a secret; a client **secret** is,
+and `ai-sync` refuses one in `mcp.json`. Register a PKCE public client instead —
+GitHub advertises `code_challenge_methods_supported: ["S256"]`.
 
-### Adding a new server
+Tool support for a hand-registered client id, as of 2026-09:
 
-1. Install the server binary, ideally via Homebrew so it is pinned to a real
-   package rather than an extension's download directory:
+| Tool | Remote servers | Hand-registered client id |
+|---|---|---|
+| Claude Code | yes | yes — `oauth.clientId` / `oauth.callbackPort` |
+| Codex | yes | yes — `codex mcp add --oauth-client-id` |
+| Zed 1.18 | yes | **no** |
 
-   ```sh
-   brew install <server>
-   ```
+Zed only knows CIMD and dynamic registration (`crates/context_server/src/oauth.rs`,
+`determine_registration_strategy`), so it cannot authenticate against a server
+offering neither. Its only alternative is a literal `Authorization` header in
+`settings.json`, which would put a token in this repo. That is why `github`
+targets only `claude` and `codex`.
 
-2. Store the credential in the Keychain. The same command rotates it later —
-   `-U` updates an existing entry:
+### Local servers
 
-   ```sh
-   security add-generic-password -a "$USER" -s <service-name> -w '<token>' -U
-   ```
+A local server is a `command` that `ai-sync` launches. Use one only when no
+remote equivalent exists — `ios-simulator` drives the local simulator, so it
+could not be remote:
 
-3. Add a wrapper at `.local/bin/<name>-mcp`, `chmod +x` it, and use absolute
-   paths — Zed does not reliably inherit `$PATH`:
+```json
+"ios-simulator": {
+  "command": "npx",
+  "args": ["-y", "ios-simulator-mcp"],
+  "targets": ["claude"]
+}
+```
 
-   ```sh
-   #!/bin/sh
-   TOKEN_ENV_VAR=$(security find-generic-password -s <service-name> -w) || {
-   	echo "<name>-mcp: no '<service-name>' entry in Keychain" >&2
-   	exit 1
-   }
-   export TOKEN_ENV_VAR
+A local server that needs a credential must not name it here. Route it through
+a `.local/bin` wrapper that reads the macOS Keychain at startup and `exec`s the
+real binary, and give the wrapper's bare name as `command` — `ai-sync` rewrites
+a `~/.local/bin` name to an absolute path for the targets that launch outside a
+login shell, since Zed and the desktop apps do not inherit `$PATH`. Anything
+else stays a bare name so it keeps tracking `$PATH`.
 
-   exec /opt/homebrew/bin/<server> stdio "$@"
-   ```
+`.githooks/pre-commit` is the backstop: it blocks any commit containing a
+credential-shaped string.
 
-4. Symlink it into `~`, or the script will not exist at the path Zed runs and
-   the server will fail to start with no obvious cause:
+### Zed settings
 
-   ```sh
-   stow ./ -t ~/
-   ```
-
-5. Point Zed at the wrapper in `.config/zed/settings.json`:
-
-   ```json
-   "context_servers": {
-     "<name>": {
-       "command": "/Users/ikapo/.local/bin/<name>-mcp",
-       "args": []
-     }
-   }
-   ```
-
-6. Verify the handshake before trusting it, by piping a JSON-RPC `initialize`
-   into the wrapper. A `serverInfo` reply means the Keychain read and the binary
-   both work:
-
-   ```sh
-   { printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"probe","version":"0"}}}'
-     sleep 2
-   } | ~/.local/bin/<name>-mcp
-   ```
-
-### Prefer a `command` entry over extensions
-
-Zed extensions that bundle an MCP server define their own `settings` block, and
-the token has to go in it verbatim — there is no way to indirect it. A plain
-`command` entry runs a process instead, which is what makes the Keychain wrapper
-possible. The GitHub server was originally the `mcp-server-github` extension; it
-was dropped for exactly this reason, and the extension turned out to just
-download the same binary Homebrew ships.
+`.config/zed/settings.json` stays tracked rather than ignored, so it remains the
+single source of truth — Zed rewrites it whenever you change a setting from the
+UI, so a generated copy would drift. `ai-sync` patches only its
+`context_servers` key, preserving the leading comment header.
 
 Do not add a `"source": "custom"` key. Older Zed docs still show it, but Zed
 1.18 rejects it with `property "source" is not allowed` and its settings
@@ -153,7 +139,7 @@ Everything I installed deliberately, as of 2026-09-03. Regenerate with
 
 | Category | Packages |
 | --- | --- |
-| VCS & dev tools | gh, git, git-lfs, gitu, lazygit, stow, watchman, github-mcp-server |
+| VCS & dev tools | gh, git, git-lfs, gitu, lazygit, stow, watchman |
 | Languages & runtimes | bun, node@24, pnpm, python@3.9, python@3.10, pyenv, pipx, poetry, rustup, gcc, gcc@11, automake |
 | Editors & shell | neovim, d12frosted/emacs-plus/emacs-plus@29, zsh-autosuggestions, zsh-syntax-highlighting, ranger, television |
 | CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, showkey, librsync, wimlib |
@@ -168,7 +154,7 @@ Everything I installed deliberately, as of 2026-09-03. Regenerate with
 ```sh
 brew install asmvik/formulae/skhd asmvik/formulae/yabai automake bat bun ccusage \
   cocoapods coreutils d12frosted/emacs-plus/emacs-plus@29 facebook/fb/idb-companion fd \
-  fzf gcc gcc@11 gh git git-lfs github-mcp-server gitu gnu-sed gnupg \
+  fzf gcc gcc@11 gh git git-lfs gitu gnu-sed gnupg \
   gobject-introspection imagemagick ispell jq lazygit librsync lsd mpv mypy neovim \
   node@24 pandoc pgcli pinentry-mac pipx pnpm poetry postgresql@14 prettier pyenv \
   pygments python-requests python-setuptools python@3.10 python@3.9 ranger ripgrep \

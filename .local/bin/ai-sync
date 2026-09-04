@@ -21,7 +21,7 @@ Sync ~/.config/ai into Claude Code, Codex, and Zed.
 
 Source of truth: ~/.config/ai
   AGENTS.md            shared instructions
-  mcp.json             MCP server definitions
+  mcp.json             MCP server definitions (local `command` or remote `url`)
   skills/              personal skills
   claude/settings.json Claude Code settings"""
 
@@ -73,10 +73,34 @@ def load_servers(directory: Path) -> dict:
         if not isinstance(cfg, dict):
             errors.append("%s: must be an object" % name)
             continue
-        if not cfg.get("command"):
-            errors.append("%s: missing 'command'" % name)
+        if cfg.get("command") and cfg.get("url"):
+            errors.append("%s: 'command' and 'url' are mutually exclusive" % name)
+        elif cfg.get("url"):
+            if not isinstance(cfg["url"], str):
+                errors.append("%s: 'url' must be a string" % name)
+        elif not cfg.get("command"):
+            errors.append("%s: needs a 'command' (local) or a 'url' (remote)" % name)
         elif not isinstance(cfg["command"], str):
             errors.append("%s: 'command' must be a string" % name)
+
+        oauth = cfg.get("oauth")
+        if oauth is not None:
+            if not isinstance(oauth, dict):
+                errors.append("%s: 'oauth' must be an object" % name)
+            else:
+                if not cfg.get("url"):
+                    errors.append("%s: 'oauth' needs a remote server ('url')" % name)
+                if not isinstance(oauth.get("client_id"), str):
+                    errors.append("%s: 'oauth' needs a string 'client_id'" % name)
+                if "client_secret" in oauth:
+                    errors.append(
+                        "%s: 'oauth.client_secret' is a secret and this file is "
+                        "version controlled; GitHub-style servers accept a PKCE "
+                        "public client, so register one without a secret" % name
+                    )
+                port = oauth.get("callback_port")
+                if port is not None and not isinstance(port, int):
+                    errors.append("%s: 'oauth.callback_port' must be an integer" % name)
         targets = cfg.get("targets")
         if not targets:
             errors.append("%s: missing 'targets' (valid: %s)" % (name, valid))
@@ -152,6 +176,15 @@ def claude_entries(servers: dict, home: Path) -> dict:
     out = {}
     for name in sorted(servers):
         cfg = servers[name]
+        if cfg.get("url"):
+            entry = {"type": "http", "url": cfg["url"]}
+            oauth = cfg.get("oauth")
+            if oauth:
+                entry["oauth"] = {"clientId": oauth["client_id"]}
+                if oauth.get("callback_port"):
+                    entry["oauth"]["callbackPort"] = oauth["callback_port"]
+            out[name] = entry
+            continue
         entry = {
             "type": "stdio",
             "command": resolve_command(cfg["command"], home),
@@ -305,6 +338,9 @@ def render_zed(path: Path, text: str, servers: dict, home: Path) -> str:
         entries = {}
         for name in sorted(servers):
             cfg = servers[name]
+            if cfg.get("url"):
+                entries[name] = {"url": cfg["url"]}
+                continue
             entry = {
                 "command": resolve_command(cfg["command"], home),
                 "args": list(cfg.get("args", [])),
@@ -483,10 +519,16 @@ def plan_codex_mcp(plan: Plan, servers: dict, state: dict) -> list:
         cfg = wanted[name]
         if name in installed:
             continue
-        args = ["mcp", "add", name]
-        for key, value in sorted((cfg.get("env") or {}).items()):
-            args += ["--env", "%s=%s" % (key, value)]
-        args += ["--", cfg["command"]] + list(cfg.get("args", []))
+        if cfg.get("url"):
+            args = ["mcp", "add", name, "--url", cfg["url"]]
+            oauth = cfg.get("oauth")
+            if oauth:
+                args += ["--oauth-client-id", oauth["client_id"]]
+        else:
+            args = ["mcp", "add", name]
+            for key, value in sorted((cfg.get("env") or {}).items()):
+                args += ["--env", "%s=%s" % (key, value)]
+            args += ["--", cfg["command"]] + list(cfg.get("args", []))
         plan.add(
             Action(
                 "codex",

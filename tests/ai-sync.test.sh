@@ -166,6 +166,128 @@ JSON
   assert_eq "non-string command exits 2" "$rc" "2"
   assert_contains "names the server" "$out" "a"
   assert_contains "names command" "$out" "command"
+
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"a": {"command": "x", "url": "https://e/mcp", "targets": ["claude"]}}}
+JSON
+  out="$(run_sync --check 2>&1)"; rc=$?
+  assert_eq "command plus url exits 2" "$rc" "2"
+  assert_contains "says they are exclusive" "$out" "url"
+
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"a": {"url": 5, "targets": ["claude"]}}}
+JSON
+  out="$(run_sync --check 2>&1)"; rc=$?
+  assert_eq "non-string url exits 2" "$rc" "2"
+  assert_contains "names url" "$out" "url"
+}
+
+test_remote_servers() {
+  printf 'remote (http) servers need no local wrapper\n'
+
+  new_sandbox
+  write_mcp <<'JSON'
+{
+  "servers": {
+    "github": {
+      "url": "https://api.githubcopilot.com/mcp/",
+      "targets": ["claude", "zed", "codex"]
+    }
+  }
+}
+JSON
+  echo '# i' >"$REPO/.config/ai/AGENTS.md"
+  echo '{}' >"$REPO/.config/ai/claude/settings.json"
+  cat >"$REPO/.config/zed/settings.json" <<'JSON'
+{
+  "vim_mode": true
+}
+JSON
+
+  run_sync >/dev/null 2>&1
+
+  local claude zed
+  claude="$(cat "$FAKEHOME/.claude.json")"
+  assert_contains "claude gets an http server" "$claude" '"type": "http"'
+  assert_contains "claude gets the url" "$claude" "api.githubcopilot.com"
+  assert_not_contains "claude has no command" "$claude" '"command"'
+
+  zed="$(cat "$REPO/.config/zed/settings.json")"
+  assert_contains "zed gets the url" "$zed" "api.githubcopilot.com"
+  assert_not_contains "zed has no command" "$zed" '"command"'
+
+  assert_contains "codex registered by url" "$(cat "$CODEX_LOG")" \
+    "mcp add github --url https://api.githubcopilot.com/mcp/"
+  assert_not_contains "codex got no -- command" "$(cat "$CODEX_LOG")" "mcp add github --env"
+
+  # Codex now reports the server it was told to add, as a real one would.
+  seed_codex_state <<'JSON'
+[{"name": "github", "enabled": true}]
+JSON
+  local rc
+  run_sync --check >/dev/null 2>&1; rc=$?
+  assert_eq "idempotent" "$rc" "0"
+}
+
+test_remote_oauth() {
+  printf 'remote servers with a pre-registered oauth client\n'
+
+  # GitHub's auth server supports neither dynamic client registration nor
+  # CIMD, so both tools must be handed a client id registered by hand.
+  new_sandbox
+  write_mcp <<'JSON'
+{
+  "servers": {
+    "github": {
+      "url": "https://api.githubcopilot.com/mcp/",
+      "oauth": {"client_id": "Iv1.abc123", "callback_port": 33418},
+      "targets": ["claude", "codex"]
+    }
+  }
+}
+JSON
+  echo '# i' >"$REPO/.config/ai/AGENTS.md"
+  echo '{}' >"$REPO/.config/ai/claude/settings.json"
+
+  run_sync >/dev/null 2>&1
+
+  local claude
+  claude="$(cat "$FAKEHOME/.claude.json")"
+  assert_contains "claude gets the client id" "$claude" '"clientId": "Iv1.abc123"'
+  assert_contains "claude gets the callback port" "$claude" '"callbackPort": 33418'
+
+  assert_contains "codex gets the client id" "$(cat "$CODEX_LOG")" \
+    "--oauth-client-id Iv1.abc123"
+
+  # A client secret would be a secret in a public repo. Refuse it outright.
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"a": {"url": "https://e/mcp", "oauth": {"client_id": "x", "client_secret": "s"}, "targets": ["claude"]}}}
+JSON
+  local out
+  out="$(run_sync --check 2>&1)"; rc=$?
+  assert_eq "client secret exits 2" "$rc" "2"
+  assert_contains "explains why" "$out" "secret"
+
+  # oauth without a client id is meaningless.
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"a": {"url": "https://e/mcp", "oauth": {"callback_port": 1}, "targets": ["claude"]}}}
+JSON
+  out="$(run_sync --check 2>&1)"; rc=$?
+  assert_eq "oauth without client id exits 2" "$rc" "2"
+  assert_contains "names client_id" "$out" "client_id"
+
+  # oauth on a local server is a mistake worth catching.
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"a": {"command": "x", "oauth": {"client_id": "y"}, "targets": ["claude"]}}}
+JSON
+  out="$(run_sync --check 2>&1)"; rc=$?
+  assert_eq "oauth on a local server exits 2" "$rc" "2"
+  assert_contains "says oauth needs a url" "$out" "url"
 }
 
 test_claude_mcp() {
@@ -787,6 +909,8 @@ PY
 
 test_version
 test_validation
+test_remote_servers
+test_remote_oauth
 test_claude_mcp
 test_claude_json_merge
 test_claude_stale_mcp_json
