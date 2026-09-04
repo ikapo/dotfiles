@@ -198,13 +198,17 @@ def render_zed(path: Path, text: str, servers: dict, home: Path) -> str:
         ) from exc
 
     if servers:
-        data["context_servers"] = {
-            name: {
-                "command": resolve_command(servers[name]["command"], home),
-                "args": list(servers[name].get("args", [])),
+        entries = {}
+        for name in sorted(servers):
+            cfg = servers[name]
+            entry = {
+                "command": resolve_command(cfg["command"], home),
+                "args": list(cfg.get("args", [])),
             }
-            for name in sorted(servers)
-        }
+            if cfg.get("env"):
+                entry["env"] = cfg["env"]
+            entries[name] = entry
+        data["context_servers"] = entries
     else:
         data.pop("context_servers", None)
 
@@ -243,7 +247,7 @@ def unlink_action(path: Path):
     return Action("unlink", str(path), run)
 
 
-def plan_codex_skills(plan: Plan, src: Path, home: Path) -> None:
+def plan_codex_skills(plan: Plan, src: Path, home: Path, errors: list) -> None:
     skills_src = src / "skills"
     skills_dst = home / ".codex" / "skills"
 
@@ -254,7 +258,10 @@ def plan_codex_skills(plan: Plan, src: Path, home: Path) -> None:
                 wanted[entry.name] = entry
 
     for name, source in wanted.items():
-        plan.add(link(skills_dst / name, source))
+        try:
+            plan.add(link(skills_dst / name, source))
+        except ConfigError as exc:
+            errors.append(str(exc))
 
     if not skills_dst.is_dir():
         return
@@ -303,8 +310,25 @@ def write_state(state: dict) -> None:
 
 
 def codex_bin():
+    """Resolve the Codex binary.
+
+    An empty AI_SYNC_CODEX_BIN disables Codex sync outright (a deliberate
+    opt-out; no note printed). A configured binary that cannot be found
+    (not on PATH, or a bad absolute path) also disables Codex sync for
+    this run, but prints one note to stderr explaining why, since that
+    case is usually not deliberate.
+    """
     value = os.environ.get("AI_SYNC_CODEX_BIN", "codex")
-    return value or None
+    if not value:
+        return None
+    resolved = shutil.which(value)
+    if resolved is None:
+        print(
+            "ai-sync: codex binary %r not found; skipping Codex sync" % value,
+            file=sys.stderr,
+        )
+        return None
+    return resolved
 
 
 def codex_installed(binary: str) -> set:
@@ -326,8 +350,19 @@ def codex_installed(binary: str) -> set:
     return {item["name"] for item in listed if isinstance(item, dict) and "name" in item}
 
 
-def _codex_run(binary: str, args: list) -> None:
-    subprocess.run([binary] + args, check=False)
+def _codex_run(binary: str, args: list, name: str) -> None:
+    """Run a codex CLI mutation. Defence in depth: codex_bin() already
+    verifies the binary exists, but if it vanishes between plan and apply
+    (or any other OSError fires), report which server failed instead of
+    crashing and aborting the rest of the plan.
+    """
+    try:
+        subprocess.run([binary] + args, check=False)
+    except OSError as exc:
+        print(
+            "ai-sync: codex command for %r failed to run: %s" % (name, exc),
+            file=sys.stderr,
+        )
 
 
 def plan_codex_mcp(plan: Plan, servers: dict, state: dict) -> list:
@@ -351,7 +386,7 @@ def plan_codex_mcp(plan: Plan, servers: dict, state: dict) -> list:
             Action(
                 "codex",
                 "+ %s" % name,
-                lambda b=binary, a=args: _codex_run(b, a),
+                lambda b=binary, a=args, n=name: _codex_run(b, a, n),
             )
         )
 
@@ -363,7 +398,7 @@ def plan_codex_mcp(plan: Plan, servers: dict, state: dict) -> list:
             Action(
                 "codex",
                 "- %s" % name,
-                lambda b=binary, n=name: _codex_run(b, ["mcp", "remove", n]),
+                lambda b=binary, n=name: _codex_run(b, ["mcp", "remove", n], n),
             )
         )
 
@@ -371,10 +406,27 @@ def plan_codex_mcp(plan: Plan, servers: dict, state: dict) -> list:
 
 
 def build_plan(servers):
+    """Build the sync plan.
+
+    Returns (plan, state, errors). `errors` collects link refusals (a real,
+    non-symlink file or directory sitting where ai-sync needs to place a
+    symlink) so one blocked path never prevents everything else in the
+    plan from being built and applied. Genuine config errors (e.g. a
+    malformed mcp.json or Zed settings.json) still raise ConfigError and
+    abort plan construction entirely, since those are not safe to apply
+    partially.
+    """
     plan = Plan()
     home = target_home()
     src = ai_dir()
     state = read_state()
+    errors = []
+
+    def try_link(path, dest):
+        try:
+            plan.add(link(path, dest))
+        except ConfigError as exc:
+            errors.append(str(exc))
 
     plan.add(
         write_file(
@@ -384,10 +436,10 @@ def build_plan(servers):
     )
 
     agents = src / "AGENTS.md"
-    plan.add(link(home / ".claude" / "skills", src / "skills"))
-    plan.add(link(home / ".claude" / "CLAUDE.md", agents))
-    plan.add(link(home / ".codex" / "AGENTS.md", agents))
-    plan.add(link(home / ".claude" / "settings.json", src / "claude" / "settings.json"))
+    try_link(home / ".claude" / "skills", src / "skills")
+    try_link(home / ".claude" / "CLAUDE.md", agents)
+    try_link(home / ".codex" / "AGENTS.md", agents)
+    try_link(home / ".claude" / "settings.json", src / "claude" / "settings.json")
 
     zed_settings = repo_root() / ".config" / "zed" / "settings.json"
     if zed_settings.exists():
@@ -403,10 +455,10 @@ def build_plan(servers):
             )
         )
 
-    plan_codex_skills(plan, src, home)
+    plan_codex_skills(plan, src, home, errors)
     new_codex = plan_codex_mcp(plan, servers, state)
     state["codex"] = new_codex
-    return plan, state
+    return plan, state, errors
 
 
 def main(argv):
@@ -427,23 +479,36 @@ def main(argv):
 
     try:
         servers = load_servers(ai_dir())
-        plan, state = build_plan(servers)
+        plan, state, errors = build_plan(servers)
     except ConfigError as exc:
         print("ai-sync: %s" % exc, file=sys.stderr)
         return 2
 
     plan_is_empty = not plan
-    if plan_is_empty:
+
+    if plan_is_empty and not errors:
         if not check:
             write_state(state)
             print("ai-sync: already in sync")
         return 0
 
-    print(plan.render())
+    if not plan_is_empty:
+        print(plan.render())
+
     if check:
-        return 1
-    plan.apply()
+        for message in errors:
+            print("ai-sync: %s" % message, file=sys.stderr)
+        return 2 if errors else 1
+
+    if not plan_is_empty:
+        plan.apply()
     write_state(state)
+
+    if errors:
+        for message in errors:
+            print("ai-sync: %s" % message, file=sys.stderr)
+        return 2
+
     return 0
 
 

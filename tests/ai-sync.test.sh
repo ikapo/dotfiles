@@ -43,9 +43,14 @@ assert_not_contains() {
   esac
 }
 
-# Creates $SANDBOX with a fake repo and fake home, plus a stub codex
-# that appends its arguments to $CODEX_LOG and serves `mcp list --json`
-# from $CODEX_STATE.
+# Creates $SANDBOX with a fake repo and fake home, plus (unless called as
+# `new_sandbox --no-codex`) a stub codex that appends its arguments to
+# $CODEX_LOG and serves `mcp list --json` from $CODEX_STATE.
+#
+# `--no-codex` skips writing the stub at $SANDBOX/codex, so the path
+# AI_SYNC_CODEX_BIN points run_sync at is absolute but does not exist --
+# reproducing "codex is not installed on this machine" without touching
+# PATH or ever risking a real codex binary being found or run.
 new_sandbox() {
   SANDBOX="$(mktemp -d)"
   SANDBOXES+=("$SANDBOX")
@@ -63,7 +68,8 @@ new_sandbox() {
   : >"$CODEX_LOG"
   echo '[]' >"$CODEX_STATE"
 
-  cat >"$SANDBOX/codex" <<'STUB'
+  if [ "${1:-}" != "--no-codex" ]; then
+    cat >"$SANDBOX/codex" <<'STUB'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >>"$CODEX_LOG"
 if [ "${1:-}" = "mcp" ] && [ "${2:-}" = "list" ]; then
@@ -71,7 +77,8 @@ if [ "${1:-}" = "mcp" ] && [ "${2:-}" = "list" ]; then
 fi
 exit 0
 STUB
-  chmod +x "$SANDBOX/codex"
+    chmod +x "$SANDBOX/codex"
+  fi
 }
 
 run_sync() {
@@ -243,6 +250,41 @@ JSON
     "$(cat "$FAKEHOME/.claude/CLAUDE.md")" "precious hand-written notes"
 }
 
+test_link_refusal_partial_apply() {
+  printf 'a blocked link does not block unrelated targets\n'
+
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"a": {"command": "a-cmd", "targets": ["claude"]}}}
+JSON
+  echo '# instructions' >"$REPO/.config/ai/AGENTS.md"
+  echo '{}' >"$REPO/.config/ai/claude/settings.json"
+
+  # A real (non-symlink) directory already occupies ~/.claude/skills,
+  # unrelated to anything else ai-sync manages.
+  mkdir -p "$FAKEHOME/.claude/skills"
+  echo 'do not touch me' >"$FAKEHOME/.claude/skills/mine.txt"
+
+  local out rc
+  out="$(run_sync 2>&1)"; rc=$?
+
+  assert_eq "exits 2 for the blocked link" "$rc" "2"
+  assert_contains "names the blocked path" "$out" "skills"
+  assert_eq "real directory survives untouched" \
+    "$([ -d "$FAKEHOME/.claude/skills" ] && [ ! -L "$FAKEHOME/.claude/skills" ] && echo intact)" \
+    "intact"
+  assert_eq "file inside it survives" \
+    "$(cat "$FAKEHOME/.claude/skills/mine.txt")" "do not touch me"
+
+  # Unrelated targets were still applied despite the blocked link.
+  assert_link "codex AGENTS.md still linked" \
+    "$FAKEHOME/.codex/AGENTS.md" "$REPO/.config/ai/AGENTS.md"
+  assert_link "claude CLAUDE.md still linked" \
+    "$FAKEHOME/.claude/CLAUDE.md" "$REPO/.config/ai/AGENTS.md"
+  assert_contains "claude mcp.json still written" \
+    "$(cat "$FAKEHOME/.claude/mcp.json")" '"a-cmd"'
+}
+
 test_codex_skills() {
   printf 'codex per-skill links\n'
 
@@ -353,6 +395,50 @@ JSON
   assert_eq "codex disabled means no calls" "$(wc -l <"$CODEX_LOG" | tr -d ' ')" "0"
 }
 
+test_codex_missing_binary() {
+  printf 'codex binary not found (not disabled, just absent)\n'
+
+  # No codex stub at all: AI_SYNC_CODEX_BIN in run_sync points at a path
+  # that does not exist. This must not crash, must not block the other
+  # targets, and must not leave the sync permanently non-idempotent.
+  new_sandbox --no-codex
+  write_mcp <<'JSON'
+{
+  "servers": {
+    "a": {"command": "a-cmd", "targets": ["claude"]},
+    "github": {"command": "gh-mcp", "targets": ["codex"]}
+  }
+}
+JSON
+  echo '# instructions' >"$REPO/.config/ai/AGENTS.md"
+  echo '{}' >"$REPO/.config/ai/claude/settings.json"
+
+  local out rc
+  out="$(run_sync 2>&1)"; rc=$?
+  assert_eq "sync succeeds despite missing codex" "$rc" "0"
+  assert_not_contains "no traceback" "$out" "Traceback"
+  assert_contains "explains codex was skipped" "$out" "codex"
+
+  # Other targets were not blocked by the missing codex binary.
+  assert_contains "claude mcp.json still written" \
+    "$(cat "$FAKEHOME/.claude/mcp.json")" '"a-cmd"'
+  assert_link "claude skills still linked" \
+    "$FAKEHOME/.claude/skills" "$REPO/.config/ai/skills"
+  assert_link "claude CLAUDE.md still linked" \
+    "$FAKEHOME/.claude/CLAUDE.md" "$REPO/.config/ai/AGENTS.md"
+  assert_link "codex AGENTS.md still linked" \
+    "$FAKEHOME/.codex/AGENTS.md" "$REPO/.config/ai/AGENTS.md"
+
+  # The important half: this must not become a permanent, repeating
+  # failure. A second run (and --check) must be clean.
+  out="$(run_sync --check 2>&1)"; rc=$?
+  assert_eq "second run --check is clean (idempotent)" "$rc" "0"
+
+  out="$(run_sync 2>&1)"; rc=$?
+  assert_eq "second apply run also succeeds" "$rc" "0"
+  assert_not_contains "second run wrote nothing new" "$out" "write"
+}
+
 write_state_file() { mkdir -p "$SANDBOX/state"; cat >"$SANDBOX/state/managed.json"; }
 
 test_codex_state_bad_shapes() {
@@ -409,7 +495,7 @@ test_zed() {
 
   new_sandbox
   write_mcp <<'JSON'
-{"servers": {"github": {"command": "gh-mcp", "targets": ["zed"]}}}
+{"servers": {"github": {"command": "gh-mcp", "targets": ["zed"], "env": {"GH_TOKEN_SOURCE": "keychain"}}}}
 JSON
   echo '# i' >"$REPO/.config/ai/AGENTS.md"
   echo '{}' >"$REPO/.config/ai/claude/settings.json"
@@ -432,6 +518,7 @@ JSON
   assert_contains "added context_servers" "$patched" '"context_servers"'
   assert_contains "resolved absolute command" "$patched" "$FAKEHOME/.local/bin/gh-mcp"
   assert_contains "kept unrelated key" "$patched" '"vim_mode"'
+  assert_contains "propagated env to zed" "$patched" '"GH_TOKEN_SOURCE": "keychain"'
 
   local rc
   run_sync --check >/dev/null 2>&1; rc=$?
@@ -455,8 +542,9 @@ JSON
   echo '{}' >"$REPO/.config/ai/claude/settings.json"
   printf '{\n  "vim_mode": true\n}\n' >"$REPO/.config/zed/settings.json"
   run_sync >/dev/null 2>&1
-  assert_contains "kept absolute path verbatim" \
-    "$(cat "$REPO/.config/zed/settings.json")" "/opt/custom/bin/x"
+  patched="$(cat "$REPO/.config/zed/settings.json")"
+  assert_contains "kept absolute path verbatim" "$patched" "/opt/custom/bin/x"
+  assert_not_contains "no spurious env key when absent" "$patched" '"env"'
 }
 
 test_zed_comment_after_brace() {
@@ -579,8 +667,10 @@ test_version
 test_validation
 test_claude_mcp
 test_symlinks
+test_link_refusal_partial_apply
 test_codex_skills
 test_codex_mcp
+test_codex_missing_binary
 test_zed
 test_zed_comment_after_brace
 test_cli
