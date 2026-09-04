@@ -9,7 +9,7 @@ formats, and none of it is tracked in this repository:
 
 | Location | Format | Contents |
 |---|---|---|
-| `~/.claude/mcp.json` | `{"mcpServers": {...}}` | `ios-simulator` |
+| `~/.claude.json` | `{"mcpServers": {...}}` among Claude Code's own runtime state | `ios-simulator` |
 | `~/.claude/settings.json` | JSON | model, effort, enabled plugins, marketplaces |
 | `.config/zed/settings.json` | `context_servers` key | `github` via `gh-mcp` |
 | `~/.codex/config.toml` | `[mcp_servers.x]` TOML | `node_repl` (app-managed) |
@@ -107,7 +107,7 @@ quietly drop a server.
 | `~/.claude/CLAUDE.md` | symlink → `~/.config/ai/AGENTS.md` |
 | `~/.codex/AGENTS.md` | symlink → `~/.config/ai/AGENTS.md` |
 | `~/.claude/settings.json` | symlink → `~/.config/ai/claude/settings.json` |
-| `~/.claude/mcp.json` | generated from `mcp.json`, `claude` targets |
+| `~/.claude.json` | `mcpServers` merged from `mcp.json`, `claude` targets |
 | Codex MCP servers | `codex mcp add` / `codex mcp remove` |
 | Zed `context_servers` | patch `.config/zed/settings.json` in-repo |
 
@@ -169,10 +169,13 @@ Two caveats worth keeping:
 - This is empirical, not contractual. A future Claude Code release could write
   via replace-and-rename instead. `ai-sync --check` reports the resulting drift
   rather than hiding it, and the fallback remains available.
-- The same question applies to `~/.claude/mcp.json` if `claude mcp add` is run
-  interactively. Stakes are lower there because that file is generated, so
-  regenerating discards the manual edit — and `ai-sync --check` reports the
-  drift first.
+- `~/.claude.json` is different in kind: Claude Code owns it and rewrites it
+  while it runs, so ai-sync merges rather than generates. Everything outside
+  `mcpServers` round-trips untouched, unmanaged servers inside it are left
+  alone, and only servers ai-sync placed on a previous run are pruned. The
+  merge is recomputed at apply time and swapped in with an atomic rename, but a
+  concurrent Claude Code write can still win the race — run `ai-sync` with
+  Claude Code closed.
 
 ## Interface
 
@@ -190,7 +193,7 @@ Output names each action taken:
 $ ai-sync
   link   ~/.claude/skills -> ~/.config/ai/skills
   link   ~/.claude/CLAUDE.md -> ~/.config/ai/AGENTS.md
-  write  ~/.claude/mcp.json (2 servers)
+  write  ~/.claude.json (2 servers)
   codex  + github
   zed    patched context_servers (1 server)
 ```

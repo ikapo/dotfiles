@@ -148,15 +148,113 @@ def write_file(path: Path, text: str):
     return Action("write", str(path), run)
 
 
-def render_claude(servers: dict) -> str:
+def claude_entries(servers: dict, home: Path) -> dict:
     out = {}
     for name in sorted(servers):
         cfg = servers[name]
-        entry = {"command": cfg["command"], "args": cfg.get("args", [])}
+        entry = {
+            "type": "stdio",
+            "command": resolve_command(cfg["command"], home),
+            "args": list(cfg.get("args", [])),
+        }
         if cfg.get("env"):
             entry["env"] = cfg["env"]
         out[name] = entry
-    return json.dumps({"mcpServers": out}, indent=2) + "\n"
+    return out
+
+
+def merge_claude_json(path: Path, text: str, servers: dict, managed, home: Path) -> str:
+    """Merge ai-sync's servers into Claude Code's ~/.claude.json.
+
+    Claude Code owns this file and rewrites it as it runs, so everything
+    outside `mcpServers` is round-tripped untouched and entries inside it
+    that ai-sync does not manage are left alone. `managed` is the server
+    list from the previous run; an entry named there but no longer wanted
+    is pruned, which is what stops a server removed from mcp.json from
+    lingering forever.
+
+    Claude Code writes this file with `json.dumps(indent=2,
+    ensure_ascii=False)` and no trailing newline; matching that keeps the
+    round trip byte-for-byte, so ai-sync reports no drift of its own.
+    """
+    if text.strip():
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise ConfigError("%s is not valid JSON: %s" % (path, exc)) from exc
+        if not isinstance(data, dict):
+            raise ConfigError("%s: top level must be an object" % path)
+    else:
+        data = {}
+
+    existing = data.get("mcpServers", {})
+    if not isinstance(existing, dict):
+        raise ConfigError("%s: 'mcpServers' must be an object" % path)
+
+    wanted = claude_entries(servers, home)
+    merged = {n: c for n, c in existing.items() if n in wanted or n not in managed}
+    merged.update(wanted)
+
+    if merged or "mcpServers" in data:
+        data["mcpServers"] = merged
+
+    out = json.dumps(data, indent=2, ensure_ascii=False)
+    return out + "\n" if text.endswith("\n") else out
+
+
+def write_claude_json(path: Path, servers: dict, managed, home: Path):
+    """Plan the ~/.claude.json merge, recomputing it again at apply time.
+
+    Claude Code may rewrite the file between planning and applying, so the
+    merge is redone against what is on disk at apply time and swapped in
+    with an atomic rename. That narrows the race to the rename itself; a
+    Claude Code session running concurrently can still lose whichever
+    write lands second, so prefer running ai-sync with Claude Code closed.
+    """
+
+    def read():
+        try:
+            return path.read_text()
+        except FileNotFoundError:
+            return ""
+        except (OSError, UnicodeDecodeError) as exc:
+            raise ConfigError("cannot read %s: %s" % (path, exc)) from exc
+
+    current = read()
+    if merge_claude_json(path, current, servers, managed, home) == current:
+        return None
+
+    def run():
+        latest = read()
+        text = merge_claude_json(path, latest, servers, managed, home)
+        if text == latest:
+            return
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_name(path.name + ".ai-sync.tmp")
+        tmp.write_text(text)
+        try:
+            shutil.copymode(path, tmp)
+        except OSError:
+            tmp.chmod(0o600)
+        os.replace(tmp, path)
+
+    return Action("write", str(path), run)
+
+
+def prune_legacy_claude_mcp(path: Path):
+    """Drop ~/.claude/mcp.json, which Claude Code never reads.
+
+    ai-sync used to write the Claude target here; the servers in it were
+    silently inert. Only a file with ai-sync's own single-key shape is
+    removed, so anything else parked at that path survives.
+    """
+    try:
+        data = json.loads(path.read_text())
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    if not isinstance(data, dict) or set(data) != {"mcpServers"}:
+        return None
+    return unlink_action(path)
 
 
 def split_jsonc(text: str):
@@ -173,14 +271,20 @@ def split_jsonc(text: str):
 
 
 def resolve_command(command: str, home: Path) -> str:
-    """Absolute path for `command`. GUI apps do not inherit shell PATH."""
+    """Absolute path for `command`. GUI apps do not inherit shell PATH.
+
+    Zed and the Claude Code desktop app both launch outside a login shell,
+    so a bare `~/.local/bin` wrapper name would not resolve for them.
+
+    Only those wrappers are resolved. Anything else keeps the bare name so
+    it still resolves through PATH at launch: freezing today's answer would
+    pin version-specific paths (a Homebrew `npx` lives under
+    `/opt/homebrew/opt/node@NN/bin`) that break on the next upgrade.
+    """
     if command.startswith("/"):
         return command
     local = home / ".local" / "bin" / command
-    if local.exists():
-        return str(local)
-    found = shutil.which(command)
-    return found or command
+    return str(local) if local.exists() else command
 
 
 def render_zed(path: Path, text: str, servers: dict, home: Path) -> str:
@@ -297,9 +401,10 @@ def read_state() -> dict:
         return {}
     if not isinstance(data, dict):
         return {}
-    codex = data.get("codex")
-    if not isinstance(codex, list) or not all(isinstance(n, str) for n in codex):
-        data.pop("codex", None)
+    for key in ("codex", "claude"):
+        names = data.get(key)
+        if not isinstance(names, list) or not all(isinstance(n, str) for n in names):
+            data.pop(key, None)
     return data
 
 
@@ -428,12 +533,14 @@ def build_plan(servers):
         except ConfigError as exc:
             errors.append(str(exc))
 
+    claude_servers = servers_for(servers, "claude")
     plan.add(
-        write_file(
-            home / ".claude" / "mcp.json",
-            render_claude(servers_for(servers, "claude")),
+        write_claude_json(
+            home / ".claude.json", claude_servers, state.get("claude", []), home
         )
     )
+    plan.add(prune_legacy_claude_mcp(home / ".claude" / "mcp.json"))
+    state["claude"] = sorted(claude_servers)
 
     agents = src / "AGENTS.md"
     try_link(home / ".claude" / "skills", src / "skills")

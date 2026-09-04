@@ -185,11 +185,11 @@ JSON
   local out rc
   out="$(run_sync --check 2>&1)"; rc=$?
   assert_eq "check reports drift" "$rc" "1"
-  assert_contains "check names the file" "$out" "mcp.json"
+  assert_contains "check names the file" "$out" ".claude.json"
 
   run_sync >/dev/null 2>&1
   local generated
-  generated="$(cat "$FAKEHOME/.claude/mcp.json")"
+  generated="$(cat "$FAKEHOME/.claude.json")"
   assert_contains "wrote alpha" "$generated" '"alpha"'
   assert_contains "wrote zeta" "$generated" '"zeta"'
   assert_not_contains "excluded zed-only server" "$generated" "zedonly"
@@ -199,14 +199,135 @@ JSON
 
   # Deterministic ordering: alpha sorts before zeta regardless of input order.
   local first
-  first="$(python3 -c 'import json,sys;print(next(iter(json.load(sys.stdin)["mcpServers"])))' <"$FAKEHOME/.claude/mcp.json")"
+  first="$(python3 -c 'import json,sys;print(next(iter(json.load(sys.stdin)["mcpServers"])))' <"$FAKEHOME/.claude.json")"
   assert_eq "sorted deterministically" "$first" "alpha"
+  assert_contains "declares stdio transport" "$generated" '"type": "stdio"'
 
   out="$(run_sync --check 2>&1)"; rc=$?
   assert_eq "check clean after sync" "$rc" "0"
 
   out="$(run_sync 2>&1)"
-  assert_not_contains "second run is a no-op" "$out" "mcp.json"
+  assert_contains "second run is a no-op" "$out" "already in sync"
+}
+
+test_claude_json_merge() {
+  printf 'claude.json read-modify-write\n'
+
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"a": {"command": "a-cmd", "targets": ["claude"]},
+             "b": {"command": "b-cmd", "targets": ["claude"]}}}
+JSON
+  cat >"$FAKEHOME/.claude.json" <<'JSON'
+{
+  "numStartups": 12,
+  "mcpServers": {
+    "handrolled": {"type": "stdio", "command": "keep-me"}
+  }
+}
+JSON
+  chmod 600 "$FAKEHOME/.claude.json"
+
+  run_sync >/dev/null 2>&1
+  local doc
+  doc="$(cat "$FAKEHOME/.claude.json")"
+  assert_contains "preserves unrelated top-level keys" "$doc" '"numStartups": 12'
+  assert_contains "preserves an unmanaged server" "$doc" "keep-me"
+  assert_contains "adds managed server a" "$doc" "a-cmd"
+  assert_contains "adds managed server b" "$doc" "b-cmd"
+  assert_eq "preserves file mode" \
+    "$(stat -f '%Lp' "$FAKEHOME/.claude.json" 2>/dev/null || stat -c '%a' "$FAKEHOME/.claude.json")" \
+    "600"
+
+  local rc
+  run_sync --check >/dev/null 2>&1; rc=$?
+  assert_eq "idempotent after merge" "$rc" "0"
+
+  # Dropping a server from mcp.json prunes it, and only it.
+  write_mcp <<'JSON'
+{"servers": {"a": {"command": "a-cmd", "targets": ["claude"]}}}
+JSON
+  run_sync >/dev/null 2>&1
+  doc="$(cat "$FAKEHOME/.claude.json")"
+  assert_not_contains "prunes the dropped server" "$doc" "b-cmd"
+  assert_contains "keeps the still-wanted server" "$doc" "a-cmd"
+  assert_contains "still preserves the unmanaged server" "$doc" "keep-me"
+
+  # Claude Code also runs as a desktop app, which does not inherit the
+  # shell PATH, so a ~/.local/bin wrapper is written as an absolute path.
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"github": {"command": "gh-mcp", "targets": ["claude"]}}}
+JSON
+  printf '#!/bin/sh\n' >"$FAKEHOME/.local/bin/gh-mcp"
+  chmod +x "$FAKEHOME/.local/bin/gh-mcp"
+  run_sync >/dev/null 2>&1
+  assert_contains "resolves a wrapper to an absolute path" \
+    "$(cat "$FAKEHOME/.claude.json")" "$FAKEHOME/.local/bin/gh-mcp"
+
+  # A command that is not a ~/.local/bin wrapper stays a bare name, so it
+  # keeps tracking PATH instead of freezing today's version-pinned path
+  # (e.g. a Homebrew npx under /opt/homebrew/opt/node@NN/bin).
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"s": {"command": "npx", "args": ["-y", "x"], "targets": ["claude"]}}}
+JSON
+  run_sync >/dev/null 2>&1
+  assert_contains "leaves a PATH command bare" \
+    "$(cat "$FAKEHOME/.claude.json")" '"command": "npx"'
+
+  # A missing ~/.claude.json is created from scratch.
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"a": {"command": "a-cmd", "targets": ["claude"]}}}
+JSON
+  rm -f "$FAKEHOME/.claude.json"
+  run_sync >/dev/null 2>&1
+  assert_contains "creates a missing file" \
+    "$(cat "$FAKEHOME/.claude.json")" "a-cmd"
+
+  # A malformed ~/.claude.json is reported, never overwritten.
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"a": {"command": "a-cmd", "targets": ["claude"]}}}
+JSON
+  printf '{ not json\n' >"$FAKEHOME/.claude.json"
+  local out
+  out="$(run_sync 2>&1)"; rc=$?
+  assert_eq "malformed claude.json exits 2" "$rc" "2"
+  assert_contains "names the file" "$out" ".claude.json"
+  assert_eq "malformed file left untouched" \
+    "$(cat "$FAKEHOME/.claude.json")" "{ not json"
+}
+
+test_claude_stale_mcp_json() {
+  printf 'stale ~/.claude/mcp.json cleanup\n'
+
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"a": {"command": "a-cmd", "targets": ["claude"]}}}
+JSON
+  # What an older ai-sync wrote to a path Claude Code never reads.
+  printf '{"mcpServers": {"a": {"command": "a-cmd", "args": []}}}\n' \
+    >"$FAKEHOME/.claude/mcp.json"
+
+  run_sync >/dev/null 2>&1
+  assert_eq "removes the inert file" \
+    "$([ -e "$FAKEHOME/.claude/mcp.json" ] && echo present || echo gone)" "gone"
+
+  local rc
+  run_sync --check >/dev/null 2>&1; rc=$?
+  assert_eq "clean once removed" "$rc" "0"
+
+  # Anything that is not ai-sync's own output is left alone.
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"a": {"command": "a-cmd", "targets": ["claude"]}}}
+JSON
+  printf '{"somethingElse": true}\n' >"$FAKEHOME/.claude/mcp.json"
+  run_sync >/dev/null 2>&1
+  assert_eq "leaves a foreign file alone" \
+    "$(cat "$FAKEHOME/.claude/mcp.json")" '{"somethingElse": true}'
 }
 
 test_symlinks() {
@@ -281,8 +402,8 @@ JSON
     "$FAKEHOME/.codex/AGENTS.md" "$REPO/.config/ai/AGENTS.md"
   assert_link "claude CLAUDE.md still linked" \
     "$FAKEHOME/.claude/CLAUDE.md" "$REPO/.config/ai/AGENTS.md"
-  assert_contains "claude mcp.json still written" \
-    "$(cat "$FAKEHOME/.claude/mcp.json")" '"a-cmd"'
+  assert_contains "claude mcp config still written" \
+    "$(cat "$FAKEHOME/.claude.json")" '"a-cmd"'
 }
 
 test_codex_skills() {
@@ -420,8 +541,8 @@ JSON
   assert_contains "explains codex was skipped" "$out" "codex"
 
   # Other targets were not blocked by the missing codex binary.
-  assert_contains "claude mcp.json still written" \
-    "$(cat "$FAKEHOME/.claude/mcp.json")" '"a-cmd"'
+  assert_contains "claude mcp config still written" \
+    "$(cat "$FAKEHOME/.claude.json")" '"a-cmd"'
   assert_link "claude skills still linked" \
     "$FAKEHOME/.claude/skills" "$REPO/.config/ai/skills"
   assert_link "claude CLAUDE.md still linked" \
@@ -593,8 +714,8 @@ JSON
   assert_contains "names the bad flag" "$out" "--bogus"
 }
 
-test_write_file_non_utf8() {
-  printf 'write_file tolerates a non-UTF-8 existing target\n'
+test_claude_json_non_utf8() {
+  printf 'non-UTF-8 ~/.claude.json is refused, not clobbered\n'
 
   new_sandbox
   write_mcp <<'JSON'
@@ -602,16 +723,17 @@ test_write_file_non_utf8() {
 JSON
   echo '# i' >"$REPO/.config/ai/AGENTS.md"
   echo '{}' >"$REPO/.config/ai/claude/settings.json"
-  # A pre-existing target file with invalid UTF-8 bytes must not crash
-  # write_file's existing-content comparison.
-  printf '\xff\xfe garbage not utf8' >"$FAKEHOME/.claude/mcp.json"
+  # ~/.claude.json holds a user's whole Claude Code state. Unreadable
+  # bytes there mean ai-sync must stop, never merge onto a guess.
+  printf '\xff\xfe garbage not utf8' >"$FAKEHOME/.claude.json"
 
   local out rc
   out="$(run_sync 2>&1)"; rc=$?
-  assert_eq "no crash on non-utf8 existing file" "$rc" "0"
+  assert_eq "exits 2" "$rc" "2"
   assert_not_contains "no traceback" "$out" "Traceback"
-  assert_contains "wrote fresh content" \
-    "$(cat "$FAKEHOME/.claude/mcp.json")" '"a-cmd"'
+  assert_contains "names the file" "$out" ".claude.json"
+  assert_eq "file left untouched" \
+    "$(wc -c <"$FAKEHOME/.claude.json" | tr -d ' ')" "19"
 }
 
 test_link_apply_time_toctou() {
@@ -666,6 +788,8 @@ PY
 test_version
 test_validation
 test_claude_mcp
+test_claude_json_merge
+test_claude_stale_mcp_json
 test_symlinks
 test_link_refusal_partial_apply
 test_codex_skills
@@ -674,7 +798,7 @@ test_codex_missing_binary
 test_zed
 test_zed_comment_after_brace
 test_cli
-test_write_file_non_utf8
+test_claude_json_non_utf8
 test_codex_state_bad_shapes
 test_codex_skills_foreign_symlink_safety
 test_link_apply_time_toctou

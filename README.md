@@ -44,13 +44,18 @@ instructions, and skills across Claude Code, Codex, and Zed — see
 
 ```sh
 stow ./ -t ~/
-ai-sync         # apply: writes Claude's mcp.json, patches Zed's
-                # context_servers, registers Codex MCP servers, and
-                # symlinks AGENTS.md/CLAUDE.md and skills
+ai-sync         # apply: merges Claude's servers into ~/.claude.json,
+                # patches Zed's context_servers, registers Codex MCP
+                # servers, and symlinks AGENTS.md/CLAUDE.md and skills
 ai-sync --check # report drift only; exit 1 if out of sync, 0 if clean
 ```
 
-`ai-sync` is idempotent — re-run it any time `.config/ai` changes. Never put a
+`ai-sync` is idempotent — re-run it any time `.config/ai` changes. Claude Code
+reads MCP servers from `~/.claude.json`, which it also rewrites as it runs, so
+`ai-sync` merges into that file rather than generating it: everything outside
+`mcpServers` is preserved, servers it does not manage are left alone, and only
+servers a previous run added are pruned. Run it with Claude Code closed, and
+restart Claude Code afterwards — it reads MCP config once at startup. Never put a
 credential in `.config/ai/mcp.json`; route it through a `.local/bin` wrapper
 that reads the macOS Keychain at startup, like `gh-mcp` (see below).
 
