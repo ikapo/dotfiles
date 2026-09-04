@@ -27,7 +27,6 @@ assert_link() {
   if [ "$got" = "$want" ]; then pass "$desc"; else fail "$desc" "link -> [$got] want [$want]"; fi
 }
 
-# shellcheck disable=SC2329  # part of the harness API; called starting in a later task
 assert_contains() {
   local desc="$1" haystack="$2" needle="$3"
   case "$haystack" in
@@ -36,7 +35,6 @@ assert_contains() {
   esac
 }
 
-# shellcheck disable=SC2329  # part of the harness API; called starting in a later task
 assert_not_contains() {
   local desc="$1" haystack="$2" needle="$3"
   case "$haystack" in
@@ -245,8 +243,101 @@ JSON
     "$(cat "$FAKEHOME/.claude/CLAUDE.md")" "precious hand-written notes"
 }
 
+test_codex_skills() {
+  printf 'codex per-skill links\n'
+
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {}}
+JSON
+  echo '# i' >"$REPO/.config/ai/AGENTS.md"
+  echo '{}' >"$REPO/.config/ai/claude/settings.json"
+  mkdir -p "$REPO/.config/ai/skills/alpha" "$REPO/.config/ai/skills/beta"
+  echo '# alpha' >"$REPO/.config/ai/skills/alpha/SKILL.md"
+  echo '# beta' >"$REPO/.config/ai/skills/beta/SKILL.md"
+
+  run_sync >/dev/null 2>&1
+  assert_link "linked alpha" \
+    "$FAKEHOME/.codex/skills/alpha" "$REPO/.config/ai/skills/alpha"
+  assert_link "linked beta" \
+    "$FAKEHOME/.codex/skills/beta" "$REPO/.config/ai/skills/beta"
+  assert_eq "left .system alone" \
+    "$([ -d "$FAKEHOME/.codex/skills/.system" ] && [ ! -L "$FAKEHOME/.codex/skills/.system" ] && echo intact)" \
+    "intact"
+
+  local rc
+  run_sync --check >/dev/null 2>&1; rc=$?
+  assert_eq "idempotent" "$rc" "0"
+
+  # Deleting a skill removes its stale link.
+  rm -rf "$REPO/.config/ai/skills/beta"
+  run_sync >/dev/null 2>&1
+  assert_eq "removed stale link" \
+    "$([ -e "$FAKEHOME/.codex/skills/beta" ] || [ -L "$FAKEHOME/.codex/skills/beta" ] && echo present || echo gone)" \
+    "gone"
+  assert_link "kept alpha" \
+    "$FAKEHOME/.codex/skills/alpha" "$REPO/.config/ai/skills/alpha"
+
+  # A real directory placed by the user is not removed.
+  mkdir -p "$FAKEHOME/.codex/skills/handmade"
+  run_sync >/dev/null 2>&1
+  assert_eq "left real dir alone" \
+    "$([ -d "$FAKEHOME/.codex/skills/handmade" ] && echo intact)" "intact"
+}
+
+test_link_apply_time_toctou() {
+  printf 'link() apply-time re-check (TOCTOU guard)\n'
+
+  # Reproduces the race directly: link() plans a normal symlink because
+  # the target is absent at plan-build time, then a real file appears in
+  # the window before apply. Calling the returned Action's apply()
+  # directly exercises the new re-check branch inside the closure without
+  # needing to win a real filesystem timing race.
+  new_sandbox
+
+  local out rc
+  out="$(AI_SYNC_REPO="$REPO" AI_SYNC_HOME="$FAKEHOME" python3 - <<'PY'
+import importlib.machinery, importlib.util, os
+from pathlib import Path
+
+loader = importlib.machinery.SourceFileLoader(
+    "ai_sync", os.path.join(os.environ["AI_SYNC_REPO"], ".local/bin/ai-sync")
+)
+spec = importlib.util.spec_from_loader("ai_sync", loader)
+mod = importlib.util.module_from_spec(spec)
+loader.exec_module(mod)
+
+target = Path(os.environ["AI_SYNC_HOME"]) / ".claude" / "CLAUDE.md"
+dest = Path(os.environ["AI_SYNC_REPO"]) / ".config" / "ai" / "AGENTS.md"
+dest.parent.mkdir(parents=True, exist_ok=True)
+dest.write_text("# instructions\n")
+
+action = mod.link(target, dest)
+assert action is not None, "expected link() to return an Action when target absent"
+
+# A real file appears in the window between plan-build and apply.
+target.parent.mkdir(parents=True, exist_ok=True)
+target.write_text("precious hand-written notes")
+
+try:
+    action.apply()
+    print("NO_RAISE")
+except mod.ConfigError as exc:
+    print("RAISED:" + str(exc))
+PY
+)"; rc=$?
+
+  assert_eq "python snippet ran cleanly" "$rc" "0"
+  assert_eq "apply-time guard raised ConfigError" "${out%%:*}" "RAISED"
+  assert_contains "same wording as plan-time refusal" "$out" "exists and is not a symlink"
+  assert_eq "file survived the attempted apply" \
+    "$(cat "$FAKEHOME/.claude/CLAUDE.md")" "precious hand-written notes"
+}
+
 test_version
 test_validation
 test_claude_mcp
 test_symlinks
+test_codex_skills
+test_link_apply_time_toctou
 report

@@ -155,11 +155,50 @@ def link(path: Path, dest: Path):
 
     def run():
         path.parent.mkdir(parents=True, exist_ok=True)
-        if path.is_symlink() or path.exists():
+        if path.is_symlink():
             path.unlink()
+        elif path.exists():
+            raise ConfigError(
+                "%s exists and is not a symlink; move it aside "
+                "(its content belongs in %s)" % (path, dest)
+            )
         path.symlink_to(dest)
 
     return Action("link", "%s -> %s" % (path, dest), run)
+
+
+def unlink_action(path: Path):
+    def run():
+        path.unlink()
+
+    return Action("unlink", str(path), run)
+
+
+def plan_codex_skills(plan: Plan, src: Path, home: Path) -> None:
+    skills_src = src / "skills"
+    skills_dst = home / ".codex" / "skills"
+
+    wanted = {}
+    if skills_src.is_dir():
+        for entry in sorted(skills_src.iterdir()):
+            if entry.is_dir() and not entry.name.startswith("."):
+                wanted[entry.name] = entry
+
+    for name, source in wanted.items():
+        plan.add(link(skills_dst / name, source))
+
+    if not skills_dst.is_dir():
+        return
+    for entry in sorted(skills_dst.iterdir()):
+        # Only ever remove symlinks this tool created.
+        if not entry.is_symlink() or entry.name in wanted:
+            continue
+        try:
+            points_into_src = Path(os.readlink(entry)).parent == skills_src
+        except OSError:
+            continue
+        if points_into_src:
+            plan.add(unlink_action(entry))
 
 
 def build_plan(servers) -> Plan:
@@ -179,6 +218,8 @@ def build_plan(servers) -> Plan:
     plan.add(link(home / ".claude" / "CLAUDE.md", agents))
     plan.add(link(home / ".codex" / "AGENTS.md", agents))
     plan.add(link(home / ".claude" / "settings.json", src / "claude" / "settings.json"))
+
+    plan_codex_skills(plan, src, home)
     return plan
 
 
