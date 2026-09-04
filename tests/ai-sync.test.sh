@@ -285,6 +285,82 @@ JSON
     "$([ -d "$FAKEHOME/.codex/skills/handmade" ] && echo intact)" "intact"
 }
 
+seed_codex_state() { cat >"$CODEX_STATE"; }
+
+test_codex_mcp() {
+  printf 'codex mcp sync\n'
+
+  new_sandbox
+  write_mcp <<'JSON'
+{
+  "servers": {
+    "github": {"command": "gh-mcp", "targets": ["codex"]},
+    "notcodex": {"command": "x", "targets": ["claude"]}
+  }
+}
+JSON
+  echo '# i' >"$REPO/.config/ai/AGENTS.md"
+  echo '{}' >"$REPO/.config/ai/claude/settings.json"
+  # Codex already has an app-managed server ai-sync must never touch.
+  seed_codex_state <<'JSON'
+[{"name": "node_repl", "enabled": true}]
+JSON
+
+  run_sync >/dev/null 2>&1
+  local log
+  log="$(cat "$CODEX_LOG")"
+  assert_contains "added github" "$log" "mcp add github"
+  assert_contains "used -- separator" "$log" "-- gh-mcp"
+  assert_not_contains "did not add claude-only server" "$log" "notcodex"
+  assert_not_contains "never removed app server" "$log" "remove node_repl"
+
+  # Simulate Codex now reporting both servers, then drop github from source.
+  seed_codex_state <<'JSON'
+[{"name": "node_repl", "enabled": true}, {"name": "github", "enabled": true}]
+JSON
+  : >"$CODEX_LOG"
+  write_mcp <<'JSON'
+{"servers": {}}
+JSON
+  run_sync >/dev/null 2>&1
+  log="$(cat "$CODEX_LOG")"
+  assert_contains "removed github" "$log" "mcp remove github"
+  assert_not_contains "still spared node_repl" "$log" "remove node_repl"
+
+  # With Codex disabled, no CLI calls at all.
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {"github": {"command": "gh-mcp", "targets": ["codex"]}}}
+JSON
+  echo '# i' >"$REPO/.config/ai/AGENTS.md"
+  echo '{}' >"$REPO/.config/ai/claude/settings.json"
+  AI_SYNC_REPO="$REPO" AI_SYNC_HOME="$FAKEHOME" AI_SYNC_STATE="$SANDBOX/state" \
+    AI_SYNC_CODEX_BIN="" "$REPO/.local/bin/ai-sync" >/dev/null 2>&1
+  assert_eq "codex disabled means no calls" "$(wc -l <"$CODEX_LOG" | tr -d ' ')" "0"
+}
+
+test_codex_skills_foreign_symlink_safety() {
+  printf 'codex skills foreign symlink safety\n'
+
+  new_sandbox
+  write_mcp <<'JSON'
+{"servers": {}}
+JSON
+  echo '# i' >"$REPO/.config/ai/AGENTS.md"
+  echo '{}' >"$REPO/.config/ai/claude/settings.json"
+  mkdir -p "$REPO/.config/ai/skills/alpha"
+  echo '# alpha' >"$REPO/.config/ai/skills/alpha/SKILL.md"
+
+  # A symlink under ~/.codex/skills pointing OUTSIDE the source skills dir
+  # (e.g. someone else's tool, or a manual link) must never be pruned.
+  mkdir -p "$SANDBOX/outside-target"
+  ln -sfn "$SANDBOX/outside-target" "$FAKEHOME/.codex/skills/foreign"
+
+  run_sync >/dev/null 2>&1
+  assert_link "foreign symlink untouched" \
+    "$FAKEHOME/.codex/skills/foreign" "$SANDBOX/outside-target"
+}
+
 test_link_apply_time_toctou() {
   printf 'link() apply-time re-check (TOCTOU guard)\n'
 
@@ -339,5 +415,7 @@ test_validation
 test_claude_mcp
 test_symlinks
 test_codex_skills
+test_codex_mcp
+test_codex_skills_foreign_symlink_safety
 test_link_apply_time_toctou
 report

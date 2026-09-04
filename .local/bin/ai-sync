@@ -3,6 +3,7 @@
 
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -201,10 +202,105 @@ def plan_codex_skills(plan: Plan, src: Path, home: Path) -> None:
             plan.add(unlink_action(entry))
 
 
-def build_plan(servers) -> Plan:
+def state_dir() -> Path:
+    override = os.environ.get("AI_SYNC_STATE")
+    if override:
+        return Path(override)
+    base = os.environ.get("XDG_STATE_HOME")
+    root = Path(base) if base else Path.home() / ".local" / "state"
+    return root / "ai-sync"
+
+
+def state_path() -> Path:
+    return state_dir() / "managed.json"
+
+
+def read_state() -> dict:
+    try:
+        return json.loads(state_path().read_text())
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def write_state(state: dict) -> None:
+    path = state_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n")
+
+
+def codex_bin():
+    value = os.environ.get("AI_SYNC_CODEX_BIN", "codex")
+    return value or None
+
+
+def codex_installed(binary: str) -> set:
+    try:
+        proc = subprocess.run(
+            [binary, "mcp", "list", "--json"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except OSError:
+        return set()
+    if proc.returncode != 0:
+        return set()
+    try:
+        listed = json.loads(proc.stdout or "[]")
+    except json.JSONDecodeError:
+        return set()
+    return {item["name"] for item in listed if isinstance(item, dict) and "name" in item}
+
+
+def _codex_run(binary: str, args: list) -> None:
+    subprocess.run([binary] + args, check=False)
+
+
+def plan_codex_mcp(plan: Plan, servers: dict, state: dict) -> list:
+    binary = codex_bin()
+    wanted = servers_for(servers, "codex")
+    if binary is None:
+        return sorted(state.get("codex", []))
+
+    installed = codex_installed(binary)
+    owned = set(state.get("codex", []))
+
+    for name in sorted(wanted):
+        cfg = wanted[name]
+        if name in installed:
+            continue
+        args = ["mcp", "add", name]
+        for key, value in sorted((cfg.get("env") or {}).items()):
+            args += ["--env", "%s=%s" % (key, value)]
+        args += ["--", cfg["command"]] + list(cfg.get("args", []))
+        plan.add(
+            Action(
+                "codex",
+                "+ %s" % name,
+                lambda b=binary, a=args: _codex_run(b, a),
+            )
+        )
+
+    # Only remove servers this tool installed. Never app-managed ones.
+    for name in sorted(owned - set(wanted)):
+        if name not in installed:
+            continue
+        plan.add(
+            Action(
+                "codex",
+                "- %s" % name,
+                lambda b=binary, n=name: _codex_run(b, ["mcp", "remove", n]),
+            )
+        )
+
+    return sorted(wanted)
+
+
+def build_plan(servers):
     plan = Plan()
     home = target_home()
     src = ai_dir()
+    state = read_state()
 
     plan.add(
         write_file(
@@ -218,9 +314,10 @@ def build_plan(servers) -> Plan:
     plan.add(link(home / ".claude" / "CLAUDE.md", agents))
     plan.add(link(home / ".codex" / "AGENTS.md", agents))
     plan.add(link(home / ".claude" / "settings.json", src / "claude" / "settings.json"))
-
     plan_codex_skills(plan, src, home)
-    return plan
+    new_codex = plan_codex_mcp(plan, servers, state)
+    state["codex"] = new_codex
+    return plan, state
 
 
 def main(argv):
@@ -231,13 +328,15 @@ def main(argv):
 
     try:
         servers = load_servers(ai_dir())
-        plan = build_plan(servers)
+        plan, state = build_plan(servers)
     except ConfigError as exc:
         print("ai-sync: %s" % exc, file=sys.stderr)
         return 2
 
-    if not plan:
+    plan_is_empty = not plan
+    if plan_is_empty:
         if not check:
+            write_state(state)
             print("ai-sync: already in sync")
         return 0
 
@@ -245,6 +344,7 @@ def main(argv):
     if check:
         return 1
     plan.apply()
+    write_state(state)
     return 0
 
 
