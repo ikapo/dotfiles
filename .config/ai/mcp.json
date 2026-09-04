@@ -1,3 +1,14 @@
 {
-  "servers": {}
+  "servers": {
+    "github": {
+      "command": "gh-mcp",
+      "args": [],
+      "targets": ["claude", "zed", "codex"]
+    },
+    "ios-simulator": {
+      "command": "npx",
+      "args": ["-y", "ios-simulator-mcp"],
+      "targets": ["claude"]
+    }
+  }
 }

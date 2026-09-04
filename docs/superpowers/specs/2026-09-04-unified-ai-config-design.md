@@ -147,24 +147,32 @@ secrets and covers `.config/ai` without modification.
 `env` in `mcp.json` is for non-sensitive values only — feature flags, paths,
 log levels. Anything secret belongs behind a wrapper.
 
-## Known Risk: Claude Code Writes to `settings.json`
+## Resolved: Claude Code Preserves the `settings.json` Symlink
 
 Claude Code writes `~/.claude/settings.json` itself when the user changes theme
-or runs `/config` or `/model`. Whether it edits in place (preserving a symlink)
-or replaces the file (clobbering it) is unverified.
+or runs `/config` or `/model`. Whether it edited in place (preserving a symlink)
+or replaced the file (clobbering it) was the design's one unverified risk.
 
-Resolution is empirical, not designed: symlink it, change the theme, and check
-whether the symlink survives.
+**Tested 2026-09-04, on Claude Code 2.1.260: the symlink survives.** With
+`~/.claude/settings.json` symlinked into this repo, changing the theme through
+`/config` wrote *through* the link — `theme` went from `dark` to
+`dark-daltonized` in `.config/ai/claude/settings.json`, and
+`~/.claude/settings.json` remained a symlink.
 
-- If it survives, this is the desired outcome — interactive settings changes
-  land in the repo as reviewable git diffs.
-- If it is clobbered, fall back to `ai-sync` copying the file and reporting
-  drift, so divergence is visible rather than silent.
+This is the desired outcome: interactive settings changes land in the repo as
+reviewable git diffs, with no sync step. The fallback the design reserved —
+`ai-sync` copying the file and reporting drift — is not needed and was not
+implemented.
 
-The same question applies to `~/.claude/mcp.json` if `claude mcp add` is ever
-run interactively. Stakes are lower there because the file is generated and
-regenerating discards the manual edit — `ai-sync --check` will report the drift
-first.
+Two caveats worth keeping:
+
+- This is empirical, not contractual. A future Claude Code release could write
+  via replace-and-rename instead. `ai-sync --check` reports the resulting drift
+  rather than hiding it, and the fallback remains available.
+- The same question applies to `~/.claude/mcp.json` if `claude mcp add` is run
+  interactively. Stakes are lower there because that file is generated, so
+  regenerating discards the manual edit — and `ai-sync --check` reports the
+  drift first.
 
 ## Interface
 

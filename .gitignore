@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Local Claude Code overrides
+**/.claude/settings.local.json
+
+# Zed local state (machine-specific, not config)
+.config/zed/prompts/
+.config/zed/conversations/
+
+# Subagent-driven-development scratch
+.superpowers/
+
+# Python bytecode
+__pycache__/
