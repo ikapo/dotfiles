@@ -1,0 +1,20 @@
+#!/bin/sh
+# Block commits containing credential-shaped strings.
+# Dependency-free so it works on a freshly bootstrapped machine.
+# Bypass a false positive with: git commit --no-verify
+
+PATTERN='github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9]{30,}|sk-[A-Za-z0-9_-]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----|"[A-Za-z0-9_]*(token|secret|password|api_?key)"[[:space:]]*:[[:space:]]*"[^"$][^"]{7,}"'
+
+hits=$(git diff --cached --diff-filter=ACM -U0 |
+	grep -nE '^\+' |
+	grep -inE "$PATTERN")
+
+if [ -n "$hits" ]; then
+	echo "pre-commit: possible secret in staged changes:" >&2
+	echo "$hits" | head -10 >&2
+	echo >&2
+	echo "Keep it out of this repo: see .config/ai/MCP.md ('Adding a" >&2
+	echo "server that needs a secret') for the Keychain wrapper pattern." >&2
+	echo "Or bypass a false positive with: git commit --no-verify" >&2
+	exit 1
+fi
