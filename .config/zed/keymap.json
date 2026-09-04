@@ -1,0 +1,192 @@
+// Zed keymap — Doom Emacs style
+//
+// Replicates Doom Emacs' evil + SPC-leader bindings as closely as Zed allows.
+// Every action name is verified against Zed 1.11.3.
+// Doom command names are noted in comments next to each binding.
+[
+  {
+    // ── Leader key (SPC) ─ normal mode ─────────────────────────────
+    "context": "Editor && vim_mode == normal && !menu",
+    "bindings": {
+      // Top-level
+      "space space": "file_finder::Toggle", // find file in project
+      "space .": "file_finder::Toggle", // find file
+      "space ,": "tab_switcher::Toggle", // switch buffer
+      "space <": "tab_switcher::ToggleAll", // switch buffer (all)
+      "space :": "command_palette::Toggle", // M-x
+      "space /": "pane::DeploySearch", // search project
+      "space `": "pane::AlternateFile", // switch to last buffer
+      "space '": "workspace::ReopenLastPicker", // resume last search
+      "space x": "workspace::NewFile", // open scratch buffer
+
+      // b — buffers
+      "space b b": "tab_switcher::Toggle", // switch workspace buffer
+      "space b B": "tab_switcher::ToggleAll", // switch buffer
+      "space b d": "pane::CloseActiveItem", // kill buffer
+      "space b k": "pane::CloseActiveItem", // kill buffer
+      "space b shift-k": "pane::CloseAllItems", // kill all buffers
+      "space b shift-o": "pane::CloseOtherItems", // kill other buffers
+      "space b n": "pane::ActivateNextItem", // next buffer
+      "space b ]": "pane::ActivateNextItem", // next buffer
+      "space b p": "pane::ActivatePreviousItem", // previous buffer
+      "space b [": "pane::ActivatePreviousItem", // previous buffer
+      "space b shift-n": "workspace::NewFile", // new empty buffer
+      "space b l": "pane::AlternateFile", // switch to last buffer
+      "space b s": "workspace::Save", // save buffer
+      "space b shift-s": "workspace::SaveAll", // save all buffers
+      "space b r": "pane::ReopenClosedItem", // (zed) reopen closed buffer
+
+      // f — files
+      "space f f": "file_finder::Toggle", // find file
+      "space f r": "file_finder::Toggle", // recent files (finder sorts by recency)
+      "space f s": "workspace::Save", // save file
+      "space f shift-s": "workspace::SaveAs", // save file as...
+      "space f n": "workspace::NewFile", // create new file
+      "space f c": "workspace::NewFile", // create new file
+      "space f p": "zed::OpenSettingsFile", // open private config (settings.json)
+      "space f shift-p": "zed::OpenKeymapFile", // open private config (keymap.json)
+      "space f y": "workspace::CopyPath", // yank file path
+      "space f shift-y": "workspace::CopyRelativePath", // yank path from project
+      "space f d": "pane::RevealInProjectPanel", // dired (reveal in sidebar)
+      "space f shift-e": "editor::RevealInFileManager", // (zed) reveal in Finder
+
+      // p — project
+      "space p p": "projects::OpenRecent", // switch project
+      "space p f": "file_finder::Toggle", // find file in project
+      "space p a": "workspace::AddFolderToProject", // add new project
+      "space p s": "workspace::SaveAll", // save project files
+      "space p c": "task::Spawn", // compile in project
+
+      // s — search
+      "space s s": "buffer_search::Deploy", // search buffer (swiper)
+      "space s p": "pane::DeploySearch", // search project
+      "space s i": "outline::Toggle", // jump to symbol (imenu)
+      "space s shift-i": "project_symbols::Toggle", // jump to symbol in workspace
+
+      // g — git
+      "space g g": ["task::Spawn", { "task_name": "lazygit", "reveal_target": "center" }], // magit status → lazygit
+      "space g shift-g": "git_panel::ToggleFocus", // zed's built-in git panel
+      "space g s": "git::StageFile", // git stage file
+      "space g shift-u": "git::UnstageFile", // git unstage file
+      "space g b": "branches::OpenRecent", // magit switch branch
+      "space g shift-b": "git::Blame", // magit blame
+      "space g d": "git::Diff", // (zed) project diff view
+      "space g c": "git::Commit", // magit commit
+      "space g r": "git::Restore", // git revert hunk/file
+      "space g f": "git::Fetch", // magit fetch
+      "space g p": "git::Pull", // magit pull
+      "space g shift-p": "git::Push", // magit push
+
+      // c — code
+      "space c a": "editor::ToggleCodeActions", // execute code action
+      "space c d": "editor::GoToDefinition", // jump to definition
+      "space c shift-d": "editor::FindAllReferences", // jump to references
+      "space c i": "editor::GoToImplementation", // find implementations
+      "space c t": "editor::GoToTypeDefinition", // find type definition
+      "space c r": "editor::Rename", // LSP rename
+      "space c f": "editor::Format", // format buffer
+      "space c o": "editor::OrganizeImports", // organize imports
+      "space c j": "project_symbols::Toggle", // jump to symbol in workspace
+      "space c x": "diagnostics::Deploy", // list errors (flycheck)
+      "space c c": "task::Spawn", // compile
+      "space c shift-c": "task::Rerun", // recompile
+      "space c k": "editor::Hover", // show docs (also just K)
+
+      // w — windows (evil-window-map)
+      "space w v": "pane::SplitVertical", // vsplit
+      "space w s": "pane::SplitHorizontal", // split
+      "space w h": "workspace::ActivatePaneLeft",
+      "space w j": "workspace::ActivatePaneDown",
+      "space w k": "workspace::ActivatePaneUp",
+      "space w l": "workspace::ActivatePaneRight",
+      "space w shift-h": "workspace::MovePaneLeft",
+      "space w shift-j": "workspace::MovePaneDown",
+      "space w shift-k": "workspace::MovePaneUp",
+      "space w shift-l": "workspace::MovePaneRight",
+      "space w w": "workspace::ActivateNextPane", // next window
+      "space w shift-w": "workspace::ActivatePreviousPane", // previous window
+      "space w c": "pane::CloseActiveItem", // close window
+      "space w d": "pane::CloseActiveItem", // delete window
+      "space w q": "pane::CloseActiveItem", // quit window
+      "space w o": "workspace::CloseInactiveTabsAndPanes", // delete other windows
+      "space w x": "workspace::SwapPaneAdjacent", // swap windows
+      "space w m": "workspace::ToggleZoom", // maximize window (toggle)
+      "space w =": "vim::ResetPaneSizes", // balance windows
+      "space w >": "vim::ResizePaneRight",
+      "space w <": "vim::ResizePaneLeft",
+      "space w +": "vim::ResizePaneUp",
+      "space w -": "vim::ResizePaneDown",
+
+      // o — open
+      "space o p": "project_panel::ToggleFocus", // project sidebar (treemacs)
+      "space o shift-p": "pane::RevealInProjectPanel", // find file in sidebar
+      "space o t": "terminal_panel::Toggle", // toggle terminal popup
+      "space o shift-t": "workspace::NewTerminal", // open terminal here
+      "space o a": "agent::ToggleFocus", // (zed) AI agent panel
+      "space o m": "markdown::OpenPreview", // (zed) markdown preview
+
+      // t — toggles
+      "space t l": "editor::ToggleLineNumbers", // line numbers
+      "space t w": "editor::ToggleSoftWrap", // soft line wrapping
+      "space t shift-f": "zed::ToggleFullScreen", // frame fullscreen
+      "space t i": "editor::ToggleInlayHints", // (zed) inlay hints
+      "space t t": "theme::ToggleMode", // (zed) light/dark theme
+      "space t p": "editor::ToggleEditPrediction", // (zed) Copilot predictions
+
+      // h — help
+      "space h t": "theme_selector::Toggle", // load theme
+      "space h k": "zed::OpenKeymap", // describe key (keymap editor)
+
+      // q — quit
+      "space q q": "zed::Quit", // quit Emacs^H^H^H^H^HZed
+      "space q f": "workspace::CloseWindow", // delete frame
+
+      // Doom bracket motions (]d/[d diagnostics and ]c/[c hunks are Zed defaults)
+      "] e": "editor::GoToDiagnostic", // next error
+      "[ e": "editor::GoToPreviousDiagnostic", // previous error
+      "] b": "pane::ActivateNextItem", // next buffer
+      "[ b": "pane::ActivatePreviousItem" // previous buffer
+    }
+  },
+  {
+    // ── Leader key (SPC) ─ visual mode ─────────────────────────────
+    "context": "Editor && vim_mode == visual && !menu",
+    "bindings": {
+      "space c f": "editor::Format", // format region
+      "space c a": "editor::ToggleCodeActions", // code action on selection
+      "space g r": "git::Restore", // revert selected hunks
+      "space /": "pane::DeploySearch" // search project
+    }
+  },
+  {
+    // ── Doom's evil-escape: jk to exit insert mode ─────────────────
+    "context": "Editor && vim_mode == insert",
+    "bindings": {
+      "j k": "vim::NormalBefore"
+    }
+  },
+  {
+    // ── Leader works from the project sidebar too ──────────────────
+    "context": "ProjectPanel && not_editing",
+    "bindings": {
+      "space o p": "project_panel::ToggleFocus",
+      "space space": "file_finder::Toggle",
+      "space f f": "file_finder::Toggle",
+      "space b b": "tab_switcher::Toggle",
+      "space g g": ["task::Spawn", { "task_name": "lazygit", "reveal_target": "center" }],
+      "space q q": "zed::Quit"
+    }
+  },
+  {
+    // ── Leader works in an empty pane (no file open) ───────────────
+    "context": "EmptyPane || SharedScreen",
+    "bindings": {
+      "space space": "file_finder::Toggle",
+      "space f f": "file_finder::Toggle",
+      "space p p": "projects::OpenRecent",
+      "space b b": "tab_switcher::Toggle",
+      "space o p": "project_panel::ToggleFocus",
+      "space q q": "zed::Quit"
+    }
+  }
+]
