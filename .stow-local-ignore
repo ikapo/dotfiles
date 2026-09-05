@@ -3,5 +3,5 @@
 .gitignore
 LICENSE
 README.md
-.claude
+settings.local.json
 .superpowers

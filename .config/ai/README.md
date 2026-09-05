@@ -11,24 +11,31 @@ Shared configuration for Claude Code and Codex.
 
 ## Setup on a new machine
 
-`stow` puts this directory at `~/.config/ai`. Each tool then needs a symlink to
-the file it expects, because none of them look in `~/.config/ai`:
+`stow` handles all of it. Neither tool looks in `~/.config/ai`, so the repo
+carries committed symlinks at the paths they do read:
+
+| Committed symlink | Points at |
+|---|---|
+| `.claude/CLAUDE.md` | `../.config/ai/AGENTS.md` |
+| `.claude/skills` | `../.config/ai/skills` |
+| `.claude/settings.json` | `../.config/ai/claude/settings.json` |
+| `.codex/AGENTS.md` | `../.config/ai/AGENTS.md` |
+
+`stow` links those into `~/.claude` and `~/.codex` like any other file, so
+setup is the same one command as the rest of the repo:
 
 ```sh
+mkdir -p ~/.claude ~/.codex
 stow ./ -t ~/
-
-ln -sfn ~/.config/ai/AGENTS.md            ~/.claude/CLAUDE.md
-ln -sfn ~/.config/ai/AGENTS.md            ~/.codex/AGENTS.md
-ln -sfn ~/.config/ai/skills               ~/.claude/skills
-ln -sfn ~/.config/ai/claude/settings.json ~/.claude/settings.json
 ```
 
-Four links, run once. They point through `~/.config/ai` rather than at the
-repository's real path, so they survive the repo moving.
+**The `mkdir` matters.** If `~/.claude` does not already exist, stow folds the
+whole directory into a single symlink pointing back at the repo, and the tool
+then writes its plugins, sessions and credentials inside your git checkout.
+Creating the directories first keeps stow linking file by file.
 
-`ln -sfn` replaces an existing symlink but refuses to overwrite a real file. If
-one of these paths already holds real content, move it aside first — its
-content belongs in this directory.
+`settings.local.json` is listed in `.stow-local-ignore`; it is this repository's
+own project settings and must not be linked into `~`.
 
 Then set up MCP servers: see [MCP.md](MCP.md).
 

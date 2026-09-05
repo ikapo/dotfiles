@@ -25,7 +25,7 @@ I manage packages with [Homebrew](https://brew.sh/).
    ```
 
 3. Clone the repository: `git clone https://github.com/ikapo/dotfiles`
-4. Symlink the dotfiles: `cd dotfiles && stow ./ -t ~/`
+4. Symlink the dotfiles: `cd dotfiles && mkdir -p ~/.claude ~/.codex && stow ./ -t ~/`
 5. Enable the secret-scanning pre-commit hook (local git config, so it does
    not survive a clone):
 
@@ -40,17 +40,18 @@ I manage packages with [Homebrew](https://brew.sh/).
 ## AI tool config
 
 `.config/ai` holds the shared agent instructions, skills, and Claude Code
-settings for Claude Code and Codex. `stow` puts it at `~/.config/ai`; each tool
-then needs one symlink to the file it expects:
+settings for Claude Code and Codex. Neither tool reads `~/.config/ai`, so the
+repo carries committed symlinks at `.claude/` and `.codex/` pointing back into
+it, and `stow` links those into place along with everything else:
 
 ```sh
+mkdir -p ~/.claude ~/.codex
 stow ./ -t ~/
-
-ln -sfn ~/.config/ai/AGENTS.md            ~/.claude/CLAUDE.md
-ln -sfn ~/.config/ai/AGENTS.md            ~/.codex/AGENTS.md
-ln -sfn ~/.config/ai/skills               ~/.claude/skills
-ln -sfn ~/.config/ai/claude/settings.json ~/.claude/settings.json
 ```
+
+Create those two directories first. Stow folds a directory that does not yet
+exist into a single symlink back to the repo, which would leave the tools
+writing sessions and credentials inside the git checkout.
 
 MCP servers are not synced or generated — `.config/ai/MCP.md` lists each one
 with the command to add it, and marks the ones that need a GUI so they can be
