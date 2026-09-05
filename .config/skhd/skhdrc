@@ -2,6 +2,7 @@ ctrl + alt + cmd - r : yabai --restart-service
 
 alt - return : bash $HOME/.local/bin/open_iterm.sh
 alt - w : open -a "/Applications/Brave Browser.app"
+alt - e : open -a /Applications/Zed.app
 alt - c : open -a /System/Applications/Calendar.app/Contents/MacOS/Calendar
 # close focused window
 alt - q : ~/.local/bin/window-destroy-and-focus-display.sh

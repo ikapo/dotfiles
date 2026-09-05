@@ -32,6 +32,20 @@ content belongs in this directory.
 
 Then set up MCP servers: see [MCP.md](MCP.md).
 
+## Why none of this is automated
+
+There was a tool here, `ai-sync`, that generated the symlinks above and
+registered MCP servers from a tracked `mcp.json`. It was removed the same day
+it shipped. Both halves turned out not to need automating: the symlinks are the
+four `ln -sfn` calls above, run once per machine, and remote MCP servers keep
+their token in the tool's own credential store after a browser login, so the
+wrapper indirection the generator existed to manage stopped being necessary —
+`claude mcp add` and `codex mcp add` each register a server in one command.
+
+Prefer adding a line to [MCP.md](MCP.md) over writing something that generates
+it. The full design and its post-mortem are in git history, at the commit that
+removed `docs/superpowers/`.
+
 ## Notes
 
 `~/.claude/settings.json` is a symlink into this repo, and Claude Code writes

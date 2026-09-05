@@ -1,10 +1,7 @@
 .git
 .githooks
 .gitignore
-install_deps.sh
 LICENSE
 README.md
 .claude
-docs
-tests
 .superpowers
