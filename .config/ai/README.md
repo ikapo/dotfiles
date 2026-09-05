@@ -6,6 +6,7 @@ Shared configuration for Claude Code and Codex.
 |---|---|
 | `AGENTS.md` | Shared agent instructions. Both tools read it. |
 | `MCP.md` | Which MCP servers to install and how. Not automated; run what you need. |
+| `PLUGINS.md` | Which plugins to install, per tool. Claude Code and Codex differ. |
 | `skills/` | Personal skills, one directory per skill. |
 | `claude/settings.json` | Claude Code settings: model, effort, enabled plugins, marketplaces. |
 
@@ -37,21 +38,22 @@ Creating the directories first keeps stow linking file by file.
 `settings.local.json` is listed in `.stow-local-ignore`; it is this repository's
 own project settings and must not be linked into `~`.
 
-Then set up MCP servers: see [MCP.md](MCP.md).
+Then set up MCP servers ([MCP.md](MCP.md)) and plugins ([PLUGINS.md](PLUGINS.md)).
 
 ## Why none of this is automated
 
 There was a tool here, `ai-sync`, that generated the symlinks above and
 registered MCP servers from a tracked `mcp.json`. It was removed the same day
-it shipped. Both halves turned out not to need automating: the symlinks are the
-four `ln -sfn` calls above, run once per machine, and remote MCP servers keep
-their token in the tool's own credential store after a browser login, so the
-wrapper indirection the generator existed to manage stopped being necessary —
-`claude mcp add` and `codex mcp add` each register a server in one command.
+it shipped. Both halves turned out not to need automating: the symlinks are now
+committed to the repo and placed by stow, so there is nothing left to generate,
+and remote MCP servers keep their token in the tool's own credential store after
+a browser login, so the wrapper indirection the generator existed to manage
+stopped being necessary — `claude mcp add` and `codex mcp add` each register a
+server in one command.
 
-Prefer adding a line to [MCP.md](MCP.md) over writing something that generates
-it. The full design and its post-mortem are in git history, at the commit that
-removed `docs/superpowers/`.
+Prefer adding a line to [MCP.md](MCP.md) or [PLUGINS.md](PLUGINS.md) over
+writing something that generates them. The full design and its post-mortem are
+in git history, at the commit that removed `docs/superpowers/`.
 
 ## Notes
 

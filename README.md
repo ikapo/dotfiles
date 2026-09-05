@@ -53,6 +53,10 @@ Create those two directories first. Stow folds a directory that does not yet
 exist into a single symlink back to the repo, which would leave the tools
 writing sessions and credentials inside the git checkout.
 
+Plugins are not synced either — `.config/ai/PLUGINS.md` lists what to install
+in each tool. Claude Code and Codex have separate plugin systems, but most of
+these ship for both, by three different routes.
+
 MCP servers are not synced or generated — `.config/ai/MCP.md` lists each one
 with the command to add it, and marks the ones that need a GUI so they can be
 skipped on a headless machine. See `.config/ai/README.md` for the layout.
