@@ -76,6 +76,36 @@ return {
     end,
   },
 
+  -- SPC t p — Zed's editor::ToggleEditPrediction. Inline ghost-text
+  -- suggestions, toggled on demand. Reads the same credentials Zed uses,
+  -- at ~/.config/github-copilot, so no separate sign-in.
+  {
+    "zbirenbaum/copilot.lua",
+    cmd = "Copilot",
+    event = "InsertEnter",
+    opts = {
+      suggestion = {
+        enabled = true,
+        -- Off by default, the way Zed's prediction toggle starts quiet;
+        -- SPC t p turns it on for the session.
+        auto_trigger = false,
+        keymap = {
+          accept = "<M-l>",
+          next = "<M-]>",
+          prev = "<M-[>",
+          dismiss = "<C-]>",
+        },
+      },
+      -- The separate panel duplicates what SPC t p already gives us.
+      panel = { enabled = false },
+      filetypes = {
+        markdown = true,
+        gitcommit = true,
+        ["*"] = true,
+      },
+    },
+  },
+
   -- Doom's evil-escape: jk leaves insert mode without eating a real "jk".
   {
     "max397574/better-escape.nvim",

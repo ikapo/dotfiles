@@ -308,6 +308,18 @@ map("n", "<leader>tt", function()
   require("nvchad.themes").open()
 end, { desc = "load theme" })
 
+-- Zed's editor::ToggleEditPrediction. Reports the resulting state, since
+-- ghost text is only visible once you start typing.
+map("n", "<leader>tp", function()
+  local ok, suggestion = pcall(require, "copilot.suggestion")
+  if not ok then
+    vim.notify("copilot.lua not loaded yet -- enter insert mode once first", vim.log.levels.WARN)
+    return
+  end
+  suggestion.toggle_auto_trigger()
+  vim.notify("Copilot suggestions " .. (vim.b.copilot_suggestion_auto_trigger and "on" or "off"))
+end, { desc = "copilot edit prediction" })
+
 -- ── h — help ────────────────────────────────────────────────────────
 map("n", "<leader>ht", function()
   require("nvchad.themes").open()
