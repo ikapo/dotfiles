@@ -2,6 +2,7 @@
 autoload -U colors && colors
 PS1="%B%{$fg[blue]%}%1~%{$reset_color%} -> %b"
 
+
 # History in cache directory:
 HISTSIZE=10000
 SAVEHIST=10000
@@ -78,6 +79,16 @@ bindkey -s '^d' 'wq\n'
 #Private Aliases
 [ -f "$HOME/.config/paliasrc" ] && source "$HOME/.config/paliasrc"
 
+eval "$(zoxide init --cmd cd zsh)"
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+#eval "$(pyenv init -zsh)"
+source <(fzf --zsh)
+
 # Load zsh-syntax-highlighting; should be last.
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 
 source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+
+
+
