@@ -188,5 +188,16 @@
       "space o p": "project_panel::ToggleFocus",
       "space q q": "zed::Quit"
     }
+  },
+  {
+    // ── Television file finder ─────────────────────────────────────
+    // Vim-Telescope-style fuzzy finder in a centred terminal.
+    // https://zed.dev/blog/hidden-gems-part-2
+    "bindings": {
+      "cmd-p": [
+        "task::Spawn",
+        { "task_name": "Television File Finder", "reveal_target": "center" }
+      ]
+    }
   }
 ]

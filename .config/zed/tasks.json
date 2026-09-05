@@ -16,5 +16,24 @@
     "show_command": false,
     "allow_concurrent_runs": true,
     "use_new_terminal": true
+  },
+  {
+    // Vim-Telescope-style file finder, per
+    // https://zed.dev/blog/hidden-gems-part-2
+    "label": "Television File Finder",
+    // Search from the project root, not the active file's directory. Escaping
+    // out of tv yields an empty string, so guard before handing it to zed --
+    // `zed ""` would otherwise open a stray empty window.
+    "command": "f=$(tv files \"$ZED_WORKTREE_ROOT\") && [ -n \"$f\" ] && zed \"$f\"",
+    // plain sh avoids slow zsh startup config
+    "shell": {
+      "program": "sh"
+    },
+    "hide": "always",
+    "reveal_target": "center",
+    "show_summary": false,
+    "show_command": false,
+    "allow_concurrent_runs": true,
+    "use_new_terminal": true
   }
 ]
