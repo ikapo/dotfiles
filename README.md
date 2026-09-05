@@ -70,23 +70,23 @@ Everything I installed deliberately, as of 2026-09-05. Regenerate with
 
 | Category | Packages |
 | --- | --- |
-| VCS & dev tools | gh, git, git-lfs, gitu, lazygit, stow, watchman |
-| Languages & runtimes | bun, node@24, pnpm, pyenv, python@3.12, zlib |
+| VCS & dev tools | gh, git, git-lfs, gitu, lazygit, stow, watchman, pkgconf |
+| Languages & runtimes | bun, node@24, pnpm |
 | Editors & shell | neovim, zsh-autosuggestions, zsh-syntax-highlighting, ranger, television |
 | CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, librsync |
 | Linters & formatters | stylua, pygments |
 | Mobile / iOS | cocoapods, facebook/fb/idb-companion |
 | Window management | asmvik/formulae/yabai, asmvik/formulae/skhd |
-| Media & docs | imagemagick, mpv |
+| Media & docs | mpv |
 | Security & network | gnupg, pinentry-mac, wireguard-tools |
-| Misc | ccusage, vercel |
+| Misc | vercel |
 
 ```sh
-brew install asmvik/formulae/skhd asmvik/formulae/yabai bat bun ccusage cocoapods \
-  coreutils facebook/fb/idb-companion fd fzf gh git git-lfs gitu gnu-sed gnupg \
-  imagemagick jq lazygit librsync lsd mpv neovim node@24 pinentry-mac pnpm pyenv \
-  pygments python@3.12 ranger ripgrep speedtest-cli stow stylua television vercel \
-  watchman wget wireguard-tools zlib zoxide zsh-autosuggestions zsh-syntax-highlighting
+brew install asmvik/formulae/skhd asmvik/formulae/yabai bat bun cocoapods coreutils \
+  facebook/fb/idb-companion fd fzf gh git git-lfs gitu gnu-sed gnupg jq lazygit librsync \
+  lsd mpv neovim node@24 pinentry-mac pkgconf pnpm pygments ranger ripgrep speedtest-cli \
+  stow stylua television vercel watchman wget wireguard-tools zoxide zsh-autosuggestions \
+  zsh-syntax-highlighting
 ```
 
 ### Casks

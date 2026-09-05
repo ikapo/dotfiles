@@ -80,9 +80,6 @@ bindkey -s '^d' 'wq\n'
 [ -f "$HOME/.config/paliasrc" ] && source "$HOME/.config/paliasrc"
 
 eval "$(zoxide init --cmd cd zsh)"
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-#eval "$(pyenv init -zsh)"
 source <(fzf --zsh)
 
 # Load zsh-syntax-highlighting; should be last.
