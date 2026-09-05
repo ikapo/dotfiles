@@ -9,8 +9,8 @@
     "context": "Editor && vim_mode == normal && !menu",
     "bindings": {
       // Top-level
-      "space space": "file_finder::Toggle", // find file in project
-      "space .": "file_finder::Toggle", // find file
+      "space space": ["task::Spawn", { "task_name": "Television File Finder", "reveal_target": "center" }], // find file in project
+      "space .": ["task::Spawn", { "task_name": "Television File Finder", "reveal_target": "center" }], // find file
       "space ,": "tab_switcher::Toggle", // switch buffer
       "space <": "tab_switcher::ToggleAll", // switch buffer (all)
       "space :": "command_palette::Toggle", // M-x
@@ -37,7 +37,8 @@
       "space b r": "pane::ReopenClosedItem", // (zed) reopen closed buffer
 
       // f — files
-      "space f f": "file_finder::Toggle", // find file
+      "space f f": ["task::Spawn", { "task_name": "Television File Finder", "reveal_target": "center" }], // find file
+      // stays native: tv has no most-recently-used ordering
       "space f r": "file_finder::Toggle", // recent files (finder sorts by recency)
       "space f s": "workspace::Save", // save file
       "space f shift-s": "workspace::SaveAs", // save file as...
@@ -52,7 +53,7 @@
 
       // p — project
       "space p p": "projects::OpenRecent", // switch project
-      "space p f": "file_finder::Toggle", // find file in project
+      "space p f": ["task::Spawn", { "task_name": "Television File Finder", "reveal_target": "center" }], // find file in project
       "space p a": "workspace::AddFolderToProject", // add new project
       "space p s": "workspace::SaveAll", // save project files
       "space p c": "task::Spawn", // compile in project
@@ -170,8 +171,8 @@
     "context": "ProjectPanel && not_editing",
     "bindings": {
       "space o p": "project_panel::ToggleFocus",
-      "space space": "file_finder::Toggle",
-      "space f f": "file_finder::Toggle",
+      "space space": ["task::Spawn", { "task_name": "Television File Finder", "reveal_target": "center" }],
+      "space f f": ["task::Spawn", { "task_name": "Television File Finder", "reveal_target": "center" }],
       "space b b": "tab_switcher::Toggle",
       "space g g": ["task::Spawn", { "task_name": "lazygit", "reveal_target": "center" }],
       "space q q": "zed::Quit"
@@ -181,8 +182,8 @@
     // ── Leader works in an empty pane (no file open) ───────────────
     "context": "EmptyPane || SharedScreen",
     "bindings": {
-      "space space": "file_finder::Toggle",
-      "space f f": "file_finder::Toggle",
+      "space space": ["task::Spawn", { "task_name": "Television File Finder", "reveal_target": "center" }],
+      "space f f": ["task::Spawn", { "task_name": "Television File Finder", "reveal_target": "center" }],
       "space p p": "projects::OpenRecent",
       "space b b": "tab_switcher::Toggle",
       "space o p": "project_panel::ToggleFocus",
