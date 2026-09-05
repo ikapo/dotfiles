@@ -33,9 +33,36 @@ I manage packages with [Homebrew](https://brew.sh/).
    git config core.hooksPath .githooks
    ```
 
-6. Start services: `brew services start skhd && brew services start yabai`
-7. Launch `nvim` once. Lazy bootstraps itself and installs the plugins in
+6. Write `~/.gitconfig` with your own identity (see [Git](#git)). Pass
+   `--file` rather than `--global`: until `~/.gitconfig` exists, `--global`
+   writes to `~/.config/git/config` instead, which `stow` has just pointed at
+   this repo.
+
+   ```sh
+   git config --file ~/.gitconfig user.name  "your name"
+   git config --file ~/.gitconfig user.email "you@example.com"
+   git config --file ~/.gitconfig user.signingkey "<your GPG key id>"
+   ```
+
+7. Start services: `brew services start skhd && brew services start yabai`
+8. Launch `nvim` once. Lazy bootstraps itself and installs the plugins in
    `.config/nvim/lua/plugins/init.lua`; `lazy-lock.json` pins the versions.
+
+## Git
+
+`.config/git/config` carries the settings that are the same on any machine and
+for any person — GPG signing on for commits and tags, `main` as the default
+branch, the git-lfs filters. `stow` links it to `~/.config/git/config`.
+
+Identity is not tracked. `[user]` and `[github]` are per-person, not
+per-machine, and a clone of this repo should not start committing as me against
+a signing key it does not have. Those live in `~/.gitconfig`, which stays out of
+the repo — git reads `~/.config/git/config` first and `~/.gitconfig` second, so
+anything set there wins. `.config/zsh/.zshrc` treats private shell aliases the
+same way, sourcing `~/.config/paliasrc` if it happens to exist.
+
+`.config/lazygit/config.yml` points lazygit's `e` at Zed and returns cleanly to
+it afterwards.
 
 ## AI tool config
 

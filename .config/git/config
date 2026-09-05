@@ -1,0 +1,18 @@
+# Machine-agnostic git settings.
+#
+# Identity lives in ~/.gitconfig, which is deliberately not tracked: [user] and
+# [github] are per-person, not per-machine, and a clone of this repo should not
+# start committing as someone else. Git reads this file first and ~/.gitconfig
+# second, so anything set there wins. See the README.
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[commit]
+	gpgSign = true
+[tag]
+	gpgSign = true
+[init]
+	defaultBranch = main

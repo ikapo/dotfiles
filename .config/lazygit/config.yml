@@ -1,0 +1,6 @@
+# Zed integration
+# Open files in Zed when pressing `e`, and return to Zed cleanly afterwards
+os:
+  editPreset: zed
+promptToReturnFromSubprocess: false
+quitOnTopLevelReturn: true
