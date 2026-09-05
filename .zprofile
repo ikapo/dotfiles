@@ -14,11 +14,6 @@ export GOBIN="$HOME/Workspace/Go/bin"
 export GOPATH="$HOME/Workspace/Go"
 export PATH="$PATH:$GOBIN"
 
-#Rust
-export CARGO_HOME="$XDG_CONFIG_HOME"/cargo
-export RUSTUP_HOME="$XDG_CONFIG_HOME"/rustup
-export PATH="$PATH:$CARGO_HOME/bin"
-
 #JS
 export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
 export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
