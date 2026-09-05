@@ -71,7 +71,7 @@ Everything I installed deliberately, as of 2026-09-05. Regenerate with
 | Category | Packages |
 | --- | --- |
 | VCS & dev tools | gh, git, git-lfs, gitu, lazygit, stow, watchman |
-| Languages & runtimes | bun, node@24, pnpm, pyenv, python@3.12, gcc, gcc@11, libgccjit, zlib |
+| Languages & runtimes | bun, node@24, pnpm, pyenv, python@3.12, zlib |
 | Editors & shell | neovim, zsh-autosuggestions, zsh-syntax-highlighting, ranger, television |
 | CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, librsync |
 | Linters & formatters | mypy, shellcheck, shfmt, stylua, pygments |
@@ -83,11 +83,11 @@ Everything I installed deliberately, as of 2026-09-05. Regenerate with
 
 ```sh
 brew install asmvik/formulae/skhd asmvik/formulae/yabai bat bun ccusage cocoapods \
-  coreutils facebook/fb/idb-companion fd fzf gcc gcc@11 gh git git-lfs gitu gnu-sed \
-  gnupg imagemagick jq lazygit libgccjit librsync lsd mpv mypy neovim node@24 pandoc \
-  pinentry-mac pnpm pyenv pygments python-requests python-setuptools python@3.12 ranger \
-  ripgrep shellcheck shfmt speedtest-cli stow stylua television vercel watchman wget \
-  wireguard-tools zlib zoxide zsh-autosuggestions zsh-syntax-highlighting
+  coreutils facebook/fb/idb-companion fd fzf gh git git-lfs gitu gnu-sed gnupg \
+  imagemagick jq lazygit librsync lsd mpv mypy neovim node@24 pandoc pinentry-mac pnpm \
+  pyenv pygments python-requests python-setuptools python@3.12 ranger ripgrep shellcheck \
+  shfmt speedtest-cli stow stylua television vercel watchman wget wireguard-tools zlib \
+  zoxide zsh-autosuggestions zsh-syntax-highlighting
 ```
 
 ### Casks
