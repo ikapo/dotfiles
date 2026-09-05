@@ -61,6 +61,21 @@ return {
     opts = { signs = true },
   },
 
+  -- SPC o m — Zed's markdown::OpenPreview. Renders in the browser rather
+  -- than a split; closest available equivalent.
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreview", "MarkdownPreviewStop", "MarkdownPreviewToggle" },
+    ft = "markdown",
+    build = function()
+      vim.fn["mkdp#util#install"]()
+    end,
+    init = function()
+      vim.g.mkdp_auto_close = 0
+      vim.g.mkdp_theme = "dark"
+    end,
+  },
+
   -- Doom's evil-escape: jk leaves insert mode without eating a real "jk".
   {
     "max397574/better-escape.nvim",

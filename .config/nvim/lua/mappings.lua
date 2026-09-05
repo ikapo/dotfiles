@@ -70,7 +70,9 @@ map("n", ";", ":", { desc = "CMD enter command mode" })
 map("n", "<leader><leader>", "<cmd>Telescope find_files<CR>", { desc = "find file in project" })
 map("n", "<leader>.", "<cmd>Telescope find_files<CR>", { desc = "find file" })
 map("n", "<leader>,", "<cmd>Telescope buffers<CR>", { desc = "switch workspace buffer" })
-map("n", "<leader><", "<cmd>Telescope buffers show_all_buffers=true<CR>", { desc = "switch buffer (all)" })
+-- A literal "<" in an lhs has to be written <lt>, or it is parsed as the start
+-- of a key notation and the mapping silently never registers.
+map("n", "<leader><lt>", "<cmd>Telescope buffers show_all_buffers=true<CR>", { desc = "switch buffer (all)" })
 map("n", "<leader>:", ":", { desc = "M-x (command mode)" })
 map("n", "<leader>/", "<cmd>Telescope live_grep<CR>", { desc = "search project" })
 map("n", "<leader>`", "<C-^>", { desc = "switch to last buffer" })
@@ -251,7 +253,7 @@ map("n", "<leader>wo", "<C-w>o", { desc = "delete other windows" })
 map("n", "<leader>wx", "<C-w>x", { desc = "swap windows" })
 map("n", "<leader>w=", "<C-w>=", { desc = "balance windows" })
 map("n", "<leader>w>", "<C-w>5>", { desc = "widen window" })
-map("n", "<leader>w<", "<C-w>5<", { desc = "narrow window" })
+map("n", "<leader>w<lt>", "<C-w>5<", { desc = "narrow window" })
 map("n", "<leader>w+", "<C-w>5+", { desc = "heighten window" })
 map("n", "<leader>w-", "<C-w>5-", { desc = "shorten window" })
 
@@ -280,6 +282,17 @@ map("n", "<leader>oT", function()
 end, { desc = "open terminal here" })
 
 map("n", "<leader>og", "<cmd>LazyGit<CR>", { desc = "open lazygit" })
+map("n", "<leader>om", "<cmd>MarkdownPreviewToggle<CR>", { desc = "markdown preview" })
+
+-- Zed's agent panel has no in-editor equivalent here; the CLIs are the agent,
+-- so open them in a float. Mirrors the cl/co aliases in .config/aliasrc.
+map("n", "<leader>oa", function()
+  require("nvchad.term").toggle { pos = "float", id = "claudeTerm", cmd = "claude" }
+end, { desc = "AI agent (claude)" })
+
+map("n", "<leader>oA", function()
+  require("nvchad.term").toggle { pos = "float", id = "codexTerm", cmd = "codex" }
+end, { desc = "AI agent (codex)" })
 
 -- ── t — toggles ─────────────────────────────────────────────────────
 map("n", "<leader>tl", "<cmd>set nu!<CR>", { desc = "line numbers" })
