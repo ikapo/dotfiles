@@ -74,7 +74,7 @@ Everything I installed deliberately, as of 2026-09-05. Regenerate with
 | Languages & runtimes | bun, node@24, pnpm |
 | Editors & shell | neovim, zsh-autosuggestions, zsh-syntax-highlighting, ranger, television |
 | CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, librsync |
-| Linters & formatters | stylua, pygments |
+| Linters & formatters | stylua |
 | Mobile / iOS | cocoapods, facebook/fb/idb-companion |
 | Window management | asmvik/formulae/yabai, asmvik/formulae/skhd |
 | Media & docs | mpv |
@@ -84,8 +84,8 @@ Everything I installed deliberately, as of 2026-09-05. Regenerate with
 ```sh
 brew install asmvik/formulae/skhd asmvik/formulae/yabai bat bun cocoapods coreutils \
   facebook/fb/idb-companion fd fzf gh git git-lfs gitu gnu-sed gnupg jq lazygit librsync \
-  lsd mpv neovim node@24 pinentry-mac pkgconf pnpm pygments ranger ripgrep speedtest-cli \
-  stow stylua television vercel watchman wget wireguard-tools zoxide zsh-autosuggestions \
+  lsd mpv neovim node@24 pinentry-mac pkgconf pnpm ranger ripgrep speedtest-cli stow \
+  stylua television vercel watchman wget wireguard-tools zoxide zsh-autosuggestions \
   zsh-syntax-highlighting
 ```
 
