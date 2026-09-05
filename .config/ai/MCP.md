@@ -28,6 +28,28 @@ codex mcp list       # Codex
 
 A name already present is not a reason to remove it. Ask before replacing one.
 
+**Prefer the plugin over the raw server.** Before registering anything by hand,
+check whether an official plugin already ships it. A plugin that bundles a
+server registers it for you, keeps its URL and version current, and usually
+brings skills and commands the bare endpoint does not — `context7` below is
+exactly this: in Claude Code it arrives with the `context7` plugin as
+`plugin:context7:context7`, and adding the raw endpoint on top would leave the
+same tools registered twice under two names.
+
+```sh
+claude plugin list                    # already installed
+claude plugin marketplace list        # which marketplaces are configured
+codex plugin list | grep -i <name>    # thousands of entries; always grep
+```
+
+Claude Code has no `plugin search`; browsing what a marketplace offers is the
+interactive `/plugin` command.
+
+Register a server directly only when no plugin provides it, or when the tool in
+hand has no such plugin — Codex has none for context7, which is why that
+section registers the endpoint there and not in Claude Code. See
+[PLUGINS.md](PLUGINS.md).
+
 ## github
 
 Remote, over OAuth. No binary, no token stored here.

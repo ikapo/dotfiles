@@ -7,6 +7,11 @@ MCP servers are not synced or generated. If one is missing, `~/.config/ai/MCP.md
 has the command to add it. Servers marked GUI-only in that file cannot work in a
 headless environment — skip them there rather than trying to make them run.
 
+Before registering a server by hand, check whether an official plugin already
+ships it — `context7` in Claude Code comes with the `context7` plugin, and
+adding the raw endpoint on top registers the same tools twice under two names.
+Add the endpoint directly only when no plugin provides it for that tool.
+
 Plugins are likewise manual: `~/.config/ai/PLUGINS.md` lists what to install in
 each tool. Claude Code and Codex keep separate plugin systems, but most of these
 plugins ship for both — by Codex's curated marketplace, by adding a repo as a
