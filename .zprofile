@@ -9,11 +9,6 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="$HOME/.cache"
 export PATH="$PATH:$HOME/.local/bin"
 
-#Golang
-export GOBIN="$HOME/Workspace/Go/bin"
-export GOPATH="$HOME/Workspace/Go"
-export PATH="$PATH:$GOBIN"
-
 #JS
 export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
 export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
