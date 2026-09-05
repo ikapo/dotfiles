@@ -74,20 +74,19 @@ Everything I installed deliberately, as of 2026-09-05. Regenerate with
 | Languages & runtimes | bun, node@24, pnpm, pyenv, python@3.12, zlib |
 | Editors & shell | neovim, zsh-autosuggestions, zsh-syntax-highlighting, ranger, television |
 | CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, librsync |
-| Linters & formatters | mypy, shellcheck, shfmt, stylua, pygments |
+| Linters & formatters | stylua, pygments |
 | Mobile / iOS | cocoapods, facebook/fb/idb-companion |
 | Window management | asmvik/formulae/yabai, asmvik/formulae/skhd |
-| Media & docs | imagemagick, mpv, pandoc |
+| Media & docs | imagemagick, mpv |
 | Security & network | gnupg, pinentry-mac, wireguard-tools |
-| Misc | ccusage, vercel, python-requests, python-setuptools |
+| Misc | ccusage, vercel |
 
 ```sh
 brew install asmvik/formulae/skhd asmvik/formulae/yabai bat bun ccusage cocoapods \
   coreutils facebook/fb/idb-companion fd fzf gh git git-lfs gitu gnu-sed gnupg \
-  imagemagick jq lazygit librsync lsd mpv mypy neovim node@24 pandoc pinentry-mac pnpm \
-  pyenv pygments python-requests python-setuptools python@3.12 ranger ripgrep shellcheck \
-  shfmt speedtest-cli stow stylua television vercel watchman wget wireguard-tools zlib \
-  zoxide zsh-autosuggestions zsh-syntax-highlighting
+  imagemagick jq lazygit librsync lsd mpv neovim node@24 pinentry-mac pnpm pyenv \
+  pygments python@3.12 ranger ripgrep speedtest-cli stow stylua television vercel \
+  watchman wget wireguard-tools zlib zoxide zsh-autosuggestions zsh-syntax-highlighting
 ```
 
 ### Casks
