@@ -95,8 +95,8 @@ local server that needs one reads it from the Keychain at runtime.
 
 ## Packages
 
-Everything I installed deliberately, as of 2026-09-05. Regenerate with
-`brew leaves --installed-on-request` and `brew list --cask`.
+Everything I installed deliberately, as of 2026-09-07. Regenerate with
+`brew leaves --installed-on-request`, `brew list --cask`, and `mas list`.
 
 ### Formulae
 
@@ -111,15 +111,36 @@ Everything I installed deliberately, as of 2026-09-05. Regenerate with
 | Window management | asmvik/formulae/yabai, asmvik/formulae/skhd |
 | Media & docs | mpv |
 | Security & network | gnupg, pinentry-mac, wireguard-tools |
-| Misc | vercel |
+| Misc | mas, vercel |
 
 ```sh
 brew install asmvik/formulae/skhd asmvik/formulae/yabai bat bun cocoapods coreutils \
   facebook/fb/idb-companion fd fzf gh git git-lfs gitu gnu-sed gnupg jq lazygit librsync \
-  lsd mpv neovim node@24 pinentry-mac pkgconf pnpm ranger ripgrep speedtest-cli stow \
+  lsd mas mpv neovim node@24 pinentry-mac pkgconf pnpm ranger ripgrep speedtest-cli stow \
   stylua television vercel watchman wget wireguard-tools zoxide zsh-autosuggestions \
   zsh-syntax-highlighting
 ```
+
+### App Store
+
+Installed through the App Store, so `brew` does not know about them. `mas`
+drives the App Store from the CLI, but it cannot sign in — open the App Store
+app and sign in first, and note that `mas install` only fetches apps already in
+this Apple ID's purchase history.
+
+| Category | Apps |
+| --- | --- |
+| Dev | Xcode |
+| Mail & productivity | Spark, Numbers, Structured, Streaks |
+| Travel & finance | Tripsy, Crypto Pro |
+| Security & network | WireGuard |
+
+```sh
+sudo mas install 497799835 1176895641 409203825 1499198946 963034692 \
+  1429967544 980888073 1451685025
+```
+
+Xcode is a ~10 GB download; skip it on a machine that will not build iOS.
 
 ### Casks
 
