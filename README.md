@@ -95,8 +95,9 @@ local server that needs one reads it from the Keychain at runtime.
 
 ## Packages
 
-Everything I installed deliberately, as of 2026-09-07. Regenerate with
-`brew leaves --installed-on-request`, `brew list --cask`, and `mas list`.
+Everything I installed deliberately, as of 2026-09-07. Regenerate the Homebrew
+tables with `brew leaves --installed-on-request` and `brew list --cask`; the
+App Store table is curated rather than generated, see the note under it.
 
 ### Formulae
 
@@ -131,16 +132,20 @@ this Apple ID's purchase history.
 | Category | Apps |
 | --- | --- |
 | Dev | Xcode |
-| Mail & productivity | Spark, Numbers, Structured, Streaks |
-| Travel & finance | Tripsy, Crypto Pro |
+| Mail & productivity | Spark, Structured, Streaks |
+| Travel & finance | Tripsy, Flighty, Crypto Pro |
 | Security & network | WireGuard |
 
 ```sh
-sudo mas install 497799835 1176895641 409203825 1499198946 963034692 \
-  1429967544 980888073 1451685025
+sudo mas install 497799835 1176895641 1499198946 963034692 \
+  1429967544 1358823008 980888073 1451685025
 ```
 
 Xcode is a ~10 GB download; skip it on a machine that will not build iOS.
+
+This list is curated, not a dump of `mas list`: Numbers ships with macOS and is
+left out, and Flighty is wanted on a new machine but is not installed on this
+one. Merge by hand rather than overwriting.
 
 ### Casks
 
