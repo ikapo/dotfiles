@@ -95,7 +95,7 @@ local server that needs one reads it from the Keychain at runtime.
 
 ## Packages
 
-Everything I installed deliberately, as of 2026-09-07. Regenerate the Homebrew
+Everything I installed deliberately, as of 2026-09-09. Regenerate the Homebrew
 tables with `brew leaves --installed-on-request` and `brew list --cask`; the
 App Store table is curated rather than generated, see the note under it.
 
@@ -106,7 +106,7 @@ App Store table is curated rather than generated, see the note under it.
 | VCS & dev tools | gh, git, git-lfs, gitu, lazygit, stow, watchman, pkgconf |
 | Languages & runtimes | bun, node@24, pnpm |
 | Editors & shell | neovim, zsh-autosuggestions, zsh-syntax-highlighting, ranger, television |
-| CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, librsync |
+| CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, librsync, mole |
 | Linters & formatters | stylua |
 | Mobile / iOS | cocoapods, facebook/fb/idb-companion |
 | Window management | asmvik/formulae/yabai, asmvik/formulae/skhd |
@@ -117,7 +117,7 @@ App Store table is curated rather than generated, see the note under it.
 ```sh
 brew install asmvik/formulae/skhd asmvik/formulae/yabai bat bun cocoapods coreutils \
   facebook/fb/idb-companion fd fzf gh git git-lfs gitu gnu-sed gnupg jq lazygit librsync \
-  lsd mas mpv neovim node@24 pinentry-mac pkgconf pnpm ranger ripgrep speedtest-cli stow \
+  lsd mas mole mpv neovim node@24 pinentry-mac pkgconf pnpm ranger ripgrep speedtest-cli stow \
   stylua television vercel watchman wget wireguard-tools zoxide zsh-autosuggestions \
   zsh-syntax-highlighting
 ```
