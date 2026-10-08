@@ -3,6 +3,7 @@
 .gitignore
 LICENSE
 README.md
+TRANSFER.md
 macos-defaults.sh
 settings.local.json
 .superpowers
