@@ -58,10 +58,10 @@ steps, plus what to carry over by hand.
 
 7. Start services: `brew services start skhd && brew services start yabai`
 8. Apply the macOS settings that no dotfile holds — `⌥1`–`⌥9` switch to
-   Desktop 1–9, and iTerm2 loading its settings from the repo:
-   `./macos-defaults.sh`. The shortcuts only reach desktops that exist, so open
-   Mission Control and add desktops until there are 9. If they do not take
-   effect, log out and back in. Restart iTerm2 afterwards.
+   Desktop 1–9, the fastest key repeat rate, and iTerm2 loading its settings
+   from the repo: `./macos-defaults.sh`. The shortcuts only reach desktops
+   that exist, so open Mission Control and add desktops until there are 9. If
+   they do not take effect, log out and back in. Restart iTerm2 afterwards.
 9. Install [One](https://getone.one) from its website — it is not on Homebrew
    and updates itself. Do this after `herdr` from the [Formulae](#formulae)
    list is installed. Its state in `~/.config/one` is not tracked.

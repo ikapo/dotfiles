@@ -37,6 +37,12 @@ fi
 /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u ||
   echo "Could not apply live; log out and back in."
 
+# Key repeat: how fast a held key repeats, and the delay before it starts.
+# 2/15 is the fastest pair selectable in System Settings' sliders; most apps
+# pick this up live, but Terminal-style apps may need a restart.
+defaults write NSGlobalDomain KeyRepeat -int 2
+defaults write NSGlobalDomain InitialKeyRepeat -int 15
+
 # iTerm2 loads its settings from the repo (stow links ~/.config/iterm2-prefs) and
 # writes changes back there automatically. Takes effect when iTerm2 next starts.
 iterm=com.googlecode.iterm2
