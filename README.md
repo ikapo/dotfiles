@@ -95,7 +95,7 @@ local server that needs one reads it from the Keychain at runtime.
 
 ## Packages
 
-Everything I installed deliberately, as of 2026-09-09. Regenerate the Homebrew
+Everything I installed deliberately, as of 2026-10-08. Regenerate the Homebrew
 tables with `brew leaves --installed-on-request` and `brew list --cask`; the
 App Store table is curated rather than generated, see the note under it.
 
@@ -105,21 +105,21 @@ App Store table is curated rather than generated, see the note under it.
 | --- | --- |
 | VCS & dev tools | gh, git, git-lfs, gitu, lazygit, stow, watchman, pkgconf |
 | Languages & runtimes | bun, node@24, pnpm |
-| Editors & shell | neovim, zsh-autosuggestions, zsh-syntax-highlighting, ranger, television |
+| Editors & shell | neovim, zsh-autosuggestions, zsh-syntax-highlighting, ranger, television, herdr |
 | CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, librsync, mole |
 | Linters & formatters | stylua |
 | Mobile / iOS | cocoapods, facebook/fb/idb-companion |
 | Window management | asmvik/formulae/yabai, asmvik/formulae/skhd |
-| Media & docs | mpv |
+| Media & docs | mpv, kepubify |
 | Security & network | gnupg, pinentry-mac, wireguard-tools |
 | Misc | mas, vercel |
 
 ```sh
 brew install asmvik/formulae/skhd asmvik/formulae/yabai bat bun cocoapods coreutils \
-  facebook/fb/idb-companion fd fzf gh git git-lfs gitu gnu-sed gnupg jq lazygit librsync \
-  lsd mas mole mpv neovim node@24 pinentry-mac pkgconf pnpm ranger ripgrep speedtest-cli stow \
-  stylua television vercel watchman wget wireguard-tools zoxide zsh-autosuggestions \
-  zsh-syntax-highlighting
+  facebook/fb/idb-companion fd fzf gh git git-lfs gitu gnu-sed gnupg herdr jq kepubify \
+  lazygit librsync lsd mas mole mpv neovim node@24 pinentry-mac pkgconf pnpm ranger \
+  ripgrep speedtest-cli stow stylua television vercel watchman wget wireguard-tools \
+  zoxide zsh-autosuggestions zsh-syntax-highlighting
 ```
 
 ### App Store
@@ -132,13 +132,13 @@ this Apple ID's purchase history.
 | Category | Apps |
 | --- | --- |
 | Dev | Xcode |
-| Mail & productivity | Spark, Structured, Streaks |
+| Productivity | Structured, Streaks |
 | Travel & finance | Tripsy, Flighty, Crypto Pro |
 | Security & network | WireGuard |
 
 ```sh
-sudo mas install 497799835 1176895641 1499198946 963034692 \
-  1429967544 1358823008 980888073 1451685025
+sudo mas install 497799835 1499198946 963034692 1429967544 \
+  1358823008 980888073 1451685025
 ```
 
 Xcode is a ~10 GB download; skip it on a machine that will not build iOS.
@@ -151,16 +151,16 @@ one. Merge by hand rather than overwriting.
 
 | Category | Packages |
 | --- | --- |
-| Browsers & comms | brave-browser, discord, telegram, whatsapp, thunderbird, zoom |
+| Browsers & comms | helium-browser, discord, telegram, whatsapp, thunderbird, zoom |
 | Dev | zed, iterm2, claude, claude-code@latest, codex, chatgpt, devtoys, linear |
-| Productivity | raycast, obsidian, google-drive, logi-options+, openwhispr |
+| Productivity | raycast, obsidian, logi-options+, openwhispr |
 | Security | bitwarden, trezor-suite |
 | Fonts | font-fira-code-nerd-font, font-mononoki-nerd-font |
 | Other | altserver, prusaslicer, tradingview, vorssaint |
 
 ```sh
-brew install --cask altserver bitwarden brave-browser chatgpt claude claude-code@latest \
-  codex devtoys discord font-fira-code-nerd-font font-mononoki-nerd-font google-drive \
-  iterm2 linear logi-options+ obsidian openwhispr prusaslicer raycast telegram \
-  thunderbird tradingview trezor-suite vorssaint whatsapp zed zoom
+brew install --cask altserver bitwarden chatgpt claude claude-code@latest codex devtoys \
+  discord font-fira-code-nerd-font font-mononoki-nerd-font helium-browser iterm2 linear \
+  logi-options+ obsidian openwhispr prusaslicer raycast telegram thunderbird tradingview \
+  trezor-suite vorssaint whatsapp zed zoom
 ```
