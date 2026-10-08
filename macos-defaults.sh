@@ -27,11 +27,24 @@ for pair in "1 18" "2 19" "3 20" "4 21" "5 23" "6 22" "7 26" "8 28" "9 25"; do
   id=$((id + 1))
 done
 
-# Apply without logging out. Skipped when writing to a test plist.
-if [[ "$hotkeys" == com.apple.symbolichotkeys ]]; then
-  /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u ||
-    echo "Could not apply live; log out and back in."
+# Everything below changes live settings, so it is skipped for a test plist.
+if [[ "$hotkeys" != com.apple.symbolichotkeys ]]; then
+  echo "Wrote the hotkeys to $hotkeys."
+  exit 0
 fi
 
-echo "Done. The Switch to Desktop shortcuts only work for desktops that exist:"
+# Apply the hotkeys without logging out.
+/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u ||
+  echo "Could not apply live; log out and back in."
+
+# iTerm2 loads its settings from the repo (stow links ~/.config/iterm2-prefs) and
+# writes changes back there automatically. Takes effect when iTerm2 next starts.
+iterm=com.googlecode.iterm2
+defaults write "$iterm" PrefsCustomFolder -string "$HOME/.config/iterm2-prefs"
+defaults write "$iterm" LoadPrefsFromCustomFolder -bool true
+defaults write "$iterm" NoSyncNeverRemindPrefsChangesLostForFile -bool true
+defaults write "$iterm" NoSyncNeverRemindPrefsChangesLostForFile_selection -int 0
+
+echo "Done. Restart iTerm2 to load its settings from the repo."
+echo "The Switch to Desktop shortcuts only work for desktops that exist:"
 echo "open Mission Control and add desktops until there are 9."

@@ -55,9 +55,10 @@ I manage packages with [Homebrew](https://brew.sh/).
 
 7. Start services: `brew services start skhd && brew services start yabai`
 8. Apply the macOS settings that no dotfile holds — `⌥1`–`⌥9` switch to
-   Desktop 1–9: `./macos-defaults.sh`. The shortcuts only reach desktops that
-   exist, so open Mission Control and add desktops until there are 9. If they
-   do not take effect, log out and back in.
+   Desktop 1–9, and iTerm2 loading its settings from the repo:
+   `./macos-defaults.sh`. The shortcuts only reach desktops that exist, so open
+   Mission Control and add desktops until there are 9. If they do not take
+   effect, log out and back in. Restart iTerm2 afterwards.
 9. Install [One](https://getone.one) from its website — it is not on Homebrew
    and updates itself. Do this after `herdr` from the [Formulae](#formulae)
    list is installed. Its state in `~/.config/one` is not tracked.
@@ -81,6 +82,12 @@ same way, sourcing `~/.config/paliasrc` if it happens to exist.
 `hosts.yml` beside it stays out of the repo. `.config/herdr/config.toml` and
 `.config/television/config.toml` are tracked the same way, without the runtime
 files around them.
+
+`.config/iterm2-prefs/` holds iTerm2's settings. `macos-defaults.sh` points
+iTerm2 at `~/.config/iterm2-prefs` and has it save changes back automatically,
+so tweaks in iTerm2's settings show up as diffs here. Leave that directory out
+of the `mkdir` in step 4: stow should link the whole directory, because iTerm2
+replaces the file when it saves.
 
 `.config/lazygit/config.yml` points lazygit's `e` at Zed and returns cleanly to
 it afterwards.
