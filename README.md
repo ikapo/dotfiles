@@ -16,20 +16,21 @@ I manage packages with [Homebrew](https://brew.sh/).
 ## How to install
 
 1. [Install Homebrew](https://brew.sh/)
-2. Install the core dependencies (see [Packages](#packages) for the full list):
+2. Clone the repository: `git clone https://github.com/ikapo/dotfiles && cd dotfiles`
+3. Sign in to the App Store app, then install every package in the `Brewfile`
+   (see [Packages](#packages)). `mas` cannot sign in for you, so without that
+   the App Store entries fail; the rest still installs. Leave Xcode out with
+   the variable if this machine will not build iOS:
 
    ```sh
-   brew install asmvik/formulae/yabai asmvik/formulae/skhd stow ranger ripgrep fd \
-     lsd zoxide fzf bat node@24 zsh-syntax-highlighting zsh-autosuggestions
-   brew install --cask iterm2 font-mononoki-nerd-font font-fira-code-nerd-font
+   brew bundle                                     # everything
+   HOMEBREW_BUNDLE_MAS_SKIP=497799835 brew bundle  # everything but Xcode
    ```
 
-3. Clone the repository: `git clone https://github.com/ikapo/dotfiles`
 4. Symlink the dotfiles. Create the directories first, or stow folds each one
    into a single link and the tool's state and credentials land in the repo:
 
    ```sh
-   cd dotfiles
    mkdir -p ~/.claude ~/.codex ~/.config/{herdr,television,gh}
    stow ./ -t ~/
    ```
@@ -115,9 +116,11 @@ local server that needs one reads it from the Keychain at runtime.
 
 ## Packages
 
-Everything I installed deliberately, as of 2026-10-08. Regenerate the Homebrew
-tables with `brew leaves --installed-on-request` and `brew list --cask`; the
-App Store table is curated rather than generated, see the note under it.
+Everything I installed deliberately, as of 2026-10-08. `Brewfile` holds the
+same list and `brew bundle` installs it; keep the two in step. To spot drift,
+compare against `brew leaves --installed-on-request` and `brew list --cask`
+rather than `brew bundle dump`, which also lists every dependency. The App Store
+list is curated rather than generated, see the note under it.
 
 ### Formulae
 
@@ -134,18 +137,10 @@ App Store table is curated rather than generated, see the note under it.
 | Security & network | gnupg, pinentry-mac, wireguard-tools |
 | Misc | mas, vercel |
 
-```sh
-brew install asmvik/formulae/skhd asmvik/formulae/yabai bat bun cocoapods coreutils \
-  facebook/fb/idb-companion fd fzf gh git git-lfs gitu gnu-sed gnupg herdr jq kepubify \
-  lazygit librsync lsd mas mole mpv neovim node@24 pinentry-mac pkgconf pnpm ranger \
-  ripgrep speedtest-cli stow stylua television vercel watchman wget wireguard-tools \
-  zoxide zsh-autosuggestions zsh-syntax-highlighting
-```
-
 ### App Store
 
-Installed through the App Store, so `brew` does not know about them. `mas`
-drives the App Store from the CLI, but it cannot sign in — open the App Store
+Installed through the App Store; `brew bundle` hands these to `mas`, which
+drives the App Store from the CLI but cannot sign in — open the App Store
 app and sign in first, and note that `mas install` only fetches apps already in
 this Apple ID's purchase history.
 
@@ -155,11 +150,6 @@ this Apple ID's purchase history.
 | Productivity | Structured, Streaks |
 | Travel & finance | Tripsy, Flighty, Crypto Pro |
 | Security & network | WireGuard |
-
-```sh
-sudo mas install 497799835 1499198946 963034692 1429967544 \
-  1358823008 980888073 1451685025
-```
 
 Xcode is a ~10 GB download; skip it on a machine that will not build iOS.
 
@@ -177,10 +167,3 @@ one. Merge by hand rather than overwriting.
 | Security | bitwarden, trezor-suite |
 | Fonts | font-fira-code-nerd-font, font-mononoki-nerd-font |
 | Other | altserver, prusaslicer, tradingview, vorssaint |
-
-```sh
-brew install --cask altserver bitwarden chatgpt claude claude-code@latest codex devtoys \
-  discord font-fira-code-nerd-font font-mononoki-nerd-font helium-browser iterm2 linear \
-  logi-options+ obsidian openwhispr prusaslicer raycast telegram thunderbird tradingview \
-  trezor-suite vorssaint whatsapp zed zoom
-```
