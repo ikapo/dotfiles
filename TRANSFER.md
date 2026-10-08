@@ -44,7 +44,8 @@ public repo, and most of it is per-machine state anyway.
 
 ## Finish the setup
 
-- [ ] `brew services start skhd && brew services start yabai`, then grant both
+- [ ] `skhd --start-service && yabai --start-service` (not `brew services
+      start` — the `asmvik` tap's formulae don't implement it), then grant both
       Accessibility access when macOS prompts
       (System Settings → Privacy & Security → Accessibility).
 - [ ] `./macos-defaults.sh` — sets ⌥1–⌥9 to switch desktops and points iTerm2

@@ -57,7 +57,10 @@ steps, plus what to carry over by hand.
    git config --file ~/.gitconfig user.signingkey "<your GPG key id>"
    ```
 
-7. Start services: `brew services start skhd && brew services start yabai`
+7. Start services: `skhd --start-service && yabai --start-service`. The
+   `asmvik` tap's formulae manage their own launchd service rather than
+   implementing `brew services`, so `brew services start` fails on them with
+   "has not implemented #plist, #service".
 8. Apply the macOS settings that no dotfile holds — `⌥1`–`⌥9` switch to
    Desktop 1–9, the fastest key repeat rate, and iTerm2 loading its settings
    from the repo: `./macos-defaults.sh`. The shortcuts only reach desktops
