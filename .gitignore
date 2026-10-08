@@ -13,3 +13,6 @@
 
 # Python bytecode
 __pycache__/
+
+# Claude skill sync cache (account-specific, written through the skills symlink)
+.config/ai/skills/synced/
