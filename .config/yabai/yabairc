@@ -8,7 +8,6 @@ yabai -m space 3 --label three
 yabai -m space 4 --label four
 yabai -m space 5 --label five
 yabai -m space 6 --label six
-yabai -m space 6 --label six
 yabai -m space 7 --label seven
 yabai -m space 8 --label eight
 yabai -m space 9 --label nine
