@@ -25,7 +25,15 @@ I manage packages with [Homebrew](https://brew.sh/).
    ```
 
 3. Clone the repository: `git clone https://github.com/ikapo/dotfiles`
-4. Symlink the dotfiles: `cd dotfiles && mkdir -p ~/.claude ~/.codex && stow ./ -t ~/`
+4. Symlink the dotfiles. Create the directories first, or stow folds each one
+   into a single link and the tool's state and credentials land in the repo:
+
+   ```sh
+   cd dotfiles
+   mkdir -p ~/.claude ~/.codex ~/.config/{herdr,television,gh}
+   stow ./ -t ~/
+   ```
+
 5. Enable the secret-scanning pre-commit hook (local git config, so it does
    not survive a clone):
 
@@ -49,7 +57,10 @@ I manage packages with [Homebrew](https://brew.sh/).
    Desktop 1–9: `./macos-defaults.sh`. The shortcuts only reach desktops that
    exist, so open Mission Control and add desktops until there are 9. If they
    do not take effect, log out and back in.
-9. Launch `nvim` once. Lazy bootstraps itself and installs the plugins in
+9. Install [One](https://getone.one) from its website — it is not on Homebrew
+   and updates itself. Do this after `herdr` from the [Formulae](#formulae)
+   list is installed. Its state in `~/.config/one` is not tracked.
+10. Launch `nvim` once. Lazy bootstraps itself and installs the plugins in
    `.config/nvim/lua/plugins/init.lua`; `lazy-lock.json` pins the versions.
 
 ## Git
@@ -64,6 +75,11 @@ a signing key it does not have. Those live in `~/.gitconfig`, which stays out of
 the repo — git reads `~/.config/git/config` first and `~/.gitconfig` second, so
 anything set there wins. `.config/zsh/.zshrc` treats private shell aliases the
 same way, sourcing `~/.config/paliasrc` if it happens to exist.
+
+`.config/gh/config.yml` holds gh's settings and aliases; the login token in
+`hosts.yml` beside it stays out of the repo. `.config/herdr/config.toml` and
+`.config/television/config.toml` are tracked the same way, without the runtime
+files around them.
 
 `.config/lazygit/config.yml` points lazygit's `e` at Zed and returns cleanly to
 it afterwards.
