@@ -13,6 +13,9 @@ I window manage with [yabai](https://github.com/koekeishiya/yabai) and [skhd](ht
 
 I manage packages with [Homebrew](https://brew.sh/).
 
+Moving from an existing Mac? See [TRANSFER.md](TRANSFER.md) instead — same
+steps, plus what to carry over by hand.
+
 ## How to install
 
 1. [Install Homebrew](https://brew.sh/)
