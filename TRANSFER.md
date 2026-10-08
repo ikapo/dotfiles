@@ -52,6 +52,9 @@ public repo, and most of it is per-machine state anyway.
       at `.config/iterm2-prefs`. The shortcuts only reach desktops that exist,
       so open Mission Control and add desktops until there are 9.
 - [ ] Restart iTerm2 so it loads settings from the repo.
+- [ ] Remap Caps Lock to Escape by hand — macOS stores this per keyboard, not
+      as one global setting, so it isn't scriptable: System Settings →
+      Keyboard → Keyboard Shortcuts… → Modifier Keys.
 - [ ] `herdr integration install claude` (and `codex`, if used there too).
 - [ ] Install [One](https://getone.one) — not on Homebrew, updates itself.
 - [ ] `gh auth login`, then sign in to Claude Code and Codex.

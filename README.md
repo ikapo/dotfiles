@@ -66,11 +66,15 @@ steps, plus what to carry over by hand.
    from the repo: `./macos-defaults.sh`. The shortcuts only reach desktops
    that exist, so open Mission Control and add desktops until there are 9. If
    they do not take effect, log out and back in. Restart iTerm2 afterwards.
-9. Install [One](https://getone.one) from its website — it is not on Homebrew
-   and updates itself. Do this after `herdr` from the [Formulae](#formulae)
-   list is installed. Its state in `~/.config/one` is not tracked.
-10. Launch `nvim` once. Lazy bootstraps itself and installs the plugins in
-   `.config/nvim/lua/plugins/init.lua`; `lazy-lock.json` pins the versions.
+9. Remap Caps Lock to Escape — not scriptable, since macOS stores it per
+   keyboard rather than as one global setting: System Settings → Keyboard →
+   Keyboard Shortcuts… → Modifier Keys, pick the keyboard if more than one is
+   listed, set Caps Lock to Escape.
+10. Install [One](https://getone.one) from its website — it is not on Homebrew
+    and updates itself. Do this after `herdr` from the [Formulae](#formulae)
+    list is installed. Its state in `~/.config/one` is not tracked.
+11. Launch `nvim` once. Lazy bootstraps itself and installs the plugins in
+    `.config/nvim/lua/plugins/init.lua`; `lazy-lock.json` pins the versions.
 
 ## Git
 
