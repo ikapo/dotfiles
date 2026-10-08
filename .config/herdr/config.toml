@@ -1,0 +1,4 @@
+onboarding = false
+
+[ui.sound]
+enabled = false

@@ -16,3 +16,12 @@ __pycache__/
 
 # Claude skill sync cache (account-specific, written through the skills symlink)
 .config/ai/skills/synced/
+
+# Tool dirs that also hold runtime state and credentials; only their config is
+# tracked. Backstop for when stow folds a missing ~/.config/<tool> into the repo.
+.config/herdr/*
+!.config/herdr/config.toml
+.config/television/*
+!.config/television/config.toml
+.config/gh/*
+!.config/gh/config.yml
