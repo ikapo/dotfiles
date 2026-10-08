@@ -13,10 +13,12 @@ Work through it in order; later steps assume earlier ones are done.
 - [ ] Install Homebrew, clone the repo, and run [How to install](README.md#how-to-install)
       steps 1–3: `brew bundle` (sign in to the App Store app first; add
       `HOMEBREW_BUNDLE_MAS_SKIP=497799835` to skip Xcode's ~10 GB download).
-- [ ] Step 4: create `~/.claude ~/.codex ~/.config/{herdr,television,gh}`, then
-      `stow -n -v ./ -t ~/` as a dry run before the real `stow ./ -t ~/`. If it
-      reports a conflict (commonly `~/.claude/settings.json`, if Claude Code has
-      already run on this Mac), move the conflicting file aside and stow again.
+- [ ] Step 4: create `~/.claude ~/.codex ~/.config/{herdr,television,gh,gnupg}`
+      (`chmod 700` the last one), then `stow -n -v ./ -t ~/` as a dry run
+      before the real `stow ./ -t ~/`. If it reports a conflict (commonly
+      `~/.claude/settings.json` if Claude Code has already run on this Mac, or
+      `~/.zprofile`/`~/.config/gh/config.yml` from Homebrew's or gh's own
+      first-run setup), move the conflicting file aside and stow again.
 - [ ] Step 5: `git config core.hooksPath .githooks`.
 
 ## Carry over from the old Mac
@@ -27,7 +29,10 @@ public repo, and most of it is per-machine state anyway.
 - [ ] GPG signing key (commits are signed, so do this before the first one):
       on the **old** Mac, `gpg --export-secret-keys --armor DACDD792 > key.asc`;
       copy it over securely; on the **new** Mac, `gpg --import key.asc`; delete
-      `key.asc` on both ends.
+      `key.asc` on both ends. `gpg-agent.conf` is tracked (see [Git](README.md#git)),
+      so signing should prompt with a native dialog rather than failing with
+      `Inappropriate ioctl for device` — if it still does, `gpgconf --kill
+      gpg-agent` and retry.
 - [ ] `~/.ssh` (keys + `config`).
 - [ ] `~/.config/paliasrc` (private shell aliases, sourced by `.zshrc` if present).
 - [ ] Write `~/.gitconfig` with your identity — [Git](README.md#git) has the

@@ -34,7 +34,8 @@ steps, plus what to carry over by hand.
    into a single link and the tool's state and credentials land in the repo:
 
    ```sh
-   mkdir -p ~/.claude ~/.codex ~/.config/{herdr,television,gh}
+   mkdir -p ~/.claude ~/.codex ~/.config/{herdr,television,gh,gnupg}
+   chmod 700 ~/.config/gnupg
    stow ./ -t ~/
    ```
 
@@ -85,6 +86,13 @@ same way, sourcing `~/.config/paliasrc` if it happens to exist.
 `hosts.yml` beside it stays out of the repo. `.config/herdr/config.toml` and
 `.config/television/config.toml` are tracked the same way, without the runtime
 files around them.
+
+`.config/gnupg/gpg-agent.conf` and `gpg.conf` are tracked the same way too —
+notably the line that points gpg-agent at `pinentry-mac` for a native
+passphrase dialog instead of a curses prompt that fails outside a real
+terminal. Everything else in that directory (keys, keyring, trustdb) stays
+out of the repo and must exist as a real directory before `stow` runs, same
+as `herdr`/`television`/`gh`.
 
 `.config/iterm2-prefs/` holds iTerm2's settings. `macos-defaults.sh` points
 iTerm2 at `~/.config/iterm2-prefs` and has it save changes back automatically,

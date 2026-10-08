@@ -25,3 +25,9 @@ __pycache__/
 !.config/television/config.toml
 .config/gh/*
 !.config/gh/config.yml
+
+# gnupg keeps its private keys, keyring and trustdb here too; only the
+# non-secret config files are tracked.
+.config/gnupg/*
+!.config/gnupg/gpg-agent.conf
+!.config/gnupg/gpg.conf
