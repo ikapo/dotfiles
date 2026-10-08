@@ -45,7 +45,11 @@ I manage packages with [Homebrew](https://brew.sh/).
    ```
 
 7. Start services: `brew services start skhd && brew services start yabai`
-8. Launch `nvim` once. Lazy bootstraps itself and installs the plugins in
+8. Apply the macOS settings that no dotfile holds — `⌥1`–`⌥9` switch to
+   Desktop 1–9: `./macos-defaults.sh`. The shortcuts only reach desktops that
+   exist, so open Mission Control and add desktops until there are 9. If they
+   do not take effect, log out and back in.
+9. Launch `nvim` once. Lazy bootstraps itself and installs the plugins in
    `.config/nvim/lua/plugins/init.lua`; `lazy-lock.json` pins the versions.
 
 ## Git
