@@ -59,6 +59,9 @@ public repo, and most of it is per-machine state anyway.
 - [ ] Remap Caps Lock to Escape by hand — macOS stores this per keyboard, not
       as one global setting, so it isn't scriptable: System Settings →
       Keyboard → Keyboard Shortcuts… → Modifier Keys.
+- [ ] If iTerm2 came along for the ride (Migration Assistant, a Time Machine
+      restore, an old backup) — it's replaced by Ghostty and isn't in the
+      Brewfile — remove it completely with `./remove-iterm2.sh`.
 - [ ] `herdr integration install claude` (and `codex`, if used there too).
 - [ ] Install [One](https://getone.one) — not on Homebrew, updates itself.
 - [ ] `gh auth login`, then sign in to Claude Code and Codex.
