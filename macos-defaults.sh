@@ -43,15 +43,7 @@ fi
 defaults write NSGlobalDomain KeyRepeat -int 2
 defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
-# iTerm2 loads its settings from the repo (stow links ~/.config/iterm2-prefs) and
-# writes changes back there automatically. Takes effect when iTerm2 next starts.
-iterm=com.googlecode.iterm2
-defaults write "$iterm" PrefsCustomFolder -string "$HOME/.config/iterm2-prefs"
-defaults write "$iterm" LoadPrefsFromCustomFolder -bool true
-defaults write "$iterm" NoSyncNeverRemindPrefsChangesLostForFile -bool true
-defaults write "$iterm" NoSyncNeverRemindPrefsChangesLostForFile_selection -int 0
-
-echo "Done. Restart iTerm2 to load its settings from the repo."
+echo "Done."
 echo "The Switch to Desktop shortcuts only work for desktops that exist:"
 echo "open Mission Control and add desktops until there are 9."
 echo "If a keyboard paired/connected AFTER this ran doesn't trigger the"

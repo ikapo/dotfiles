@@ -8,4 +8,3 @@ macos-defaults.sh
 settings.local.json
 .superpowers
 Brewfile
-sync-iterm2-prefs.sh

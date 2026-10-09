@@ -76,7 +76,7 @@ cask "zoom"
 
 # Dev
 cask "zed"
-cask "iterm2"
+cask "ghostty"
 cask "claude"
 cask "claude-code@latest"
 cask "codex"

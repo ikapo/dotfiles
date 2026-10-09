@@ -48,15 +48,14 @@ public repo, and most of it is per-machine state anyway.
       start` — the `asmvik` tap's formulae don't implement it), then grant both
       Accessibility access when macOS prompts
       (System Settings → Privacy & Security → Accessibility).
-- [ ] `./macos-defaults.sh` — sets ⌥1–⌥9 to switch desktops and points iTerm2
-      at `.config/iterm2-prefs`. The shortcuts only reach desktops that exist,
-      so open Mission Control and add desktops until there are 9. If an
-      external keyboard that was paired/connected *after* this ran doesn't
-      trigger the shortcuts (⌥+number types a special character instead),
-      reboot — confirmed fix, not just a guess: WindowServer can need a full
-      restart to pick up a keyboard that showed up after the hotkeys were set,
-      even though it types normally in every other respect.
-- [ ] Restart iTerm2 so it loads settings from the repo.
+- [ ] `./macos-defaults.sh` — sets ⌥1–⌥9 to switch desktops. The shortcuts
+      only reach desktops that exist, so open Mission Control and add
+      desktops until there are 9. If an external keyboard that was
+      paired/connected *after* this ran doesn't trigger the shortcuts
+      (⌥+number types a special character instead), reboot — confirmed fix,
+      not just a guess: WindowServer can need a full restart to pick up a
+      keyboard that showed up after the hotkeys were set, even though it
+      types normally in every other respect.
 - [ ] Remap Caps Lock to Escape by hand — macOS stores this per keyboard, not
       as one global setting, so it isn't scriptable: System Settings →
       Keyboard → Keyboard Shortcuts… → Modifier Keys.

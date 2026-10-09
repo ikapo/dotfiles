@@ -62,10 +62,9 @@ steps, plus what to carry over by hand.
    implementing `brew services`, so `brew services start` fails on them with
    "has not implemented #plist, #service".
 8. Apply the macOS settings that no dotfile holds — `⌥1`–`⌥9` switch to
-   Desktop 1–9, the fastest key repeat rate, and iTerm2 loading its settings
-   from the repo: `./macos-defaults.sh`. The shortcuts only reach desktops
-   that exist, so open Mission Control and add desktops until there are 9. If
-   they do not take effect, log out and back in. Restart iTerm2 afterwards.
+   Desktop 1–9 and the fastest key repeat rate: `./macos-defaults.sh`. The
+   shortcuts only reach desktops that exist, so open Mission Control and add
+   desktops until there are 9. If they do not take effect, log out and back in.
 9. Remap Caps Lock to Escape — not scriptable, since macOS stores it per
    keyboard rather than as one global setting: System Settings → Keyboard →
    Keyboard Shortcuts… → Modifier Keys, pick the keyboard if more than one is
@@ -101,11 +100,8 @@ terminal. Everything else in that directory (keys, keyring, trustdb) stays
 out of the repo and must exist as a real directory before `stow` runs, same
 as `herdr`/`television`/`gh`.
 
-`.config/iterm2-prefs/` holds iTerm2's settings. `macos-defaults.sh` points
-iTerm2 at `~/.config/iterm2-prefs` and has it save changes back automatically,
-so tweaks in iTerm2's settings show up as diffs here. Leave that directory out
-of the `mkdir` in step 4: stow should link the whole directory, because iTerm2
-replaces the file when it saves.
+`.config/ghostty/config` holds Ghostty's settings as plain text; `stow` just
+links the file into place, and Ghostty reloads it live on save.
 
 `.config/lazygit/config.yml` points lazygit's `e` at Zed and returns cleanly to
 it afterwards.
@@ -187,7 +183,7 @@ one. Merge by hand rather than overwriting.
 | Category | Packages |
 | --- | --- |
 | Browsers & comms | helium-browser, discord, telegram, whatsapp, thunderbird, zoom |
-| Dev | zed, iterm2, claude, claude-code@latest, codex, chatgpt, devtoys, linear |
+| Dev | zed, ghostty, claude, claude-code@latest, codex, chatgpt, devtoys, linear |
 | Productivity | raycast, obsidian, logi-options+, openwhispr |
 | Security | bitwarden, trezor-suite |
 | Fonts | font-fira-code-nerd-font, font-mononoki-nerd-font |

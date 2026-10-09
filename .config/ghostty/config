@@ -1,0 +1,12 @@
+# Ghostty reads this file directly (stow links ~/.config/ghostty here) and
+# reloads it live on save.
+font-family = Mononoki Nerd Font Mono
+font-size = 22
+background = #000000
+
+# 0.85 opacity (Ghostty's scale is 1.0 = opaque), 15% transparent, blur off.
+background-opacity = 0.85
+
+# A bit more breathing room than Ghostty's tight default of 2.
+window-padding-x = 10
+window-padding-y = 10
