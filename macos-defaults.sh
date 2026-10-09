@@ -54,3 +54,7 @@ defaults write "$iterm" NoSyncNeverRemindPrefsChangesLostForFile_selection -int 
 echo "Done. Restart iTerm2 to load its settings from the repo."
 echo "The Switch to Desktop shortcuts only work for desktops that exist:"
 echo "open Mission Control and add desktops until there are 9."
+echo "If a keyboard paired/connected AFTER this ran doesn't trigger the"
+echo "shortcuts (⌥+number types a special character instead), reboot — a"
+echo "keyboard added after the hotkeys were set can need a full restart"
+echo "before WindowServer picks it up, even though it types normally."
