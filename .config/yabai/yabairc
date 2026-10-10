@@ -27,3 +27,8 @@ yabai -m config bottom_padding 2
 yabai -m config left_padding 2
 yabai -m config right_padding 2
 yabai -m config window_gap 10
+
+# Closing an app's last window (alt-q, cmd-w, exit) leaves nothing focused;
+# hand focus to another window on the same display.
+yabai -m signal --add label=focus_after_close event=window_destroyed active=yes action="$HOME/.local/bin/focus-after-close.sh"
+yabai -m signal --add label=focus_after_quit event=application_terminated action="$HOME/.local/bin/focus-after-close.sh"

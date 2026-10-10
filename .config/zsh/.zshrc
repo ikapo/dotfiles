@@ -70,7 +70,7 @@ bindkey '^R' history-incremental-search-backward
 # Yabai-friendly terminal quitting
 setopt IGNORE_EOF
 # Aliasing it to a short command so it runs faster
-alias wq='window-destroy-and-focus-display.sh'
+alias wq='yabai -m window --close'
 bindkey -s '^d' 'wq\n'
 
 # Load aliases if existent.

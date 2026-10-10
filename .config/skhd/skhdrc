@@ -5,7 +5,7 @@ alt - w : open -a "/Applications/Helium.app"
 alt - e : open -a /Applications/Zed.app
 alt - c : open -a /System/Applications/Calendar.app/Contents/MacOS/Calendar
 # close focused window
-alt - q : ~/.local/bin/window-destroy-and-focus-display.sh
+alt - q : yabai -m window --close
 
 # focus window
 alt - h : yabai -m window --focus west || yabai -m display --focus west
