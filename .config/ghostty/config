@@ -10,3 +10,5 @@ background-opacity = 0.85
 # A bit more breathing room than Ghostty's tight default of 2.
 window-padding-x = 10
 window-padding-y = 10
+clipboard-read = allow
+clipboard-write = allow
