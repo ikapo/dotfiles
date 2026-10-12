@@ -20,6 +20,9 @@ yabai -m rule --add app="^Disk Utility$" manage=off # sticky=on sub-layer=above
 yabai -m rule --add app="^System Information$" manage=off # sticky=on sub-layer=above
 yabai -m rule --add app="^Activity Monitor$" manage=off # sticky=on sub-layer=above
 yabai -m rule --add app="^Streaks$" manage=off
+# iOS Simulator, and any app's own settings/preferences window
+yabai -m rule --add app="^Simulator$" manage=off
+yabai -m rule --add title="(Settings|Preferences)$" manage=off
 
 yabai -m config top_padding 2
 yabai -m config bottom_padding 2
