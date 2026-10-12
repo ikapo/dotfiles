@@ -1,11 +1,12 @@
 {
-  "model": "opusplan",
+  "model": "opus",
   "enabledPlugins": {
     "ui-ux-pro-max@ui-ux-pro-max-skill": true,
     "superpowers@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
     "codex@openai-codex": true,
-    "claude-mem@thedotmack": true
+    "claude-mem@thedotmack": true,
+    "mattpocock-skills@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "ui-ux-pro-max-skill": {
@@ -33,7 +34,7 @@
       "effortLevel": "medium"
     }
   },
-  "theme": "dark-daltonized",
+  "theme": "dark",
   "agentPushNotifEnabled": true,
   "hooks": {
     "SessionStart": [
