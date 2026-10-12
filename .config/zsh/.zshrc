@@ -31,6 +31,10 @@ bindkey -M menuselect 'k' vi-up-line-or-history
 bindkey -M menuselect 'l' vi-forward-char
 bindkey -M menuselect 'j' vi-down-line-or-history
 bindkey -v '^?' backward-delete-char
+# Option+Backspace (Ghostty sends ESC DEL) and ctrl-w delete the previous word,
+# past where insert mode started too (the vi-* versions stop there).
+bindkey -M viins '^[^?' backward-kill-word
+bindkey -M viins '^w' backward-kill-word
 
 # Change cursor shape for different vi modes. Ghostty's own cursor handling is
 # off (shell-integration-features = no-cursor), so this is the only owner.

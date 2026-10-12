@@ -20,3 +20,8 @@ shell-integration-features = no-cursor
 # Default to a blinking bar for programs that don't pick a cursor shape
 # themselves (Claude Code, less, ...) and for zsh's preexec reset.
 cursor-style = bar
+
+# Option+Backspace deletes a word. Option isn't Alt here (macos-option-as-alt
+# is off so Option still types special characters), so send the ESC+DEL that
+# shells and Claude Code read as meta-backspace.
+keybind = alt+backspace=text:\x1b\x7f
