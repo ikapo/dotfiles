@@ -83,6 +83,8 @@ steps, plus what to carry over by hand.
     git clone git@github.com:ikapo/nvim.git ~/.config/nvim
     ```
 
+    Afterwards `dotpull` (in `aliasrc`) pulls both repos and restows.
+
 ## Git
 
 `.config/git/config` carries the settings that are the same on any machine and

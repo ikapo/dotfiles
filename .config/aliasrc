@@ -26,4 +26,5 @@ alias ka="killall" \
 	ga="git add" \
 	gall="git add ." \
 	gc="git commit -m" \
-	gp="git push"
+	gp="git push" \
+	dotpull='git -C ~/Workspace/dotfiles pull --ff-only && git -C ~/.config/nvim pull --ff-only && stow -d ~/Workspace/dotfiles -t ~ .'
