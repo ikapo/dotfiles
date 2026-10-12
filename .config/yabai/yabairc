@@ -11,11 +11,14 @@ yabai -m space 8 --label eight
 yabai -m space 9 --label nine
 
 # float system preferences. Most of these just diable Yabai form resizing them.
-yabai -m rule --add app="^System Settings$" sticky=on sub-layer=above manage=off
-yabai -m rule --add app="^Finder$" sticky=on sub-layer=above manage=off
-yabai -m rule --add app="^Disk Utility$" sticky=on sub-layer=above manage=off
-yabai -m rule --add app="^System Information$" sticky=on sub-layer=above manage=off
-yabai -m rule --add app="^Activity Monitor$" sticky=on sub-layer=above manage=off
+# sticky and sub-layer need the scripting addition (SIP partly disabled; see
+# yabai(1) RULE). SIP is on here, so they sit in comments: move them back into
+# the rules if SIP is ever relaxed.
+yabai -m rule --add app="^System Settings$" manage=off # sticky=on sub-layer=above
+yabai -m rule --add app="^Finder$" manage=off # sticky=on sub-layer=above
+yabai -m rule --add app="^Disk Utility$" manage=off # sticky=on sub-layer=above
+yabai -m rule --add app="^System Information$" manage=off # sticky=on sub-layer=above
+yabai -m rule --add app="^Activity Monitor$" manage=off # sticky=on sub-layer=above
 yabai -m rule --add app="^Streaks$" manage=off
 
 yabai -m config top_padding 2
