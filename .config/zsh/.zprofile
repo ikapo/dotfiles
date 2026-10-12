@@ -1,12 +1,16 @@
-eval "$(/opt/homebrew/bin/brew shellenv)"
 #!/bin/sh
 
 # Profile file. Runs on login. Environmental variables are set here.
+
+# Homebrew: puts /opt/homebrew/bin on $PATH. Keep it first; later lines need it.
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
 export EDITOR="nvim"
 
-# Adds `~/.local/bin` to $PATH
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="$HOME/.cache"
+
+# Adds `~/.local/bin` to $PATH
 export PATH="$PATH:$HOME/.local/bin"
 
 #JS
@@ -19,15 +23,7 @@ export NODE_REPL_HISTORY=""
 export CHECKPOINT_DISABLE=1
 
 # ~/ Clean-up:
-export XAUTHORITY="$XDG_CONFIG_HOME/Xauthority"
-export GTK2_RC_FILES="$HOME/.config/gtk-2.0/gtkrc-2.0"
 export LESSHISTFILE="-"
-export INPUTRC="$HOME/.config/inputrc"
-export GNUPGHOME="$HOME/.config/gnupg"
-export GPG_TTY=$(tty)
-export PASSWORD_STORE_DIR="$HOME/.local/share/password-store"
-export PYLINTHOME="$XDG_CACHE_HOME/pylint"
-export DOCKER_CONFIG="$XDG_CONFIG_HOME/docker"
 
 # Other program settings:
 export LESS=-R

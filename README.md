@@ -36,6 +36,7 @@ steps, plus what to carry over by hand.
    ```sh
    mkdir -p ~/.claude ~/.codex ~/.config/{herdr,television,gh,gnupg}
    chmod 700 ~/.config/gnupg
+   ln -s .config/gnupg ~/.gnupg   # for GUI apps, which never see GNUPGHOME
    stow ./ -t ~/
    ```
 

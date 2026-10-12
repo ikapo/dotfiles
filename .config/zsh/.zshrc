@@ -80,6 +80,9 @@ bindkey '^e' edit-command-line
 # Search backward with ctrl-r:
 bindkey '^R' history-incremental-search-backward
 
+# gpg-agent needs the tty to put its passphrase prompt on.
+export GPG_TTY=$(tty)
+
 # Load aliases if existent.
 [ -f "$HOME/.config/aliasrc" ] && source "$HOME/.config/aliasrc"
 
