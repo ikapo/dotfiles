@@ -8,18 +8,12 @@
 .config/zed/prompts/
 .config/zed/conversations/
 
-# Subagent-driven-development scratch
-.superpowers/
-
 # zsh state; the config keeps it in XDG dirs, this catches anything that still
 # writes into ZDOTDIR (stow folds ~/.config/zsh into the repo).
 .config/zsh/.zcompcache/
 .config/zsh/.zcompdump*
 .config/zsh/.zsh_history
 .config/zsh/.zsh_sessions/
-
-# Python bytecode
-__pycache__/
 
 # Claude skill sync cache (account-specific, written through the skills symlink)
 .config/ai/skills/synced/
@@ -38,3 +32,6 @@ __pycache__/
 .config/gnupg/*
 !.config/gnupg/gpg-agent.conf
 !.config/gnupg/gpg.conf
+
+# Python bytecode (ranger plugins)
+__pycache__/
