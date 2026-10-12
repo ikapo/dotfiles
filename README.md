@@ -184,8 +184,10 @@ this Apple ID's purchase history.
 
 Xcode is a ~10 GB download; skip it on a machine that will not build iOS.
 
-This list is curated, not a dump of `mas list`: Apple's free iWork apps
-(Numbers, Keynote, Pages) are left out. Merge by hand rather than overwriting.
+This list is curated, not a dump of `mas list`. Apple's iWork apps (Numbers,
+Keynote, Pages) come preinstalled on new Macs but are ordinary App Store apps;
+I don't use them, so they're deleted rather than listed. Merge by hand rather
+than overwriting.
 
 ### Casks
 
