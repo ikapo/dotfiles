@@ -24,6 +24,7 @@ brew "neovim"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 brew "ranger"
+brew "pillow"  # ranger image previews
 brew "television"
 brew "herdr"
 
@@ -41,12 +42,14 @@ brew "wget"
 brew "speedtest-cli"
 brew "librsync"
 brew "mole"
+brew "todoist-cli"
 
 # Linters & formatters
 brew "stylua"
 
 # Mobile / iOS
 brew "cocoapods"
+brew "fastlane"
 brew "facebook/fb/idb-companion"
 
 # Window management
@@ -81,6 +84,8 @@ cask "claude"
 cask "claude-code@latest"
 cask "codex"
 cask "chatgpt"
+cask "grok-bot"
+cask "t3-code@nightly"
 cask "devtoys"
 cask "linear"
 
@@ -88,7 +93,8 @@ cask "linear"
 cask "raycast"
 cask "obsidian"
 cask "logi-options+"
-cask "openwhispr"
+cask "wispr-flow"
+cask "todoist-app"
 
 # Security
 cask "bitwarden"
@@ -103,6 +109,7 @@ cask "altserver"
 cask "prusaslicer"
 cask "tradingview"
 cask "vorssaint"
+cask "spotify"
 
 # App Store — sign in to the App Store app first; mas cannot sign in.
 # Xcode is ~10 GB: skip it on a machine that will not build iOS with

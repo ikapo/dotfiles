@@ -150,10 +150,10 @@ list is curated rather than generated, see the note under it.
 | --- | --- |
 | VCS & dev tools | gh, git, git-lfs, gitu, lazygit, stow, watchman, pkgconf |
 | Languages & runtimes | bun, node@24, pnpm |
-| Editors & shell | neovim, zsh-autosuggestions, zsh-syntax-highlighting, ranger, television, herdr |
-| CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, librsync, mole |
+| Editors & shell | neovim, zsh-autosuggestions, zsh-syntax-highlighting, ranger, pillow, television, herdr |
+| CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, librsync, mole, todoist-cli |
 | Linters & formatters | stylua |
-| Mobile / iOS | cocoapods, facebook/fb/idb-companion |
+| Mobile / iOS | cocoapods, fastlane, facebook/fb/idb-companion |
 | Window management | asmvik/formulae/yabai, asmvik/formulae/skhd |
 | Media & docs | mpv, kepubify |
 | Security & network | gnupg, pinentry-mac, wireguard-tools |
@@ -175,17 +175,16 @@ this Apple ID's purchase history.
 
 Xcode is a ~10 GB download; skip it on a machine that will not build iOS.
 
-This list is curated, not a dump of `mas list`: Numbers ships with macOS and is
-left out, and Flighty is wanted on a new machine but is not installed on this
-one. Merge by hand rather than overwriting.
+This list is curated, not a dump of `mas list`: Apple's free iWork apps
+(Numbers, Keynote, Pages) are left out. Merge by hand rather than overwriting.
 
 ### Casks
 
 | Category | Packages |
 | --- | --- |
 | Browsers & comms | helium-browser, discord, telegram, whatsapp, thunderbird, zoom |
-| Dev | zed, ghostty, claude, claude-code@latest, codex, chatgpt, devtoys, linear |
-| Productivity | raycast, obsidian, logi-options+, openwhispr |
+| Dev | zed, ghostty, claude, claude-code@latest, codex, chatgpt, grok-bot, t3-code@nightly, devtoys, linear |
+| Productivity | raycast, obsidian, logi-options+, wispr-flow, todoist-app |
 | Security | bitwarden, trezor-suite |
 | Fonts | font-fira-code-nerd-font, font-mononoki-nerd-font |
-| Other | altserver, prusaslicer, tradingview, vorssaint |
+| Other | altserver, prusaslicer, tradingview, vorssaint, spotify |
