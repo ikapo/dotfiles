@@ -9,7 +9,7 @@ yabai -m query --windows --window > /dev/null 2>&1 && exit 0
 
 displayIndex=$(yabai -m query --displays --display | jq -re ".index")
 
-# Standard windows only: overlays such as OpenWhispr's sticky recorder panel are
+# Standard windows only: overlays such as Wispr Flow's sticky status panel are
 # visible on every space but can't take keyboard focus. Skip the window that
 # just closed, which yabai can still list as visible for a moment.
 windowId=$(yabai -m query --windows | jq -re \

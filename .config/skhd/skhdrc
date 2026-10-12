@@ -1,3 +1,4 @@
+# restart yabai
 ctrl + alt + cmd - r : yabai --restart-service
 
 alt - return : bash $HOME/.local/bin/open_ghostty.sh
@@ -12,9 +13,6 @@ alt - h : yabai -m window --focus west || yabai -m display --focus west
 alt - j : yabai -m window --focus south || yabai -m display --focus south
 alt - k : yabai -m window --focus north || yabai -m display --focus north
 alt - l : yabai -m window --focus east || yabai -m display --focus east
-
-# restart yabai
-alt - 0 : yabai --restart-service
 
 # swap window
 shift + alt - h : yabai -m window --swap west || ~/.local/bin/move-display.sh west
