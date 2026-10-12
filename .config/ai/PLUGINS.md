@@ -30,6 +30,7 @@ missing.
 | Plugin | Skills | Claude Code | Codex |
 |---|---|---|---|
 | `superpowers` | 14 | bundled marketplace | curated marketplace |
+| `mattpocock-skills` | 25 | bundled marketplace | curated marketplace |
 | `claude-mem` | 18 | `thedotmack` | repo as marketplace |
 | `ui-ux-pro-max` | 7 | `ui-ux-pro-max-skill` | `uipro` CLI |
 | `context7` | 0 | bundled marketplace | — MCP only, see [MCP.md](MCP.md) |
@@ -46,14 +47,16 @@ claude plugin marketplace add openai/codex-plugin-cc
 claude plugin marketplace add thedotmack/claude-mem
 
 claude plugin install superpowers@claude-plugins-official
+claude plugin install mattpocock-skills@claude-plugins-official
 claude plugin install context7@claude-plugins-official
 claude plugin install ui-ux-pro-max@ui-ux-pro-max-skill
 claude plugin install codex@openai-codex
 claude plugin install claude-mem@thedotmack
 ```
 
-`superpowers` and `context7` come from `claude-plugins-official`, which ships
-with Claude Code and needs no `marketplace add`.
+`superpowers`, `mattpocock-skills` and `context7` come from
+`claude-plugins-official`, which ships with Claude Code and needs no
+`marketplace add`.
 
 `claude/settings.json` in this directory already lists these under
 `enabledPlugins`, and stow symlinks it into place. That setting records the
@@ -68,6 +71,13 @@ codex plugin add superpowers@openai-curated-remote
 ```
 
 Or from inside Codex: `/plugins`, search `superpowers`, Install Plugin.
+
+**mattpocock-skills** — also in Codex's curated marketplace, same version as
+the Claude Code plugin:
+
+```sh
+codex plugin add mattpocock-skills@openai-curated-remote
+```
 
 **claude-mem** — the repo carries a Codex marketplace manifest, so add the repo
 and install from it:
@@ -105,12 +115,17 @@ cp -R <source-skill-dir> ~/.config/ai/skills/<name>
 
 Claude picks it up at once, since `~/.claude/skills` is a symlink to this
 directory. Codex needs one committed link per skill, because `~/.codex/skills/`
-also holds Codex's own `.system/` built-ins and so cannot itself be a symlink:
+also holds Codex's own `.system/` built-ins and so cannot itself be a symlink,
+and because a folder link would also expose the Claude-only skills in the
+gitignored `skills/synced/`:
 
 ```sh
-cd <repo> && ln -sfn ../../.config/ai/skills/<name> .codex/skills/<name>
+cd <repo> && ln -s ../../.config/ai/skills/<name> .codex/skills/<name>
 stow ./ -t ~/
 ```
+
+The [README](README.md#skills) explains where Codex looks for skills and how to
+check that it sees one.
 
 Codex also ships a `skill-installer` skill that pulls skills from any GitHub
 repo path. Prefer it over copying whenever the skill has a real upstream.

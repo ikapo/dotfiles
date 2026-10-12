@@ -8,6 +8,7 @@ Shared configuration for Claude Code and Codex.
 | `MCP.md` | Which MCP servers to install and how. Not automated; run what you need. |
 | `PLUGINS.md` | Which plugins to install, per tool. Claude Code and Codex differ. |
 | `skills/` | Personal skills, one directory per skill. |
+| `skills/synced/` | Skills Claude Code syncs from claude.ai. Gitignored, Claude-only. |
 | `claude/settings.json` | Claude Code settings: model, effort, enabled plugins, marketplaces. |
 
 ## Setup on a new machine
@@ -21,6 +22,7 @@ carries committed symlinks at the paths they do read:
 | `.claude/skills` | `../.config/ai/skills` |
 | `.claude/settings.json` | `../.config/ai/claude/settings.json` |
 | `.codex/AGENTS.md` | `../.config/ai/AGENTS.md` |
+| `.codex/skills/<name>` | `../../.config/ai/skills/<name>`, one link per skill |
 
 `stow` links those into `~/.claude` and `~/.codex` like any other file, so
 setup is the same one command as the rest of the repo:
@@ -34,6 +36,35 @@ stow ./ -t ~/
 whole directory into a single symlink pointing back at the repo, and the tool
 then writes its plugins, sessions and credentials inside your git checkout.
 Creating the directories first keeps stow linking file by file.
+
+### Skills
+
+Claude gets every skill at once: `~/.claude/skills` is a link to the whole
+`skills/` directory. Codex gets only the skills that have their own link in
+`.codex/skills/`, for two reasons:
+
+- `~/.codex/skills/` must stay a real directory. Codex keeps its `.system/`
+  built-ins there and its `skill-installer` writes there, so a link of the
+  folder would make Codex write into this repo.
+- Codex scans skill folders recursively. A folder link would also hand it
+  everything in the gitignored `skills/synced/`, which holds Claude-only skills.
+
+So a new skill needs one committed link before Codex can see it:
+
+```sh
+ln -s ../../.config/ai/skills/<name> .codex/skills/<name>
+stow ./ -t ~/
+```
+
+Check that Codex sees it with
+`codex debug prompt-input | grep -o '<name>[^ ]*'`.
+
+Codex's current docs name `~/.agents/skills/` as the user skill folder and do
+not mention `~/.codex/skills/`. Codex 0.162 reads both, and still keeps
+`.system/` and its installed skills in `~/.codex/skills/`, so this setup uses
+that one. If a later Codex stops reading it, move these links to
+`.agents/skills/<name>`, run `mkdir -p ~/.agents/skills` before stow so stow
+doesn't fold the directory into a single link, and update this section.
 
 `settings.local.json` is listed in `.stow-local-ignore`; it is this repository's
 own project settings and must not be linked into `~`.
