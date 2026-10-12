@@ -35,7 +35,7 @@ steps, plus what to carry over by hand.
    into a single link and the tool's state and credentials land in the repo:
 
    ```sh
-   mkdir -p ~/.claude ~/.codex ~/.config/{herdr,television,gh,gnupg}
+   mkdir -p ~/.claude ~/.codex ~/.config/{herdr,television,gh,gnupg,zsh}
    chmod 700 ~/.config/gnupg
    ln -s .config/gnupg ~/.gnupg   # for GUI apps, which never see GNUPGHOME
    stow ./ -t ~/
