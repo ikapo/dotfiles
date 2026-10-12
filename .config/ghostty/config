@@ -12,3 +12,11 @@ window-padding-x = 10
 window-padding-y = 10
 clipboard-read = allow
 clipboard-write = allow
+
+# zsh owns the cursor shape (bar in vi insert mode, block in normal mode), so
+# keep Ghostty's shell integration from setting it as well.
+shell-integration-features = no-cursor
+
+# Default to a blinking bar for programs that don't pick a cursor shape
+# themselves (Claude Code, less, ...) and for zsh's preexec reset.
+cursor-style = bar

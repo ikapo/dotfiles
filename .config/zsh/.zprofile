@@ -23,7 +23,6 @@ export XAUTHORITY="$XDG_CONFIG_HOME/Xauthority"
 export GTK2_RC_FILES="$HOME/.config/gtk-2.0/gtkrc-2.0"
 export LESSHISTFILE="-"
 export INPUTRC="$HOME/.config/inputrc"
-export ZDOTDIR="$HOME/.config/zsh"
 export GNUPGHOME="$HOME/.config/gnupg"
 export GPG_TTY=$(tty)
 export PASSWORD_STORE_DIR="$HOME/.local/share/password-store"

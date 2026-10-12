@@ -3,16 +3,22 @@ autoload -U colors && colors
 PS1="%B%{$fg[blue]%}%1~%{$reset_color%} -> %b"
 
 
-# History in cache directory:
+# History in XDG state dir (zsh won't create the dir and silently saves nothing):
 HISTSIZE=10000
 SAVEHIST=10000
-HISTFILE=~/.cache/zsh/history
+HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh/history"
+mkdir -p "${HISTFILE:h}"
+setopt INC_APPEND_HISTORY	# Write each command as it runs, not only on exit.
 
-# Basic auto/tab complete:
+# Basic auto/tab complete (dump and cache in XDG cache, out of the repo):
+zsh_cache="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+mkdir -p "$zsh_cache"
 autoload -U compinit
 zstyle ':completion:*' menu select
+zstyle ':completion:*' cache-path "$zsh_cache/zcompcache"
 zmodload zsh/complist
-compinit
+compinit -d "$zsh_cache/zcompdump"
+unset zsh_cache
 _comp_options+=(globdots)		# Include hidden files.
 
 # vi mode
@@ -26,26 +32,29 @@ bindkey -M menuselect 'l' vi-forward-char
 bindkey -M menuselect 'j' vi-down-line-or-history
 bindkey -v '^?' backward-delete-char
 
-# Change cursor shape for different vi modes.
-function zle-keymap-select {
-  if [[ ${KEYMAP} == vicmd ]] ||
-     [[ $1 = 'block' ]]; then
-    echo -ne '\e[1 q'
-  elif [[ ${KEYMAP} == main ]] ||
-       [[ ${KEYMAP} == viins ]] ||
-       [[ ${KEYMAP} = '' ]] ||
-       [[ $1 = 'beam' ]]; then
-    echo -ne '\e[5 q'
-  fi
+# Change cursor shape for different vi modes. Ghostty's own cursor handling is
+# off (shell-integration-features = no-cursor), so this is the only owner.
+_vi_cursor_insert='\e[5 q'  # blinking bar
+_vi_cursor_normal='\e[2 q'  # steady block
+_vi_cursor_replace='\e[3 q' # blinking underline
+_vi_cursor() {
+  case $KEYMAP in
+    vicmd|visual|viopp) echo -ne $_vi_cursor_normal ;;
+    *) [[ $ZLE_STATE == *overwrite* ]] && echo -ne $_vi_cursor_replace ||
+         echo -ne $_vi_cursor_insert ;;
+  esac
 }
+zle-keymap-select() { _vi_cursor }
 zle -N zle-keymap-select
 zle-line-init() {
-    zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
-    echo -ne "\e[5 q"
+    zle -K viins # every prompt starts in insert mode
+    _vi_cursor
 }
 zle -N zle-line-init
-echo -ne '\e[5 q' # Use beam shape cursor on startup.
-preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
+# Hand programs the terminal's default shape; nvim sets its own anyway.
+preexec() { echo -ne '\e[0 q' ;}
+# Programs run from inside a widget (nvim via ctrl-e) leave their shape behind.
+_vi_cursor_edit_command_line() { edit-command-line; _vi_cursor }
 
 # Use ranger to switch directories and bind it to ctrl-o
 rangercd () {
@@ -61,17 +70,11 @@ rangercd () {
 bindkey -s '^o' 'rangercd\n'
 
 # Edit line in vim with ctrl-e:
-autoload edit-command-line; zle -N edit-command-line
+autoload edit-command-line; zle -N edit-command-line _vi_cursor_edit_command_line
 bindkey '^e' edit-command-line
 
 # Search backward with ctrl-r:
 bindkey '^R' history-incremental-search-backward
-
-# Yabai-friendly terminal quitting
-setopt IGNORE_EOF
-# Aliasing it to a short command so it runs faster
-alias wq='yabai -m window --close'
-bindkey -s '^d' 'wq\n'
 
 # Load aliases if existent.
 [ -f "$HOME/.config/aliasrc" ] && source "$HOME/.config/aliasrc"
