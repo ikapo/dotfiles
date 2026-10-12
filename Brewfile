@@ -21,6 +21,7 @@ brew "pnpm"
 
 # Editors & shell
 brew "neovim"
+brew "tree-sitter-cli"  # nvim-treesitter compiles parsers with it
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 brew "ranger"

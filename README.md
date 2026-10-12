@@ -6,8 +6,9 @@ I use MacOS.
 
 I edit with [Zed](https://zed.dev/) and [Neovim](https://neovim.io/) (via
 [NvChad](https://nvchad.com/)). Both use Doom Emacs style `SPC` keybindings —
-see `.config/zed/keymap.json` and `.config/nvim/lua/mappings.lua`, which are
-kept in sync with each other.
+see `.config/zed/keymap.json` and `lua/mappings.lua` in
+[ikapo/nvim](https://github.com/ikapo/nvim), which are kept in sync with each
+other. The Neovim config is its own repo, shared with my Orange Pis.
 
 I window manage with [yabai](https://github.com/koekeishiya/yabai) and [skhd](https://github.com/koekeishiya/skhd).
 
@@ -73,8 +74,14 @@ steps, plus what to carry over by hand.
 10. Install [One](https://getone.one) from its website — it is not on Homebrew
     and updates itself. Do this after `herdr` from the [Formulae](#formulae)
     list is installed. Its state in `~/.config/one` is not tracked.
-11. Launch `nvim` once. Lazy bootstraps itself and installs the plugins in
-    `.config/nvim/lua/plugins/init.lua`; `lazy-lock.json` pins the versions.
+11. Clone the Neovim config (its own repo, not stowed) and launch `nvim` once.
+    Lazy installs the plugins pinned in `lazy-lock.json` and treesitter
+    parsers compile on first file open (needs `tree-sitter-cli`); then run
+    `:MasonInstallAll` for the language servers:
+
+    ```sh
+    git clone git@github.com:ikapo/nvim.git ~/.config/nvim
+    ```
 
 ## Git
 
@@ -150,7 +157,7 @@ list is curated rather than generated, see the note under it.
 | --- | --- |
 | VCS & dev tools | gh, git, git-lfs, gitu, lazygit, stow, watchman, pkgconf |
 | Languages & runtimes | bun, node@24, pnpm |
-| Editors & shell | neovim, zsh-autosuggestions, zsh-syntax-highlighting, ranger, pillow, television, herdr |
+| Editors & shell | neovim, tree-sitter-cli, zsh-autosuggestions, zsh-syntax-highlighting, ranger, pillow, television, herdr |
 | CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, librsync, mole, todoist-cli |
 | Linters & formatters | stylua |
 | Mobile / iOS | cocoapods, fastlane, facebook/fb/idb-companion |
