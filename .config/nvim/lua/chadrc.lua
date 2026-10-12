@@ -66,4 +66,11 @@ M.nvdash = {
 
 M.lsp = { signature = true }
 
+-- :MasonInstallAll installs every enabled LSP server and conform formatter,
+-- plus these. The LSP servers here are enabled only once installed (see
+-- configs/lspconfig.lua), so they must be named. bashls picks up shellcheck.
+M.mason = {
+  pkgs = { "typescript-language-server", "html-lsp", "css-lsp", "shellcheck" },
+}
+
 return M

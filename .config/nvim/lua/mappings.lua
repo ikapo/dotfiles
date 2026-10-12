@@ -142,8 +142,12 @@ end, { desc = "yank path from project" })
 map("n", "<leader>fd", "<cmd>NvimTreeFindFile<CR>", { desc = "dired (reveal in tree)" })
 
 map("n", "<leader>fE", function()
-  vim.fn.jobstart { "open", "-R", vim.fn.expand "%:p" }
-end, { desc = "reveal in Finder" })
+  if vim.fn.has "mac" == 1 then
+    vim.fn.jobstart { "open", "-R", vim.fn.expand "%:p" }
+  else
+    vim.ui.open(vim.fn.expand "%:p:h")
+  end
+end, { desc = "reveal in file manager" })
 
 -- ── p — project ─────────────────────────────────────────────────────
 map("n", "<leader>pp", "<cmd>Telescope projects<CR>", { desc = "switch project" })
