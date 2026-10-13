@@ -1,5 +1,7 @@
 # restart yabai
 ctrl + alt + cmd - r : yabai --restart-service
+# turn the display off but keep the Mac awake, so Bluetooth devices stay connected
+ctrl + alt + cmd - s : pmset displaysleepnow
 
 alt - return : bash $HOME/.local/bin/open_ghostty.sh
 alt - w : open -a "/Applications/Helium.app"
