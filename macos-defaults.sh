@@ -43,6 +43,13 @@ fi
 defaults write NSGlobalDomain KeyRepeat -int 2
 defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
+# On the charger (clamshell at the desk), only the display sleeps; the Mac
+# stays awake. Full sleep turns Bluetooth off, so the keyboard and mouse drop
+# and can't wake it — only opening the lid does. Battery sleep is unchanged.
+# Same as System Settings → Battery → Options → "Prevent automatic sleeping on
+# power adapter when the display is off".
+sudo pmset -c sleep 0
+
 echo "Done."
 echo "The Switch to Desktop shortcuts only work for desktops that exist:"
 echo "open Mission Control and add desktops until there are 9."
