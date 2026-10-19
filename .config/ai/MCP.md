@@ -109,6 +109,22 @@ claude mcp add --scope user ios-simulator -- npx -y ios-simulator-mcp
 
 Claude Code only. Codex and Zed do not need it.
 
+## xcode
+
+Local, built into Xcode: `xcrun mcpbridge` exposes Xcode's own MCP tools
+(projects, builds, previews). Turn on Xcode's MCP support in its settings first;
+enabling it there does not register it with any agent.
+
+**Skip in a headless environment? Yes — GUI-only.** It needs Xcode installed on
+macOS. On Linux, a container, or a session without Xcode, do not install it.
+
+```sh
+claude mcp add --scope user xcode -- xcrun mcpbridge
+codex mcp add xcode -- xcrun mcpbridge
+```
+
+Takes effect in new sessions (restart the app or start a new thread).
+
 ## context7
 
 Remote, no auth. Live library and framework documentation.

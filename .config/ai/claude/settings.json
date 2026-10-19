@@ -50,5 +50,6 @@
       }
     ]
   },
-  "advisorModel": "fable"
+  "advisorModel": "fable",
+  "skipWorkflowUsageWarning": true
 }
