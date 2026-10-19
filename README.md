@@ -94,8 +94,9 @@ window manager. Follow [How to install](#how-to-install) with these changes.
 **Steps that change:**
 
 - Step 3: install `Brewfile.server` instead: the CLI half of `Brewfile`,
-  Xcode, Helium, Claude, Claude Code, Codex and T3 Code. Sign in to the App Store app first, as for `Brewfile` — do it at the
-  Mac or over Screen Sharing, since `mas` cannot sign in from SSH:
+  Xcode, Ghostty, Helium, Claude, Claude Code, Codex, ChatGPT, Grok and
+  T3 Code. Sign in to the App Store app first, as for `Brewfile` — do it at
+  the Mac or over Screen Sharing, since `mas` cannot sign in from SSH:
 
   ```sh
   brew bundle --file=Brewfile.server
@@ -109,8 +110,8 @@ window manager. Follow [How to install](#how-to-install) with these changes.
   sudo xcodebuild -runFirstLaunch
   ```
 
-- Step 4: stow the whole repo as usual. The yabai, skhd, Zed and Ghostty
-  configs land too but stay inert without their apps. GnuPG is not installed
+- Step 4: stow the whole repo as usual. The yabai, skhd and Zed configs land
+  too but stay inert without their apps. GnuPG is not installed
   and nothing signs (see Signing below), so skip the `chmod` and the `~/.gnupg`
   link — but keep `gnupg` in the `mkdir`, or stow folds `~/.config/gnupg` into
   the repo and anything that ever runs gpg writes its keyring there:
@@ -158,8 +159,10 @@ to it.
 still useful without them — `xcodebuild` builds and tests over SSH.
 
 **Connecting from Ghostty.** Ghostty sets `TERM=xterm-ghostty`, which a fresh
-Mac without Ghostty does not recognise ("unknown terminal type"). Copy the
-terminfo entry over once, from the machine running Ghostty:
+Mac does not recognise ("unknown terminal type") — not even with Ghostty
+installed, since Ghostty keeps the entry inside its app bundle and points only
+its own windows at it. Copy the terminfo entry over once, from the machine
+running Ghostty:
 
 ```sh
 infocmp -x xterm-ghostty | ssh <ssh-target> -- tic -x -
