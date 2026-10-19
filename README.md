@@ -102,10 +102,13 @@ window manager. Follow [How to install](#how-to-install) with these changes.
   brew bundle --file=Brewfile.server
   ```
 
-  Then accept the licence and install Xcode's first-launch components, or
+  Then point the developer tools at Xcode — Homebrew's installer set them to
+  the Command Line Tools, and `xcodebuild` refuses to run against those —
+  accept the licence and install Xcode's first-launch components, or
   `xcodebuild` stops on a prompt the first time it runs over SSH:
 
   ```sh
+  sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
   sudo xcodebuild -license accept
   sudo xcodebuild -runFirstLaunch
   ```
