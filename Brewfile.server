@@ -1,7 +1,7 @@
-# A Mac that mostly runs agents over SSH: the CLI half of Brewfile, Xcode, and
-# the agent apps and browser for when it is used at the desk or over Screen
-# Sharing, plus Ghostty. No editors or window management. Sign in to the App Store app
-# first, as for Brewfile. Install with:
+# A Mac that mostly runs agents over SSH: the CLI half of Brewfile, Xcode,
+# Obsidian for the vault, and Ghostty, a browser and the agent apps for when it
+# is used at the desk or over Screen Sharing. No editors or window management.
+# Sign in to the App Store app first, as for Brewfile. Install with:
 #   brew bundle --file=Brewfile.server
 # README.md#headless-mac covers the rest of the setup. When a package here
 # changes in Brewfile, change it here too.
@@ -37,6 +37,7 @@ brew "zoxide"
 brew "coreutils"
 brew "gnu-sed"
 brew "wget"
+brew "mole"
 brew "todoist-cli"  # the todoist-cli skill drives it
 
 # Mobile / iOS
@@ -58,6 +59,9 @@ cask "codex"
 cask "chatgpt"
 cask "grok-bot"
 cask "t3-code@nightly"
+
+# Productivity
+cask "obsidian"  # keeps the vault synced; README.md#headless-mac
 
 # Fonts
 cask "font-mononoki-nerd-font"  # Ghostty's font-family

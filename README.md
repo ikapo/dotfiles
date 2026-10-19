@@ -94,8 +94,8 @@ window manager. Follow [How to install](#how-to-install) with these changes.
 **Steps that change:**
 
 - Step 3: install `Brewfile.server` instead: the CLI half of `Brewfile`,
-  Xcode, Ghostty, Helium, Claude, Claude Code, Codex, ChatGPT, Grok and
-  T3 Code. Sign in to the App Store app first, as for `Brewfile` — do it at
+  Xcode, Obsidian, Ghostty, Helium, Claude, Claude Code, Codex, ChatGPT, Grok
+  and T3 Code. Sign in to the App Store app first, as for `Brewfile` — do it at
   the Mac or over Screen Sharing, since `mas` cannot sign in from SSH:
 
   ```sh
@@ -170,6 +170,17 @@ running Ghostty:
 ```sh
 infocmp -x xterm-ghostty | ssh <ssh-target> -- tic -x -
 ```
+
+**Obsidian.** Agents read and write the vault, which syncs through Obsidian
+Sync — and Sync only runs while the Obsidian app is open. Set it up at the Mac
+or over Screen Sharing:
+
+1. Open Obsidian, sign in to the Obsidian account, and pick **Open vault from
+   Obsidian Sync**. Choose the vault, and put it at `~/Workspace/Obsidian` —
+   the same path as on the laptop, which notes and agent memory refer to.
+2. Let the first sync finish before an agent touches the vault.
+3. Add Obsidian to System Settings → General → Login Items, so it starts —
+   and keeps syncing — after every reboot.
 
 **Not in the repo:** turn on System Settings → General → Sharing → Remote
 Login. With FileVault on, a reboot waits at the unlock screen before your
