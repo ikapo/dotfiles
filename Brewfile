@@ -102,7 +102,6 @@ cask "bitwarden"
 cask "trezor-suite"
 
 # Fonts
-cask "font-fira-code-nerd-font"
 cask "font-mononoki-nerd-font"
 
 # Other

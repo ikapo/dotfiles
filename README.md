@@ -285,5 +285,5 @@ than overwriting.
 | Dev | zed, ghostty, claude, claude-code@latest, codex, chatgpt, grok-bot, t3-code@nightly, devtoys, linear |
 | Productivity | raycast, obsidian, logi-options+, wispr-flow, todoist-app |
 | Security | bitwarden, trezor-suite |
-| Fonts | font-fira-code-nerd-font, font-mononoki-nerd-font |
+| Fonts | font-mononoki-nerd-font |
 | Other | altserver, prusaslicer, tradingview, vorssaint, spotify |
