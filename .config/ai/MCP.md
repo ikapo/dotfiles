@@ -124,25 +124,6 @@ It arrives **with the `context7` plugin** and shows up as
 `plugin:context7:context7`. Do not add it by hand; install the plugin instead
 (see [PLUGINS.md](PLUGINS.md)).
 
-## stitch
-
-Remote, Google's design-generation service.
-
-**Skip in a headless environment?** No — plain HTTPS.
-
-It authenticates with an `X-Goog-Api-Key` header, so it is the one server here
-that carries a credential. That key lives in Claude Code's own user config
-(`claude mcp get stitch` shows it) and **must not be written into this
-repository** — `claude/settings.json` is tracked. Register it per machine:
-
-```sh
-claude mcp add --scope user --transport http stitch https://stitch.googleapis.com/mcp \
-  --header "X-Goog-Api-Key: $(security find-generic-password -s stitch-mcp -w)"
-```
-
-Store the key in the Keychain first, as in the next section, rather than
-pasting it into a shell that records history.
-
 ## Adding a server that needs a secret
 
 Only when no remote equivalent exists. Never write the token into any file in

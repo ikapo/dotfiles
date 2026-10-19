@@ -144,8 +144,8 @@ git config --file ~/.gitconfig commit.gpgSign false
 git config --file ~/.gitconfig tag.gpgSign false
 ```
 
-**Keychain.** Claude Code keeps its login in the macOS Keychain, and the
-`stitch` entry in `.config/ai/MCP.md` reads its key from there. An SSH session
+**Keychain.** Claude Code keeps its login in the macOS Keychain, and any MCP
+server that needs a secret reads it from there (see `.config/ai/MCP.md`). An SSH session
 may find the login keychain locked; unlock it before signing in or starting a
 server that reads it:
 
