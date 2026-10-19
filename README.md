@@ -110,7 +110,15 @@ window manager. Follow [How to install](#how-to-install) with these changes.
   ```
 
 - Step 4: stow the whole repo as usual. The yabai, skhd, Zed and Ghostty
-  configs land too but stay inert without their apps.
+  configs land too but stay inert without their apps. GnuPG is not installed
+  and nothing signs (see Signing below), so skip the `chmod` and the `~/.gnupg`
+  link — but keep `gnupg` in the `mkdir`, or stow folds `~/.config/gnupg` into
+  the repo and anything that ever runs gpg writes its keyring there:
+
+  ```sh
+  mkdir -p ~/.claude ~/.codex ~/.config/{herdr,television,gh,gnupg,zsh}
+  stow ./ -t ~/
+  ```
 - Steps 7–9 (yabai/skhd, `macos-defaults.sh`, Caps Lock) and step 10 (One) do
   not apply. Run the one line of `macos-defaults.sh` that does, plus restart
   after a power cut:
