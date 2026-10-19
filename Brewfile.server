@@ -1,6 +1,7 @@
-# A headless Mac that runs agents over SSH: the CLI half of Brewfile plus
-# Xcode, no GUI apps or window management. Sign in to the App Store app first,
-# as for Brewfile. Install with:
+# A Mac that mostly runs agents over SSH: the CLI half of Brewfile, Xcode, and
+# the agent apps and browser for when it is used at the desk or over Screen
+# Sharing. No editors or window management. Sign in to the App Store app
+# first, as for Brewfile. Install with:
 #   brew bundle --file=Brewfile.server
 # README.md#headless-mac covers the rest of the setup. When a package here
 # changes in Brewfile, change it here too.
@@ -46,9 +47,14 @@ brew "facebook/fb/idb-companion"
 # Misc
 brew "mas"
 
+# Browsers
+cask "helium-browser"
+
 # Dev
+cask "claude"
 cask "claude-code@latest"
 cask "codex"
+cask "t3-code@nightly"
 
 # App Store — sign in to the App Store app first; mas cannot sign in.
 mas "Xcode", id: 497799835
