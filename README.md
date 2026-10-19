@@ -94,8 +94,8 @@ window manager. Follow [How to install](#how-to-install) with these changes.
 **Steps that change:**
 
 - Step 3: install `Brewfile.server` instead: the CLI half of `Brewfile`,
-  Xcode, Obsidian, Ghostty, Helium, Claude, Claude Code, Grok and T3 Code.
-  Sign in to the App Store app first, as for `Brewfile` — do it at
+  Xcode, Obsidian, Ghostty, Helium, Claude, Claude Code, Grok, Grok Build and
+  T3 Code. Sign in to the App Store app first, as for `Brewfile` — do it at
   the Mac or over Screen Sharing, since `mas` cannot sign in from SSH:
 
   ```sh
@@ -295,7 +295,7 @@ than overwriting.
 | Category | Packages |
 | --- | --- |
 | Browsers & comms | helium-browser, discord, telegram, whatsapp, thunderbird, zoom |
-| Dev | zed, ghostty, claude, claude-code@latest, grok-bot, t3-code@nightly, devtoys, linear |
+| Dev | zed, ghostty, claude, claude-code@latest, grok-bot, grok-build, t3-code@nightly, devtoys, linear |
 | Productivity | raycast, obsidian, logi-options+, wispr-flow, todoist-app |
 | Security | bitwarden, trezor-suite |
 | Fonts | font-mononoki-nerd-font |

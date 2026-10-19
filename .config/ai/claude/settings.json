@@ -5,7 +5,8 @@
     "superpowers@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
     "claude-mem@thedotmack": true,
-    "mattpocock-skills@claude-plugins-official": true
+    "mattpocock-skills@claude-plugins-official": true,
+    "grok-build@xai-grok-build": true
   },
   "extraKnownMarketplaces": {
     "ui-ux-pro-max-skill": {
@@ -18,6 +19,12 @@
       "source": {
         "source": "github",
         "repo": "thedotmack/claude-mem"
+      }
+    },
+    "xai-grok-build": {
+      "source": {
+        "source": "github",
+        "repo": "xai-org/grok-build-plugin-cc"
       }
     }
   },

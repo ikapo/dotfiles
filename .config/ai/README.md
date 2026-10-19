@@ -67,11 +67,12 @@ that file when you change a setting. A setting changed in the UI follows the
 links and lands in `claude/settings.json` as a normal edit — review it with
 `git diff` before committing.
 
-`claude plugin uninstall` does not. It follows only the first link, to
-`.claude/settings.json` in this repo — itself a link — and replaces that with a
-plain file holding the new settings, leaving `claude/settings.json` untouched.
-After a plugin command, check `git status`: if `.claude/settings.json` shows as
-changed (`T`), copy the change into `claude/settings.json` and restore the link
-with `git checkout -- .claude/settings.json`.
+Plugin commands do not — `claude plugin uninstall` and `/plugin install` both.
+They follow only the first link, to `.claude/settings.json` in this repo —
+itself a link — and replace that with a plain file holding the new settings,
+leaving `claude/settings.json` untouched. After a plugin command, check
+`git status`: if `.claude/settings.json` shows as changed (`T`), copy the
+change into `claude/settings.json` and restore the link with
+`git checkout -- .claude/settings.json`.
 
 Never put a credential in this directory. It is public.
