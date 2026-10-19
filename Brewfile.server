@@ -59,5 +59,8 @@ cask "chatgpt"
 cask "grok-bot"
 cask "t3-code@nightly"
 
+# Fonts
+cask "font-mononoki-nerd-font"  # Ghostty's font-family
+
 # App Store — sign in to the App Store app first; mas cannot sign in.
 mas "Xcode", id: 497799835
