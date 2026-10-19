@@ -5,6 +5,8 @@
 # README.md#headless-mac covers the rest of the setup. When a package here
 # changes in Brewfile, change it here too.
 
+tap "facebook/fb"
+
 # VCS & dev tools
 brew "gh"
 brew "git"
@@ -39,6 +41,7 @@ brew "todoist-cli"  # the todoist-cli skill drives it
 # Mobile / iOS
 brew "cocoapods"
 brew "fastlane"
+brew "facebook/fb/idb-companion"
 
 # Misc
 brew "mas"
