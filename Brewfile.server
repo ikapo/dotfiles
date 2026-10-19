@@ -1,0 +1,47 @@
+# A headless Mac that runs agents over SSH: the CLI half of Brewfile plus
+# Xcode, no GUI apps or window management. Sign in to the App Store app first,
+# as for Brewfile. Install with:
+#   brew bundle --file=Brewfile.server
+# README.md#headless-mac covers the rest of the setup. When a package here
+# changes in Brewfile, change it here too.
+
+# VCS & dev tools
+brew "gh"
+brew "git"
+brew "git-lfs"
+brew "lazygit"
+brew "stow"
+
+# Languages & runtimes
+brew "bun"
+brew "node@24"
+brew "pnpm"
+
+# Editors & shell
+brew "neovim"  # $EDITOR, for git and Claude Code's external editor
+brew "zsh-autosuggestions"  # .zshrc sources both unconditionally
+brew "zsh-syntax-highlighting"
+brew "herdr"  # persistent agent sessions; attach with herdr --remote
+
+# CLI utilities
+brew "bat"
+brew "fd"
+brew "fzf"  # .zshrc runs fzf and zoxide unconditionally
+brew "jq"
+brew "lsd"
+brew "ripgrep"
+brew "zoxide"
+brew "coreutils"
+brew "gnu-sed"
+brew "wget"
+brew "todoist-cli"  # the todoist-cli skill drives it
+
+# Misc
+brew "mas"
+
+# Dev
+cask "claude-code@latest"
+cask "codex"
+
+# App Store — sign in to the App Store app first; mas cannot sign in.
+mas "Xcode", id: 497799835

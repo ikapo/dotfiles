@@ -15,7 +15,8 @@ I window manage with [yabai](https://github.com/koekeishiya/yabai) and [skhd](ht
 I manage packages with [Homebrew](https://brew.sh/).
 
 Moving from an existing Mac? See [TRANSFER.md](TRANSFER.md) instead — same
-steps, plus what to carry over by hand.
+steps, plus what to carry over by hand. Setting up a Mac that only runs agents
+over SSH? See [Headless Mac](#headless-mac).
 
 ## How to install
 
@@ -84,6 +85,82 @@ steps, plus what to carry over by hand.
     ```
 
     Afterwards `dotpull` (in `aliasrc`) pulls both repos and restows.
+
+## Headless Mac
+
+A Mac reached only over SSH, running Claude Code and Codex — no editor, no
+window manager. Follow [How to install](#how-to-install) with these changes.
+
+**Steps that change:**
+
+- Step 3: install `Brewfile.server` instead, the CLI half of `Brewfile` plus
+  Xcode. Sign in to the App Store app first, as for `Brewfile` — do it at the
+  Mac or over Screen Sharing, since `mas` cannot sign in from SSH:
+
+  ```sh
+  brew bundle --file=Brewfile.server
+  ```
+
+  Then accept the licence and install Xcode's first-launch components, or
+  `xcodebuild` stops on a prompt the first time it runs over SSH:
+
+  ```sh
+  sudo xcodebuild -license accept
+  sudo xcodebuild -runFirstLaunch
+  ```
+
+- Step 4: stow the whole repo as usual. The yabai, skhd, Zed and Ghostty
+  configs land too but stay inert without their apps.
+- Steps 7–9 (yabai/skhd, `macos-defaults.sh`, Caps Lock) and step 10 (One) do
+  not apply. Run the one line of `macos-defaults.sh` that does, plus restart
+  after a power cut:
+
+  ```sh
+  sudo pmset -a sleep 0 autorestart 1
+  ```
+
+- Step 11: still clone the Neovim config. `EDITOR` is `nvim`, and `dotpull`
+  stops before restowing if `~/.config/nvim` is missing.
+
+**Signing.** `.config/git/config` signs every commit, and `gpg-agent.conf`
+asks for the passphrase through `pinentry-mac` — a dialog on a screen nobody
+is watching, so commits from an SSH session hang or fail. Turn signing off in
+this machine's `~/.gitconfig`, which overrides the repo's file:
+
+```sh
+git config --file ~/.gitconfig commit.gpgSign false
+git config --file ~/.gitconfig tag.gpgSign false
+```
+
+**Keychain.** Claude Code keeps its login in the macOS Keychain, and the
+`stitch` entry in `.config/ai/MCP.md` reads its key from there. An SSH session
+may find the login keychain locked; unlock it before signing in or starting a
+server that reads it:
+
+```sh
+security unlock-keychain ~/Library/Keychains/login.keychain-db
+```
+
+**Sessions.** Run agents inside `herdr`, which keeps them alive when SSH
+drops. From another machine, `herdr --remote <ssh-target>` attaches straight
+to it.
+
+**MCP servers.** Skip the ones `.config/ai/MCP.md` marks GUI-only
+(`ios-simulator`, `xcode`); the rest work over plain HTTPS. Xcode itself is
+still useful without them — `xcodebuild` builds and tests over SSH.
+
+**Connecting from Ghostty.** Ghostty sets `TERM=xterm-ghostty`, which a fresh
+Mac without Ghostty does not recognise ("unknown terminal type"). Copy the
+terminfo entry over once, from the machine running Ghostty:
+
+```sh
+infocmp -x xterm-ghostty | ssh <ssh-target> -- tic -x -
+```
+
+**Not in the repo:** turn on System Settings → General → Sharing → Remote
+Login. With FileVault on, a reboot waits at the unlock screen before your
+account — and its herdr sessions — comes up, so decide how you will unlock it
+remotely, or leave FileVault off and turn on automatic login.
 
 ## Git
 

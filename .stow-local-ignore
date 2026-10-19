@@ -7,3 +7,4 @@ TRANSFER.md
 macos-defaults.sh
 settings.local.json
 Brewfile
+Brewfile.server
