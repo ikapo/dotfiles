@@ -1,70 +1,45 @@
 # `.config/ai`
 
-Shared configuration for Claude Code and Codex.
+Configuration for Claude Code.
 
 | Path | Purpose |
 |---|---|
-| `AGENTS.md` | Shared agent instructions. Both tools read it. |
+| `AGENTS.md` | Agent instructions, read as `~/.claude/CLAUDE.md`. |
 | `MCP.md` | Which MCP servers to install and how. Not automated; run what you need. |
-| `PLUGINS.md` | Which plugins to install, per tool. Claude Code and Codex differ. |
+| `PLUGINS.md` | Which plugins to install. |
 | `skills/` | Personal skills, one directory per skill. |
-| `skills/synced/` | Skills Claude Code syncs from claude.ai. Gitignored, Claude-only. |
+| `skills/synced/` | Skills Claude Code syncs from claude.ai. Gitignored. |
 | `claude/settings.json` | Claude Code settings: model, effort, enabled plugins, marketplaces. |
 
 ## Setup on a new machine
 
-`stow` handles all of it. Neither tool looks in `~/.config/ai`, so the repo
-carries committed symlinks at the paths they do read:
+`stow` handles all of it. Claude Code does not look in `~/.config/ai`, so the
+repo carries committed symlinks at the paths it does read:
 
 | Committed symlink | Points at |
 |---|---|
 | `.claude/CLAUDE.md` | `../.config/ai/AGENTS.md` |
 | `.claude/skills` | `../.config/ai/skills` |
 | `.claude/settings.json` | `../.config/ai/claude/settings.json` |
-| `.codex/AGENTS.md` | `../.config/ai/AGENTS.md` |
-| `.codex/skills/<name>` | `../../.config/ai/skills/<name>`, one link per skill |
 
-`stow` links those into `~/.claude` and `~/.codex` like any other file, so
-setup is the same one command as the rest of the repo:
+`stow` links those into `~/.claude` like any other file, so setup is the same
+one command as the rest of the repo:
 
 ```sh
-mkdir -p ~/.claude ~/.codex
+mkdir -p ~/.claude
 stow ./ -t ~/
 ```
 
 **The `mkdir` matters.** If `~/.claude` does not already exist, stow folds the
-whole directory into a single symlink pointing back at the repo, and the tool
-then writes its plugins, sessions and credentials inside your git checkout.
-Creating the directories first keeps stow linking file by file.
+whole directory into a single symlink pointing back at the repo, and Claude
+Code then writes its plugins, sessions and credentials inside your git
+checkout. Creating the directory first keeps stow linking file by file.
 
 ### Skills
 
 Claude gets every skill at once: `~/.claude/skills` is a link to the whole
-`skills/` directory. Codex gets only the skills that have their own link in
-`.codex/skills/`, for two reasons:
-
-- `~/.codex/skills/` must stay a real directory. Codex keeps its `.system/`
-  built-ins there and its `skill-installer` writes there, so a link of the
-  folder would make Codex write into this repo.
-- Codex scans skill folders recursively. A folder link would also hand it
-  everything in the gitignored `skills/synced/`, which holds Claude-only skills.
-
-So a new skill needs one committed link before Codex can see it:
-
-```sh
-ln -s ../../.config/ai/skills/<name> .codex/skills/<name>
-stow ./ -t ~/
-```
-
-Check that Codex sees it with
-`codex debug prompt-input | grep -o '<name>[^ ]*'`.
-
-Codex's current docs name `~/.agents/skills/` as the user skill folder and do
-not mention `~/.codex/skills/`. Codex 0.162 reads both, and still keeps
-`.system/` and its installed skills in `~/.codex/skills/`, so this setup uses
-that one. If a later Codex stops reading it, move these links to
-`.agents/skills/<name>`, run `mkdir -p ~/.agents/skills` before stow so stow
-doesn't fold the directory into a single link, and update this section.
+`skills/` directory, so a new skill directory there is picked up with no
+further setup.
 
 `settings.local.json` is listed in `.stow-local-ignore`; it is this repository's
 own project settings and must not be linked into `~`.
@@ -79,8 +54,7 @@ it shipped. Both halves turned out not to need automating: the symlinks are now
 committed to the repo and placed by stow, so there is nothing left to generate,
 and remote MCP servers keep their token in the tool's own credential store after
 a browser login, so the wrapper indirection the generator existed to manage
-stopped being necessary — `claude mcp add` and `codex mcp add` each register a
-server in one command.
+stopped being necessary — `claude mcp add` registers a server in one command.
 
 Prefer adding a line to [MCP.md](MCP.md) or [PLUGINS.md](PLUGINS.md) over
 writing something that generates them. The full design and its post-mortem are
@@ -89,8 +63,15 @@ in git history, at the commit that removed `docs/superpowers/`.
 ## Notes
 
 `~/.claude/settings.json` is a symlink into this repo, and Claude Code writes
-that file when you change a setting in the UI. It follows the symlink rather
-than replacing it, so such a change lands here as a normal edit — review it with
+that file when you change a setting. A setting changed in the UI follows the
+links and lands in `claude/settings.json` as a normal edit — review it with
 `git diff` before committing.
+
+`claude plugin uninstall` does not. It follows only the first link, to
+`.claude/settings.json` in this repo — itself a link — and replaces that with a
+plain file holding the new settings, leaving `claude/settings.json` untouched.
+After a plugin command, check `git status`: if `.claude/settings.json` shows as
+changed (`T`), copy the change into `claude/settings.json` and restore the link
+with `git checkout -- .claude/settings.json`.
 
 Never put a credential in this directory. It is public.

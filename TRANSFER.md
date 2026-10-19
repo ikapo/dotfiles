@@ -13,7 +13,7 @@ Work through it in order; later steps assume earlier ones are done.
 - [ ] Install Homebrew, clone the repo, and run [How to install](README.md#how-to-install)
       steps 1–3: `brew bundle` (sign in to the App Store app first; add
       `HOMEBREW_BUNDLE_MAS_SKIP=497799835` to skip Xcode's ~10 GB download).
-- [ ] Step 4: create `~/.claude ~/.codex ~/.config/{herdr,television,gh,gnupg}`
+- [ ] Step 4: create `~/.claude ~/.config/{herdr,television,gh,gnupg}`
       (`chmod 700` the last one), then `stow -n -v ./ -t ~/` as a dry run
       before the real `stow ./ -t ~/`. If it reports a conflict (commonly
       `~/.claude/settings.json` if Claude Code has already run on this Mac, or
@@ -59,9 +59,9 @@ public repo, and most of it is per-machine state anyway.
 - [ ] Remap Caps Lock to Escape by hand — macOS stores this per keyboard, not
       as one global setting, so it isn't scriptable: System Settings →
       Keyboard → Keyboard Shortcuts… → Modifier Keys.
-- [ ] `herdr integration install claude` (and `codex`, if used there too).
+- [ ] `herdr integration install claude`.
 - [ ] Install [One](https://getone.one) — not on Homebrew, updates itself.
-- [ ] `gh auth login`, then sign in to Claude Code and Codex.
+- [ ] `gh auth login`, then sign in to Claude Code.
 - [ ] Install the plugins in [`.config/ai/PLUGINS.md`](.config/ai/PLUGINS.md)
       and add the MCP servers in [`.config/ai/MCP.md`](.config/ai/MCP.md).
 - [ ] Launch `nvim` once so Lazy bootstraps its plugins.

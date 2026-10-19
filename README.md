@@ -36,7 +36,7 @@ over SSH? See [Headless Mac](#headless-mac).
    into a single link and the tool's state and credentials land in the repo:
 
    ```sh
-   mkdir -p ~/.claude ~/.codex ~/.config/{herdr,television,gh,gnupg,zsh}
+   mkdir -p ~/.claude ~/.config/{herdr,television,gh,gnupg,zsh}
    chmod 700 ~/.config/gnupg
    ln -s .config/gnupg ~/.gnupg   # for GUI apps, which never see GNUPGHOME
    stow ./ -t ~/
@@ -88,14 +88,14 @@ over SSH? See [Headless Mac](#headless-mac).
 
 ## Headless Mac
 
-A Mac reached only over SSH, running Claude Code and Codex — no editor, no
+A Mac reached only over SSH, running Claude Code — no editor, no
 window manager. Follow [How to install](#how-to-install) with these changes.
 
 **Steps that change:**
 
 - Step 3: install `Brewfile.server` instead: the CLI half of `Brewfile`,
-  Xcode, Obsidian, Ghostty, Helium, Claude, Claude Code, Codex, ChatGPT, Grok
-  and T3 Code. Sign in to the App Store app first, as for `Brewfile` — do it at
+  Xcode, Obsidian, Ghostty, Helium, Claude, Claude Code, Grok and T3 Code.
+  Sign in to the App Store app first, as for `Brewfile` — do it at
   the Mac or over Screen Sharing, since `mas` cannot sign in from SSH:
 
   ```sh
@@ -120,7 +120,7 @@ window manager. Follow [How to install](#how-to-install) with these changes.
   the repo and anything that ever runs gpg writes its keyring there:
 
   ```sh
-  mkdir -p ~/.claude ~/.codex ~/.config/{herdr,television,gh,gnupg,zsh}
+  mkdir -p ~/.claude ~/.config/{herdr,television,gh,gnupg,zsh}
   stow ./ -t ~/
   ```
 - Steps 7–9 (yabai/skhd, `macos-defaults.sh`, Caps Lock) and step 10 (One) do
@@ -220,23 +220,22 @@ it afterwards.
 
 ## AI tool config
 
-`.config/ai` holds the shared agent instructions, skills, and Claude Code
-settings for Claude Code and Codex. Neither tool reads `~/.config/ai`, so the
-repo carries committed symlinks at `.claude/` and `.codex/` pointing back into
-it, and `stow` links those into place along with everything else:
+`.config/ai` holds Claude Code's agent instructions, skills and settings.
+Claude Code does not read `~/.config/ai`, so the repo carries committed
+symlinks in `.claude/` pointing back into it, and `stow` links those into
+place along with everything else:
 
 ```sh
-mkdir -p ~/.claude ~/.codex
+mkdir -p ~/.claude
 stow ./ -t ~/
 ```
 
-Create those two directories first. Stow folds a directory that does not yet
-exist into a single symlink back to the repo, which would leave the tools
-writing sessions and credentials inside the git checkout.
+Create that directory first. Stow folds a directory that does not yet exist
+into a single symlink back to the repo, which would leave Claude Code writing
+sessions and credentials inside the git checkout.
 
-Plugins are not synced either — `.config/ai/PLUGINS.md` lists what to install
-in each tool. Claude Code and Codex have separate plugin systems, but most of
-these ship for both, by three different routes.
+Plugins are not synced either — `.config/ai/PLUGINS.md` lists what to
+install.
 
 MCP servers are not synced or generated — `.config/ai/MCP.md` lists each one
 with the command to add it, and marks the ones that need a GUI so they can be
@@ -296,7 +295,7 @@ than overwriting.
 | Category | Packages |
 | --- | --- |
 | Browsers & comms | helium-browser, discord, telegram, whatsapp, thunderbird, zoom |
-| Dev | zed, ghostty, claude, claude-code@latest, codex, chatgpt, grok-bot, t3-code@nightly, devtoys, linear |
+| Dev | zed, ghostty, claude, claude-code@latest, grok-bot, t3-code@nightly, devtoys, linear |
 | Productivity | raycast, obsidian, logi-options+, wispr-flow, todoist-app |
 | Security | bitwarden, trezor-suite |
 | Fonts | font-mononoki-nerd-font |

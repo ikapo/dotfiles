@@ -21,7 +21,6 @@ alias ka="killall" \
 	cat="bat" \
 	ffmpeg="ffmpeg -hide_banner" \
 	cl="claude" \
-  co="codex" \
 	gs="git status" \
 	ga="git add" \
 	gall="git add ." \

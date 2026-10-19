@@ -22,8 +22,7 @@ partial setup: it is the correct setup for that machine.
 plugin under a different name. Look first:
 
 ```sh
-claude mcp list      # Claude Code
-codex mcp list       # Codex
+claude mcp list
 ```
 
 A name already present is not a reason to remove it. Ask before replacing one.
@@ -32,22 +31,19 @@ A name already present is not a reason to remove it. Ask before replacing one.
 check whether an official plugin already ships it. A plugin that bundles a
 server registers it for you, keeps its URL and version current, and usually
 brings skills and commands the bare endpoint does not — `context7` below is
-exactly this: in Claude Code it arrives with the `context7` plugin as
+exactly this: it arrives with the `context7` plugin as
 `plugin:context7:context7`, and adding the raw endpoint on top would leave the
 same tools registered twice under two names.
 
 ```sh
 claude plugin list                    # already installed
 claude plugin marketplace list        # which marketplaces are configured
-codex plugin list | grep -i <name>    # thousands of entries; always grep
 ```
 
 Claude Code has no `plugin search`; browsing what a marketplace offers is the
 interactive `/plugin` command.
 
-Register a server directly only when no plugin provides it, or when the tool in
-hand has no such plugin — Codex has none for context7, which is why that
-section registers the endpoint there and not in Claude Code. See
+Register a server directly only when no plugin provides it. See
 [PLUGINS.md](PLUGINS.md).
 
 ## github
@@ -58,7 +54,7 @@ Remote, over OAuth. No binary, no token stored here.
 anywhere with a network.
 
 GitHub's authorization server supports neither dynamic client registration nor
-CIMD, so every tool has to be handed a client ID you registered by hand. Do
+CIMD, so the client has to be handed a client ID you registered by hand. Do
 this once per person, not per machine:
 
 1. Go to <https://github.com/settings/developers> → **New OAuth App**.
@@ -70,21 +66,15 @@ this once per person, not per machine:
 Then, substituting the client ID:
 
 ```sh
-# Claude Code
 claude mcp add --scope user --transport http \
   --client-id <CLIENT_ID> --callback-port 33418 \
   github https://api.githubcopilot.com/mcp/
-
-# Codex
-codex mcp add github --url https://api.githubcopilot.com/mcp/ \
-  --oauth-client-id <CLIENT_ID>
-codex mcp login github
 ```
 
 Claude Code authenticates on first use — run `/mcp` and pick `github`.
 
 If the browser shows a redirect-URI mismatch, the `redirect_uri=` parameter in
-the URL is the one the tool actually sent. Put that exact string in the OAuth
+the URL is the one Claude Code actually sent. Put that exact string in the OAuth
 App's callback field.
 
 **Zed cannot use this server.** Zed 1.18 supports only CIMD and dynamic
@@ -107,23 +97,22 @@ headless substitute; omit it and carry on.
 claude mcp add --scope user ios-simulator -- npx -y ios-simulator-mcp
 ```
 
-Claude Code only. Codex and Zed do not need it.
+Claude Code only. Zed does not need it.
 
 ## xcode
 
 Local, built into Xcode: `xcrun mcpbridge` exposes Xcode's own MCP tools
 (projects, builds, previews). Turn on Xcode's MCP support in its settings first;
-enabling it there does not register it with any agent.
+enabling it there does not register it with Claude Code.
 
 **Skip in a headless environment? Yes — GUI-only.** It needs Xcode installed on
 macOS. On Linux, a container, or a session without Xcode, do not install it.
 
 ```sh
 claude mcp add --scope user xcode -- xcrun mcpbridge
-codex mcp add xcode -- xcrun mcpbridge
 ```
 
-Takes effect in new sessions (restart the app or start a new thread).
+Takes effect in new sessions.
 
 ## context7
 
@@ -131,14 +120,9 @@ Remote, no auth. Live library and framework documentation.
 
 **Skip in a headless environment?** No — plain HTTPS.
 
-In Claude Code it arrives **with the `context7` plugin** and shows up as
-`plugin:context7:context7`. Do not add it by hand there; install the plugin
-instead (see [PLUGINS.md](PLUGINS.md)). Codex has no such plugin, so register
-the same endpoint directly:
-
-```sh
-codex mcp add context7 --url https://mcp.context7.com/mcp
-```
+It arrives **with the `context7` plugin** and shows up as
+`plugin:context7:context7`. Do not add it by hand; install the plugin instead
+(see [PLUGINS.md](PLUGINS.md)).
 
 ## stitch
 
@@ -204,11 +188,10 @@ but it is a backstop, not permission to be careless.
 
 ## Where each tool keeps this
 
-Useful when something does not show up. All three read their config once at
+Useful when something does not show up. Both read their config once at
 startup — **restart the tool after changing it.**
 
 | Tool | File | Notes |
 |---|---|---|
 | Claude Code | `~/.claude.json`, key `mcpServers` | Not `~/.claude/mcp.json`, which Claude Code never reads. Claude Code rewrites this file as it runs; edit it with the tool closed, or use `claude mcp add`. |
-| Codex | `~/.codex/config.toml`, `[mcp_servers.*]` | Also written by the ChatGPT desktop app; prefer `codex mcp add`. |
 | Zed | `.config/zed/settings.json`, `context_servers` | Tracked in this repo, so no token may appear in it. Do not add `"source": "custom"` — Zed 1.18 rejects it. |

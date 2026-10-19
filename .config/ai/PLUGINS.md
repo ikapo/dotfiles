@@ -1,56 +1,28 @@
 # Plugins and skills
 
-Which plugins to install on a new machine, per tool. Written to be handed to an
-AI agent: each entry below has the exact command.
+Which Claude Code plugins to install on a new machine. Written to be handed to
+an AI agent: each entry below has the exact command.
 
 Nothing here is automated. Run the commands for what you want, skip the rest.
 
-## Read this first
-
-Claude Code and Codex have separate plugin systems — separate install
-locations, separate marketplaces, separate manifests:
-
-| | Claude Code | Codex |
-|---|---|---|
-| Installed under | `~/.claude/plugins/` | `~/.codex/plugins/` |
-| Managed with | `claude plugin marketplace add` | `codex plugin marketplace add` |
-| Marketplace manifest | `.claude-plugin/marketplace.json` | `.agents/plugins/marketplace.json` |
-
-That does **not** mean a plugin is Claude-only. Most of these ship for both,
-by three different routes: Codex's own curated marketplace, a repo added as a
-Codex marketplace, or the project's own CLI installer. Check all three before
-concluding something is unavailable.
-
-`codex plugin list` prints several thousand entries across three marketplaces.
-Pipe it through `grep`; do not read the head of it and assume a plugin is
-missing.
-
 ## What to install
 
-| Plugin | Skills | Claude Code | Codex |
-|---|---|---|---|
-| `superpowers` | 14 | bundled marketplace | curated marketplace |
-| `mattpocock-skills` | 25 | bundled marketplace | curated marketplace |
-| `claude-mem` | 18 | `thedotmack` | repo as marketplace |
-| `ui-ux-pro-max` | 7 | `ui-ux-pro-max-skill` | `uipro` CLI |
-| `context7` | 0 | bundled marketplace | — MCP only, see [MCP.md](MCP.md) |
-| `codex` | 3 | `openai-codex` | — not applicable |
-
-`codex` is the plugin that lets *Claude* drive the Codex CLI. Codex does not
-need it.
-
-## Claude Code
+| Plugin | Skills | Marketplace |
+|---|---|---|
+| `superpowers` | 14 | bundled marketplace |
+| `mattpocock-skills` | 25 | bundled marketplace |
+| `claude-mem` | 18 | `thedotmack` |
+| `ui-ux-pro-max` | 7 | `ui-ux-pro-max-skill` |
+| `context7` | 0 | bundled marketplace |
 
 ```sh
 claude plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill
-claude plugin marketplace add openai/codex-plugin-cc
 claude plugin marketplace add thedotmack/claude-mem
 
 claude plugin install superpowers@claude-plugins-official
 claude plugin install mattpocock-skills@claude-plugins-official
 claude plugin install context7@claude-plugins-official
 claude plugin install ui-ux-pro-max@ui-ux-pro-max-skill
-claude plugin install codex@openai-codex
 claude plugin install claude-mem@thedotmack
 ```
 
@@ -62,70 +34,15 @@ claude plugin install claude-mem@thedotmack
 `enabledPlugins`, and stow symlinks it into place. That setting records the
 choice; it does not fetch anything, so the installs above are still needed.
 
-## Codex
-
-**superpowers** — in Codex's own curated marketplace, no setup required:
-
-```sh
-codex plugin add superpowers@openai-curated-remote
-```
-
-Or from inside Codex: `/plugins`, search `superpowers`, Install Plugin.
-
-**mattpocock-skills** — also in Codex's curated marketplace, same version as
-the Claude Code plugin:
-
-```sh
-codex plugin add mattpocock-skills@openai-curated-remote
-```
-
-**claude-mem** — the repo carries a Codex marketplace manifest, so add the repo
-and install from it:
-
-```sh
-codex plugin marketplace add https://github.com/thedotmack/claude-mem
-codex plugin add claude-mem@claude-mem-local
-```
-
-**ui-ux-pro-max** — not a Codex plugin; it installs through its own npm CLI,
-which writes skills for whichever assistant you name:
-
-```sh
-npm install -g ui-ux-pro-max-cli
-uipro init --ai codex --global
-```
-
-`--global` installs for every project rather than the current directory.
-`uipro update` refreshes the skill files later, and `uipro uninstall --ai codex`
-removes them.
-
 ## Copying a single skill instead
 
-Only worth it for a skill with no upstream install route. Both tools read
-`SKILL.md` with `name` and `description` frontmatter, so a skill directory can
-simply be copied — at the cost of forking it from upstream updates. Skip any
-skill that names Claude-Code-only tooling, and skip `claude-mem`'s: they drive
-an MCP server Codex is not running.
-
-Put the skill in `skills/` here and let stow place both links:
+Only worth it for a skill with no upstream install route. A skill is a
+directory with a `SKILL.md` carrying `name` and `description` frontmatter, so
+it can simply be copied — at the cost of forking it from upstream updates.
 
 ```sh
 cp -R <source-skill-dir> ~/.config/ai/skills/<name>
 ```
 
 Claude picks it up at once, since `~/.claude/skills` is a symlink to this
-directory. Codex needs one committed link per skill, because `~/.codex/skills/`
-also holds Codex's own `.system/` built-ins and so cannot itself be a symlink,
-and because a folder link would also expose the Claude-only skills in the
-gitignored `skills/synced/`:
-
-```sh
-cd <repo> && ln -s ../../.config/ai/skills/<name> .codex/skills/<name>
-stow ./ -t ~/
-```
-
-The [README](README.md#skills) explains where Codex looks for skills and how to
-check that it sees one.
-
-Codex also ships a `skill-installer` skill that pulls skills from any GitHub
-repo path. Prefer it over copying whenever the skill has a real upstream.
+directory.
