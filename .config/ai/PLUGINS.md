@@ -15,11 +15,13 @@ Nothing here is automated. Run the commands for what you want, skip the rest.
 | `ui-ux-pro-max` | 7 | `ui-ux-pro-max-skill` |
 | `context7` | 0 | bundled marketplace |
 | `grok-build` | 4 | `xai-grok-build` |
+| `ponytail` | 6 | `ponytail` |
 
 ```sh
 claude plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill
 claude plugin marketplace add thedotmack/claude-mem
 claude plugin marketplace add xai-org/grok-build-plugin-cc
+claude plugin marketplace add DietrichGebert/ponytail
 
 claude plugin install superpowers@claude-plugins-official
 claude plugin install mattpocock-skills@claude-plugins-official
@@ -27,6 +29,7 @@ claude plugin install context7@claude-plugins-official
 claude plugin install ui-ux-pro-max@ui-ux-pro-max-skill
 claude plugin install claude-mem@thedotmack
 claude plugin install grok-build@xai-grok-build
+claude plugin install ponytail@ponytail
 ```
 
 `superpowers`, `mattpocock-skills` and `context7` come from

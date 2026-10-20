@@ -6,7 +6,8 @@
     "context7@claude-plugins-official": true,
     "claude-mem@thedotmack": true,
     "mattpocock-skills@claude-plugins-official": true,
-    "grok-build@xai-grok-build": true
+    "grok-build@xai-grok-build": true,
+    "ponytail@ponytail": true
   },
   "extraKnownMarketplaces": {
     "ui-ux-pro-max-skill": {
@@ -25,6 +26,12 @@
       "source": {
         "source": "github",
         "repo": "xai-org/grok-build-plugin-cc"
+      }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
       }
     }
   },
@@ -51,5 +58,13 @@
     ]
   },
   "advisorModel": "fable",
-  "skipWorkflowUsageWarning": true
+  "skipWorkflowUsageWarning": true,
+  "pluginConfigs": {
+    "ponytail@ponytail": {
+      "options": {
+        "ledger": true,
+        "sendNames": true
+      }
+    }
+  }
 }
