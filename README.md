@@ -182,6 +182,42 @@ or over Screen Sharing:
 3. Add Obsidian to System Settings → General → Login Items, so it starts —
    and keeps syncing — after every reboot.
 
+**Staying current.** A launchd agent runs what `dotpull` does every hour and
+at login, so changes pushed from the laptop reach this Mac without anyone
+logging in. Aliases do not exist outside an interactive shell, so the command
+is spelled out, and launchd starts jobs with a bare `PATH` that lacks
+Homebrew's `stow`. `--ff-only` makes a run fail rather than merge if this
+Mac has local commits; the log says so. Both clones must use HTTPS, as in
+step 2 — a background job cannot unlock an SSH key. If
+`git -C ~/Workspace/dotfiles remote get-url origin` (or the same for
+`~/.config/nvim`) starts with `git@`, switch it with
+`git remote set-url origin https://github.com/ikapo/<repo>.git`, then run
+`gh auth setup-git` so pushes from this Mac still authenticate.
+
+```sh
+cat > ~/Library/LaunchAgents/com.ikapo.dotpull.plist <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.ikapo.dotpull</string>
+  <key>ProgramArguments</key><array>
+    <string>/bin/zsh</string><string>-c</string>
+    <string>date; git -C ~/Workspace/dotfiles pull --ff-only &amp;&amp; git -C ~/.config/nvim pull --ff-only &amp;&amp; stow -d ~/Workspace/dotfiles -t ~ .</string>
+  </array>
+  <key>EnvironmentVariables</key><dict><key>PATH</key><string>/opt/homebrew/bin:/usr/bin:/bin</string></dict>
+  <key>StartInterval</key><integer>3600</integer>
+  <key>RunAtLoad</key><true/>
+  <key>StandardOutPath</key><string>/tmp/dotpull.log</string>
+  <key>StandardErrorPath</key><string>/tmp/dotpull.log</string>
+</dict></plist>
+EOF
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.ikapo.dotpull.plist
+```
+
+Check it with `tail /tmp/dotpull.log`. It pulls and restows only: a new entry
+in `Brewfile.server` still needs `brew bundle --file=Brewfile.server` by hand,
+since an unattended cask install can stop on a password prompt.
+
 **Not in the repo:** turn on System Settings → General → Sharing → Remote
 Login. With FileVault on, a reboot waits at the unlock screen before your
 account — and its herdr sessions — comes up, so decide how you will unlock it
