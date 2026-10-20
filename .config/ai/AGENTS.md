@@ -13,3 +13,10 @@ endpoint on top registers the same tools twice under two names. Add the
 endpoint directly only when no plugin provides it.
 
 Plugins are likewise manual: `~/.config/ai/PLUGINS.md` lists what to install.
+Git syncs the list of enabled plugins between machines, but not the installed
+plugins. At the start of each session, compare `claude plugin list` with
+`enabledPlugins` in `~/.config/ai/claude/settings.json`. Install any that are
+missing with the commands in `PLUGINS.md`. Installing a plugin replaces the
+`.claude/settings.json` symlink with a plain file, so afterwards run
+`git -C ~/Workspace/dotfiles checkout -- .claude/settings.json`. Without that,
+the hourly pull on the headless Mac stops.

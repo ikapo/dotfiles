@@ -216,7 +216,11 @@ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.ikapo.dotpull.plist
 
 Check it with `tail /tmp/dotpull.log`. It pulls and restows only: a new entry
 in `Brewfile.server` still needs `brew bundle --file=Brewfile.server` by hand,
-since an unattended cask install can stop on a password prompt.
+since an unattended cask install can stop on a password prompt. Plugins are
+not installed by the job either. A plugin install replaces the
+`.claude/settings.json` symlink, which would stop later pulls. Instead,
+`.config/ai/AGENTS.md` has Claude install missing plugins at the start of each
+session and restore the symlink.
 
 **Not in the repo:** turn on System Settings → General → Sharing → Remote
 Login. With FileVault on, a reboot waits at the unlock screen before your
