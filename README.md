@@ -36,7 +36,7 @@ over SSH? See [Headless Mac](#headless-mac).
    into a single link and the tool's state and credentials land in the repo:
 
    ```sh
-   mkdir -p ~/.claude ~/.config/{herdr,television,gh,gnupg,zsh}
+   mkdir -p ~/.claude ~/.local/bin ~/.config/{herdr,television,gh,gnupg,zsh}
    chmod 700 ~/.config/gnupg
    ln -s .config/gnupg ~/.gnupg   # for GUI apps, which never see GNUPGHOME
    stow ./ -t ~/
@@ -120,7 +120,7 @@ window manager. Follow [How to install](#how-to-install) with these changes.
   the repo and anything that ever runs gpg writes its keyring there:
 
   ```sh
-  mkdir -p ~/.claude ~/.config/{herdr,television,gh,gnupg,zsh}
+  mkdir -p ~/.claude ~/.local/bin ~/.config/{herdr,television,gh,gnupg,zsh}
   stow ./ -t ~/
   ```
 - Steps 7–9 (yabai/skhd, `macos-defaults.sh`, Caps Lock) and step 10 (One) do
