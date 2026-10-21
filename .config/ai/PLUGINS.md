@@ -12,13 +12,11 @@ Nothing here is automated. Run the commands for what you want, skip the rest.
 | `superpowers` | 14 | bundled marketplace |
 | `mattpocock-skills` | 25 | bundled marketplace |
 | `claude-mem` | 18 | `thedotmack` |
-| `ui-ux-pro-max` | 7 | `ui-ux-pro-max-skill` |
 | `context7` | 0 | bundled marketplace |
 | `grok-build` | 4 | `xai-grok-build` |
 | `ponytail` | 6 | `ponytail` |
 
 ```sh
-claude plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill
 claude plugin marketplace add thedotmack/claude-mem
 claude plugin marketplace add xai-org/grok-build-plugin-cc
 claude plugin marketplace add DietrichGebert/ponytail
@@ -26,7 +24,6 @@ claude plugin marketplace add DietrichGebert/ponytail
 claude plugin install superpowers@claude-plugins-official
 claude plugin install mattpocock-skills@claude-plugins-official
 claude plugin install context7@claude-plugins-official
-claude plugin install ui-ux-pro-max@ui-ux-pro-max-skill
 claude plugin install claude-mem@thedotmack
 claude plugin install grok-build@xai-grok-build
 claude plugin install ponytail@ponytail
@@ -54,10 +51,12 @@ Third-party skills that do not come in a plugin are installed with the
 |---|---|
 | `Doist/todoist-cli` | `todoist-cli` (drives the `td` formula) |
 | `emilkowalski/skills` | all |
+| `nextlevelbuilder/ui-ux-pro-max-skill` | all (was the `ui-ux-pro-max` plugin) |
 
 ```sh
 skills add Doist/todoist-cli --skill todoist-cli -g -y
 skills add emilkowalski/skills --skill '*' -g -y
+skills add nextlevelbuilder/ui-ux-pro-max-skill --skill '*' -g -y
 ```
 
 Without `-a`, `-y` installs to every agent the CLI detects on that machine:
@@ -71,3 +70,19 @@ updates them. The CLI's lock file (`~/.agents/.skill-lock.json`) records each
 skill's source but is not tracked: it cannot restore global skills on another
 machine, so this table is the list. Add a row and its command when you add a
 source.
+
+### Pending: more plugins could move here
+
+A plugin that is only skills belongs here instead, but the CLI (1.7.4) has no
+way to prefix or namespace skills: two sources with a same-named skill
+overwrite each other, and only the last install survives. Plugins avoid this
+with their `plugin:` prefix. So `mattpocock-skills` stays a plugin for now:
+its `prototype` would replace `emilkowalski/skills`' `prototype`.
+
+Check whether that is fixed: `skills add --help | grep -i prefix`, or the
+status of [PR #1464](https://github.com/vercel-labs/skills/pull/1464)
+(`--prefix`) and issues [#2394](https://github.com/vercel-labs/skills/issues/2394)
+and [#1802](https://github.com/vercel-labs/skills/issues/1802). Once released,
+move `mattpocock-skills` here with a prefix (install its 27 enabled skills by
+name, matching the plugin's `skills` list), then drop this section. The other
+plugins also ship hooks, MCP servers, agents or commands, so they stay plugins.

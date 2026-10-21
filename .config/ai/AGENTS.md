@@ -28,4 +28,6 @@ with that section and install any that are missing. `~/.claude/skills` must be
 a plain directory: if it is still a symlink into the dotfiles repo, `unlink` it,
 `mkdir` it, and move any `synced/` folder from the repo's old
 `.config/ai/skills/` into it before installing. The CLI's links are relative
-and dangle through a symlink.
+and dangle through a symlink. While checking, run `skills add --help | grep -i prefix`:
+if it shows a prefix option, tell the user and follow "Pending: more plugins
+could move here" in `PLUGINS.md`.
