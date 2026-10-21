@@ -56,12 +56,18 @@ Third-party skills that do not come in a plugin are installed with the
 | `emilkowalski/skills` | all |
 
 ```sh
-skills add Doist/todoist-cli --skill todoist-cli -g -a claude-code -y
-skills add emilkowalski/skills --skill '*' -g -a claude-code -y
+skills add Doist/todoist-cli --skill todoist-cli -g -y
+skills add emilkowalski/skills --skill '*' -g -y
 ```
 
-`skills ls -g` shows what is installed; `skills update -g -y` updates them.
-They land in `~/.claude/skills`, which links into this repo, so the files sit
-in `skills/` but are gitignored. The CLI's lock file (`~/.agents/.skill-lock.json`)
-is not tracked: it cannot restore global skills on another machine, so this
-table is the list. Add a row and its command when you add a source.
+Without `-a`, `-y` installs to every agent the CLI detects on that machine:
+one copy in `~/.agents/skills`, linked from each agent's own directory
+(`~/.claude/skills` for Claude Code). Detection happens at install time, so
+re-run the commands after installing a new agent. Ignore the PromptScript
+error each install prints; it is project-only and the install still succeeds.
+
+`skills ls -g` shows what is installed and for which agents; `skills update -g -y`
+updates them. The CLI's lock file (`~/.agents/.skill-lock.json`) records each
+skill's source but is not tracked: it cannot restore global skills on another
+machine, so this table is the list. Add a row and its command when you add a
+source.

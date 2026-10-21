@@ -22,6 +22,10 @@ missing with the commands in `PLUGINS.md`. Installing a plugin replaces the
 the hourly pull on the headless Mac stops.
 
 Third-party skills go through the `skills` CLI, never copied into the repo:
-`skills add <source> -g -a claude-code -y`, then add the source and command to
-the Skills section of `PLUGINS.md`. At the start of each session, compare
-`skills ls -g` with that section and install any that are missing.
+`skills add <source> -g -y`, then add the source and command to the Skills
+section of `PLUGINS.md`. At the start of each session, compare `skills ls -g`
+with that section and install any that are missing. `~/.claude/skills` must be
+a plain directory: if it is still a symlink into the dotfiles repo, `unlink` it,
+`mkdir` it, and move any `synced/` folder from the repo's old
+`.config/ai/skills/` into it before installing. The CLI's links are relative
+and dangle through a symlink.

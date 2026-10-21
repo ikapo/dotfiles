@@ -260,7 +260,7 @@ it afterwards.
 
 ## AI tool config
 
-`.config/ai` holds Claude Code's agent instructions, skills and settings.
+`.config/ai` holds Claude Code's agent instructions and settings.
 Claude Code does not read `~/.config/ai`, so the repo carries committed
 symlinks in `.claude/` pointing back into it, and `stow` links those into
 place along with everything else:

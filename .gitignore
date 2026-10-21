@@ -15,13 +15,6 @@
 .config/zsh/.zsh_history
 .config/zsh/.zsh_sessions/
 
-# ~/.claude/skills links here, so Claude's claude.ai sync cache and the links
-# `skills add -g` makes land in this directory. Both are machine state; the
-# list of what to install is in .config/ai/PLUGINS.md. Un-ignore a personal
-# skill with a ! line below.
-.config/ai/skills/*
-!.config/ai/skills/README.md
-
 # Tool dirs that also hold runtime state and credentials; only their config is
 # tracked. Backstop for when stow folds a missing ~/.config/<tool> into the repo.
 .config/herdr/*

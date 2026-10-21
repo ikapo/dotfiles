@@ -7,7 +7,6 @@ Configuration for Claude Code.
 | `AGENTS.md` | Agent instructions, read as `~/.claude/CLAUDE.md`. |
 | `MCP.md` | Which MCP servers to install and how. Not automated; run what you need. |
 | `PLUGINS.md` | Which plugins to install. |
-| `skills/` | Where `~/.claude/skills` points. Its contents are gitignored: skills the `skills` CLI installs, and `synced/`, Claude's claude.ai cache. |
 | `claude/settings.json` | Claude Code settings: model, effort, enabled plugins, marketplaces. |
 
 ## Setup on a new machine
@@ -18,7 +17,6 @@ repo carries committed symlinks at the paths it does read:
 | Committed symlink | Points at |
 |---|---|
 | `.claude/CLAUDE.md` | `../.config/ai/AGENTS.md` |
-| `.claude/skills` | `../.config/ai/skills` |
 | `.claude/settings.json` | `../.config/ai/claude/settings.json` |
 
 `stow` links those into `~/.claude` like any other file, so setup is the same
@@ -36,10 +34,12 @@ checkout. Creating the directory first keeps stow linking file by file.
 
 ### Skills
 
-`~/.claude/skills` is a link to the whole `skills/` directory. Third-party
-skills are installed into it with the `skills` CLI and stay out of git; the
-list and commands are in [PLUGINS.md](PLUGINS.md#skills). A personal skill
-would go there too, with a `!` line in `.gitignore` to track it.
+`~/.claude/skills` is a plain directory, not linked into the repo. The `skills`
+CLI fills it with links into `~/.agents/skills`, and Claude keeps its claude.ai
+cache there in `synced/`. The list and commands are in
+[PLUGINS.md](PLUGINS.md#skills). If you ever track a personal skill under
+`.claude/skills/`, run `mkdir -p ~/.claude/skills` before stow, or stow folds
+the directory into a symlink and the CLI's relative links break.
 
 `settings.local.json` is listed in `.stow-local-ignore`; it is this repository's
 own project settings and must not be linked into `~`.
