@@ -45,15 +45,23 @@ ready.
 `enabledPlugins`, and stow symlinks it into place. That setting records the
 choice; it does not fetch anything, so the installs above are still needed.
 
-## Copying a single skill instead
+## Skills
 
-Only worth it for a skill with no upstream install route. A skill is a
-directory with a `SKILL.md` carrying `name` and `description` frontmatter, so
-it can simply be copied — at the cost of forking it from upstream updates.
+Third-party skills that do not come in a plugin are installed with the
+`skills` CLI (`brew "skills"` in the Brewfiles), never copied into the repo.
+
+| Source | Skills |
+|---|---|
+| `Doist/todoist-cli` | `todoist-cli` (drives the `td` formula) |
+| `emilkowalski/skills` | all |
 
 ```sh
-cp -R <source-skill-dir> ~/.config/ai/skills/<name>
+skills add Doist/todoist-cli --skill todoist-cli -g -a claude-code -y
+skills add emilkowalski/skills --skill '*' -g -a claude-code -y
 ```
 
-Claude picks it up at once, since `~/.claude/skills` is a symlink to this
-directory.
+`skills ls -g` shows what is installed; `skills update -g -y` updates them.
+They land in `~/.claude/skills`, which links into this repo, so the files sit
+in `skills/` but are gitignored. The CLI's lock file (`~/.agents/.skill-lock.json`)
+is not tracked: it cannot restore global skills on another machine, so this
+table is the list. Add a row and its command when you add a source.

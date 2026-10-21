@@ -39,6 +39,7 @@ brew "gnu-sed"
 brew "wget"
 brew "mole"
 brew "todoist-cli"  # the todoist-cli skill drives it
+brew "skills"  # installs third-party agent skills; .config/ai/PLUGINS.md
 
 # Mobile / iOS
 brew "cocoapods"

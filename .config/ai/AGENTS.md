@@ -20,3 +20,8 @@ missing with the commands in `PLUGINS.md`. Installing a plugin replaces the
 `.claude/settings.json` symlink with a plain file, so afterwards run
 `git -C ~/Workspace/dotfiles checkout -- .claude/settings.json`. Without that,
 the hourly pull on the headless Mac stops.
+
+Third-party skills go through the `skills` CLI, never copied into the repo:
+`skills add <source> -g -a claude-code -y`, then add the source and command to
+the Skills section of `PLUGINS.md`. At the start of each session, compare
+`skills ls -g` with that section and install any that are missing.

@@ -7,8 +7,7 @@ Configuration for Claude Code.
 | `AGENTS.md` | Agent instructions, read as `~/.claude/CLAUDE.md`. |
 | `MCP.md` | Which MCP servers to install and how. Not automated; run what you need. |
 | `PLUGINS.md` | Which plugins to install. |
-| `skills/` | Personal skills, one directory per skill. |
-| `skills/synced/` | Skills Claude Code syncs from claude.ai. Gitignored. |
+| `skills/` | Where `~/.claude/skills` points. Its contents are gitignored: skills the `skills` CLI installs, and `synced/`, Claude's claude.ai cache. |
 | `claude/settings.json` | Claude Code settings: model, effort, enabled plugins, marketplaces. |
 
 ## Setup on a new machine
@@ -37,14 +36,15 @@ checkout. Creating the directory first keeps stow linking file by file.
 
 ### Skills
 
-Claude gets every skill at once: `~/.claude/skills` is a link to the whole
-`skills/` directory, so a new skill directory there is picked up with no
-further setup.
+`~/.claude/skills` is a link to the whole `skills/` directory. Third-party
+skills are installed into it with the `skills` CLI and stay out of git; the
+list and commands are in [PLUGINS.md](PLUGINS.md#skills). A personal skill
+would go there too, with a `!` line in `.gitignore` to track it.
 
 `settings.local.json` is listed in `.stow-local-ignore`; it is this repository's
 own project settings and must not be linked into `~`.
 
-Then set up MCP servers ([MCP.md](MCP.md)) and plugins ([PLUGINS.md](PLUGINS.md)).
+Then set up MCP servers ([MCP.md](MCP.md)), plugins and skills ([PLUGINS.md](PLUGINS.md)).
 
 ## Why none of this is automated
 

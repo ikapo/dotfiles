@@ -274,8 +274,8 @@ Create that directory first. Stow folds a directory that does not yet exist
 into a single symlink back to the repo, which would leave Claude Code writing
 sessions and credentials inside the git checkout.
 
-Plugins are not synced either — `.config/ai/PLUGINS.md` lists what to
-install.
+Plugins and third-party skills are not synced either — `.config/ai/PLUGINS.md`
+lists what to install. Skills come from the `skills` CLI.
 
 MCP servers are not synced or generated — `.config/ai/MCP.md` lists each one
 with the command to add it, and marks the ones that need a GUI so they can be
@@ -301,7 +301,7 @@ list is curated rather than generated, see the note under it.
 | VCS & dev tools | gh, git, git-lfs, gitu, lazygit, stow, watchman, pkgconf |
 | Languages & runtimes | bun, node@24, pnpm |
 | Editors & shell | neovim, tree-sitter-cli, zsh-autosuggestions, zsh-syntax-highlighting, ranger, pillow, television, herdr |
-| CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, librsync, mole, todoist-cli |
+| CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, librsync, mole, todoist-cli, skills |
 | Linters & formatters | stylua |
 | Mobile / iOS | cocoapods, fastlane, facebook/fb/idb-companion |
 | Window management | asmvik/formulae/yabai, asmvik/formulae/skhd |

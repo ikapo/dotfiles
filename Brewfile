@@ -44,6 +44,7 @@ brew "speedtest-cli"
 brew "librsync"
 brew "mole"
 brew "todoist-cli"
+brew "skills"  # installs third-party agent skills; .config/ai/PLUGINS.md
 
 # Linters & formatters
 brew "stylua"
