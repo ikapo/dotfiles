@@ -15,9 +15,11 @@ brew "watchman"
 brew "pkgconf"
 
 # Languages & runtimes
+# bun and uv are required by the claude-mem plugin (uv runs its Chroma search)
 brew "bun"
 brew "node@24"
 brew "pnpm"
+brew "uv"
 
 # Editors & shell
 brew "neovim"
@@ -69,7 +71,6 @@ brew "wireguard-tools"
 
 # Misc
 brew "mas"
-brew "vercel"
 
 # Browsers & comms
 cask "helium-browser"
@@ -89,6 +90,7 @@ cask "grok-build"
 cask "t3-code@nightly"
 cask "devtoys"
 cask "linear"
+cask "vercel"
 
 # Productivity
 cask "raycast"

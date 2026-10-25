@@ -16,9 +16,11 @@ brew "lazygit"
 brew "stow"
 
 # Languages & runtimes
+# bun and uv are required by the claude-mem plugin (uv runs its Chroma search)
 brew "bun"
 brew "node@24"
 brew "pnpm"
+brew "uv"
 
 # Editors & shell
 brew "neovim"  # $EDITOR, for git and Claude Code's external editor

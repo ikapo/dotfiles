@@ -299,7 +299,7 @@ list is curated rather than generated, see the note under it.
 | Category | Packages |
 | --- | --- |
 | VCS & dev tools | gh, git, git-lfs, gitu, lazygit, stow, watchman, pkgconf |
-| Languages & runtimes | bun, node@24, pnpm |
+| Languages & runtimes | bun, node@24, pnpm, uv |
 | Editors & shell | neovim, tree-sitter-cli, zsh-autosuggestions, zsh-syntax-highlighting, ranger, pillow, television, herdr |
 | CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, librsync, mole, todoist-cli, skills |
 | Linters & formatters | stylua |
@@ -307,7 +307,7 @@ list is curated rather than generated, see the note under it.
 | Window management | asmvik/formulae/yabai, asmvik/formulae/skhd |
 | Media & docs | mpv, kepubify |
 | Security & network | gnupg, pinentry-mac, wireguard-tools |
-| Misc | mas, vercel |
+| Misc | mas |
 
 ### App Store
 
@@ -335,7 +335,7 @@ than overwriting.
 | Category | Packages |
 | --- | --- |
 | Browsers & comms | helium-browser, discord, telegram, whatsapp, thunderbird, zoom |
-| Dev | zed, ghostty, claude, claude-code@latest, grok-bot, grok-build, t3-code@nightly, devtoys, linear |
+| Dev | zed, ghostty, claude, claude-code@latest, grok-bot, grok-build, t3-code@nightly, devtoys, linear, vercel |
 | Productivity | raycast, obsidian, logi-options+, wispr-flow, todoist-app |
 | Security | bitwarden, trezor-suite |
 | Fonts | font-mononoki-nerd-font |
