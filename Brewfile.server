@@ -7,6 +7,7 @@
 # changes in Brewfile, change it here too.
 
 tap "facebook/fb"
+tap "mobai-app/tap"
 
 # VCS & dev tools
 brew "gh"
@@ -47,6 +48,7 @@ brew "skills"  # installs third-party agent skills; .config/ai/PLUGINS.md
 brew "cocoapods"
 brew "fastlane"
 brew "facebook/fb/idb-companion"
+brew "mobai-app/tap/simslim"
 
 # Misc
 brew "mas"

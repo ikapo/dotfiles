@@ -303,7 +303,7 @@ list is curated rather than generated, see the note under it.
 | Editors & shell | neovim, tree-sitter-cli, zsh-autosuggestions, zsh-syntax-highlighting, ranger, pillow, television, herdr |
 | CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, librsync, mole, todoist-cli, skills |
 | Linters & formatters | stylua |
-| Mobile / iOS | cocoapods, fastlane, facebook/fb/idb-companion |
+| Mobile / iOS | cocoapods, fastlane, facebook/fb/idb-companion, mobai-app/tap/simslim |
 | Window management | asmvik/formulae/yabai, asmvik/formulae/skhd |
 | Media & docs | mpv, kepubify, md2pdf |
 | Security & network | gnupg, pinentry-mac, wireguard-tools |

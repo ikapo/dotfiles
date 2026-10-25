@@ -4,6 +4,7 @@
 tap "asmvik/formulae"
 tap "facebook/fb"
 tap "loops-so/tap"
+tap "mobai-app/tap"
 
 # VCS & dev tools
 brew "gh"
@@ -56,6 +57,7 @@ brew "stylua"
 brew "cocoapods"
 brew "fastlane"
 brew "facebook/fb/idb-companion"
+brew "mobai-app/tap/simslim"
 
 # Window management
 brew "asmvik/formulae/yabai"
