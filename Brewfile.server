@@ -28,6 +28,7 @@ brew "neovim"  # $EDITOR, for git and Claude Code's external editor
 brew "zsh-autosuggestions"  # .zshrc sources both unconditionally
 brew "zsh-syntax-highlighting"
 brew "herdr"  # persistent agent sessions; attach with herdr --remote
+brew "ranger"
 
 # CLI utilities
 brew "bat"
@@ -49,6 +50,9 @@ brew "cocoapods"
 brew "fastlane"
 brew "facebook/fb/idb-companion"
 brew "mobai-app/tap/simslim"
+
+# Network
+brew "cloudflared"  # tunnels T3 Code to t3.nbuilds.io
 
 # Misc
 brew "mas"
