@@ -10,6 +10,12 @@ background-opacity = 0.85
 # A bit more breathing room than Ghostty's tight default of 2.
 window-padding-x = 10
 window-padding-y = 10
+# New windows and tabs start in ~ instead of the focused terminal's directory
+# (Ghostty inherits it by default). Splits still inherit.
+working-directory = home
+window-inherit-working-directory = false
+tab-inherit-working-directory = false
+
 clipboard-read = allow
 clipboard-write = allow
 
