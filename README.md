@@ -305,7 +305,7 @@ list is curated rather than generated, see the note under it.
 | Linters & formatters | stylua |
 | Mobile / iOS | cocoapods, fastlane, facebook/fb/idb-companion |
 | Window management | asmvik/formulae/yabai, asmvik/formulae/skhd |
-| Media & docs | mpv, kepubify |
+| Media & docs | mpv, kepubify, md2pdf |
 | Security & network | gnupg, pinentry-mac, wireguard-tools |
 | Misc | mas |
 
@@ -334,9 +334,9 @@ than overwriting.
 
 | Category | Packages |
 | --- | --- |
-| Browsers & comms | helium-browser, discord, telegram, whatsapp, thunderbird, zoom |
-| Dev | zed, ghostty, claude, claude-code@latest, grok-bot, grok-build, t3-code@nightly, devtoys, linear, vercel |
-| Productivity | raycast, obsidian, logi-options+, wispr-flow, todoist-app |
+| Browsers & comms | helium-browser, telegram, whatsapp, zoom |
+| Dev | zed, ghostty, claude, claude-code@latest, grok-bot, grok-build, t3-code@nightly, linear, vercel, loops-so/tap/loops |
+| Productivity | obsidian, openlogi, monitorcontrol, wispr-flow, todoist-app |
 | Security | bitwarden, trezor-suite |
 | Fonts | font-mononoki-nerd-font |
-| Other | altserver, prusaslicer, tradingview, vorssaint, spotify |
+| Other | tradingview, vorssaint, spotify |

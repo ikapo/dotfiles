@@ -3,6 +3,7 @@
 
 tap "asmvik/formulae"
 tap "facebook/fb"
+tap "loops-so/tap"
 
 # VCS & dev tools
 brew "gh"
@@ -63,6 +64,7 @@ brew "asmvik/formulae/skhd"
 # Media & docs
 brew "mpv"
 brew "kepubify"
+brew "md2pdf"
 
 # Security & network
 brew "gnupg"
@@ -74,10 +76,8 @@ brew "mas"
 
 # Browsers & comms
 cask "helium-browser"
-cask "discord"
 cask "telegram"
 cask "whatsapp"
-cask "thunderbird"
 cask "zoom"
 
 # Dev
@@ -88,14 +88,14 @@ cask "claude-code@latest"
 cask "grok-bot"
 cask "grok-build"
 cask "t3-code@nightly"
-cask "devtoys"
 cask "linear"
 cask "vercel"
+cask "loops-so/tap/loops"
 
 # Productivity
-cask "raycast"
 cask "obsidian"
-cask "logi-options+"
+cask "openlogi"
+cask "monitorcontrol"
 cask "wispr-flow"
 cask "todoist-app"
 
@@ -107,8 +107,6 @@ cask "trezor-suite"
 cask "font-mononoki-nerd-font"
 
 # Other
-cask "altserver"
-cask "prusaslicer"
 cask "tradingview"
 cask "vorssaint"
 cask "spotify"

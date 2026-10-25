@@ -37,7 +37,6 @@ public repo, and most of it is per-machine state anyway.
 - [ ] `~/.config/paliasrc` (private shell aliases, sourced by `.zshrc` if present).
 - [ ] Write `~/.gitconfig` with your identity — [Git](README.md#git) has the
       commands. Use `--file ~/.gitconfig`, not `--global`, until that file exists.
-- [ ] Raycast settings (export, or turn on Cloud Sync).
 - [ ] Browser bookmarks/history, if moving off Helium's predecessor.
 - [ ] Obsidian vaults, unless they already sync.
 - [ ] Claude history and memory: `~/.claude-mem` and `~/.claude/projects`.
