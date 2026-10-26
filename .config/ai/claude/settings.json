@@ -6,7 +6,10 @@
     "claude-mem@thedotmack": true,
     "mattpocock-skills@claude-plugins-official": true,
     "grok-build@xai-grok-build": true,
-    "ponytail@ponytail": true
+    "ponytail@ponytail": true,
+    "cloudflare@claude-plugins-official": true,
+    "neon@claude-plugins-official": true,
+    "revenuecat@RevenueCat": true
   },
   "extraKnownMarketplaces": {
     "thedotmack": {
@@ -25,6 +28,12 @@
       "source": {
         "source": "github",
         "repo": "DietrichGebert/ponytail"
+      }
+    },
+    "RevenueCat": {
+      "source": {
+        "source": "github",
+        "repo": "RevenueCat/ai-toolkit"
       }
     }
   },

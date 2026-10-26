@@ -124,6 +124,47 @@ It arrives **with the `context7` plugin** and shows up as
 `plugin:context7:context7`. Do not add it by hand; install the plugin instead
 (see [PLUGINS.md](PLUGINS.md)).
 
+## cloudflare and neon
+
+Remote, over OAuth. They arrive **with the `cloudflare` and `neon` plugins**
+and show up as `plugin:cloudflare:cloudflare` (https://mcp.cloudflare.com/mcp)
+and `plugin:neon:neon` (https://mcp.neon.tech/mcp). Do not add them by hand;
+install the plugins instead (see [PLUGINS.md](PLUGINS.md)), then sign in to
+each with `/mcp` in an interactive session.
+
+**Skip in a headless environment?** No — plain HTTPS. The browser sign-in has
+to happen once in an interactive session.
+
+## revenuecat
+
+Remote, over OAuth. It arrives **with the `revenuecat` plugin** (RevenueCat's
+AI Toolkit) and shows up as `plugin:revenuecat:RevenueCat`
+(https://mcp.revenuecat.ai/mcp). Do not add it by hand; install the plugin
+(see [PLUGINS.md](PLUGINS.md)), then sign in with `/mcp` in an interactive
+session. The toolkit's `rc` CLI has its own login (`npx @revenuecat/cli auth
+login`).
+
+**Skip in a headless environment?** No — plain HTTPS. The browser sign-in has
+to happen once in an interactive session.
+
+## porkbun
+
+Remote, over OAuth: Porkbun's own hosted server, no API key stored here.
+Registered on the `no-purchases` endpoint, so it can manage DNS and domain
+settings but can never register, renew, transfer or charge anything. Use
+`https://mcp.porkbun.com/mcp` instead only if purchases are wanted.
+
+**Skip in a headless environment?** No — plain HTTPS. Sign in once with `/mcp`
+in an interactive session and pick the access level there.
+
+```sh
+claude mcp add --transport http --scope user porkbun https://mcp.porkbun.com/mcp/no-purchases
+```
+
+Each connection also appears on porkbun.com under API access as
+"(connected app)", where it can be restricted or disabled. Per-domain API
+access must be on for a domain before the server can change it.
+
 ## Adding a server that needs a secret
 
 Only when no remote equivalent exists. Never write the token into any file in

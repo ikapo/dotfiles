@@ -15,11 +15,15 @@ Nothing here is automated. Run the commands for what you want, skip the rest.
 | `context7` | 0 | bundled marketplace |
 | `grok-build` | 4 | `xai-grok-build` |
 | `ponytail` | 6 | `ponytail` |
+| `cloudflare` | 14 | bundled marketplace |
+| `neon` | 8 | bundled marketplace |
+| `revenuecat` | toolkit + MCP | `RevenueCat` |
 
 ```sh
 claude plugin marketplace add thedotmack/claude-mem
 claude plugin marketplace add xai-org/grok-build-plugin-cc
 claude plugin marketplace add DietrichGebert/ponytail
+claude plugin marketplace add RevenueCat/ai-toolkit
 
 claude plugin install superpowers@claude-plugins-official
 claude plugin install mattpocock-skills@claude-plugins-official
@@ -27,9 +31,12 @@ claude plugin install context7@claude-plugins-official
 claude plugin install claude-mem@thedotmack
 claude plugin install grok-build@xai-grok-build
 claude plugin install ponytail@ponytail
+claude plugin install cloudflare@claude-plugins-official
+claude plugin install neon@claude-plugins-official
+claude plugin install revenuecat@RevenueCat
 ```
 
-`superpowers`, `mattpocock-skills` and `context7` come from
+`superpowers`, `mattpocock-skills`, `context7`, `cloudflare` and `neon` come from
 `claude-plugins-official`, which ships with Claude Code and needs no
 `marketplace add`.
 
@@ -37,6 +44,11 @@ claude plugin install ponytail@ponytail
 Grok Build CLI. It shells out to `grok`, which the `grok-build` cask installs,
 so sign that in first with `grok login`. `/grok-build:check` confirms it is
 ready.
+
+`revenuecat` is RevenueCat's AI Toolkit: it registers RevenueCat's MCP server
+(`https://mcp.revenuecat.ai/mcp`) plus skills for RevenueCat workflows. It signs in
+with OAuth to the RevenueCat account: run `/mcp` in an interactive session and pick
+it. Don't add the raw endpoint on top; the plugin already ships it.
 
 `claude/settings.json` in this directory already lists these under
 `enabledPlugins`, and stow symlinks it into place. That setting records the
