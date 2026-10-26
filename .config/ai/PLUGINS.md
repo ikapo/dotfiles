@@ -50,12 +50,14 @@ Third-party skills that do not come in a plugin are installed with the
 | Source | Skills |
 |---|---|
 | `Doist/todoist-cli` | `todoist-cli` (drives the `td` formula) |
+| `elayadesign/ai-design-skills` | all |
 | `emilkowalski/skills` | all |
 | `nextlevelbuilder/ui-ux-pro-max-skill` | all (was the `ui-ux-pro-max` plugin) |
 | `rossark0/rossark-motion-skill` | `rossark-motion-skill` |
 
 ```sh
 skills add Doist/todoist-cli --skill todoist-cli -g -y
+skills add elayadesign/ai-design-skills --skill '*' -g -y
 skills add emilkowalski/skills --skill '*' -g -y
 skills add nextlevelbuilder/ui-ux-pro-max-skill --skill '*' -g -y
 skills add rossark0/rossark-motion-skill --skill rossark-motion-skill -g -y
