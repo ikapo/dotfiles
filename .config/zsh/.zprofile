@@ -15,9 +15,6 @@ export PATH="$PATH:$HOME/.local/bin"
 
 #JS
 export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
-export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
-export LDFLAGS="-L/opt/homebrew/opt/node@24/lib"
-export CPPFLAGS="-I/opt/homebrew/opt/node@24/include"
 export NODE_REPL_HISTORY=""
 # Prisma telemetry disable
 export CHECKPOINT_DISABLE=1

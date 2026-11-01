@@ -19,7 +19,7 @@ brew "pkgconf"
 # Languages & runtimes
 # bun and uv are required by the claude-mem plugin (uv runs its Chroma search)
 brew "bun"
-brew "node@24"
+brew "node"
 brew "pnpm"
 brew "uv"
 

@@ -299,7 +299,7 @@ list is curated rather than generated, see the note under it.
 | Category | Packages |
 | --- | --- |
 | VCS & dev tools | gh, git, git-lfs, gitu, lazygit, stow, watchman, pkgconf |
-| Languages & runtimes | bun, node@24, pnpm, uv |
+| Languages & runtimes | bun, node, pnpm, uv |
 | Editors & shell | neovim, tree-sitter-cli, zsh-autosuggestions, zsh-syntax-highlighting, ranger, pillow, television, herdr |
 | CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, librsync, mole, todoist-cli, skills |
 | Linters & formatters | stylua |
