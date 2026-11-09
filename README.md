@@ -160,8 +160,8 @@ to it. A plain `ssh` login lands in one shared tmux session, `ssh_tmux`
 panes skip it.
 
 **MCP servers.** Skip the ones `.config/ai/MCP.md` marks GUI-only
-(`ios-simulator`, `xcode`); the rest work over plain HTTPS. Xcode itself is
-still useful without them — `xcodebuild` builds and tests over SSH.
+(`ios-simulator`); the rest work over plain HTTPS. The `xcode` plugin's server
+does connect here, and `xcodebuild` builds and tests over SSH either way.
 
 **Connecting from Ghostty.** Ghostty sets `TERM=xterm-ghostty`, which a fresh
 Mac does not recognise ("unknown terminal type") — not even with Ghostty

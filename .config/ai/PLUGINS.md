@@ -62,8 +62,8 @@ server (`https://mcp.posthog.com/mcp`) plus PostHog skills; sign in with `/mcp`.
 
 `xcode` drives Xcode through its MCP server (build, run, previews, device and
 simulator interaction, string catalogs) and adds iOS skills (VoiceOver, Dynamic
-Type, SwiftUI, App Intents). It needs Xcode running on a Mac with a GUI session;
-skip it on a headless machine.
+Type, SwiftUI, App Intents). It needs Xcode installed, and keep it on the headless
+Mac too: its MCP server connects there. Skip it only on a machine without Xcode.
 
 `claude/settings.json` in this directory already lists these under
 `enabledPlugins`, and stow symlinks it into place. That setting records the

@@ -102,17 +102,13 @@ Claude Code only. Zed does not need it.
 ## xcode
 
 Local, built into Xcode: `xcrun mcpbridge` exposes Xcode's own MCP tools
-(projects, builds, previews). Turn on Xcode's MCP support in its settings first;
-enabling it there does not register it with Claude Code.
+(projects, builds, previews). It arrives **with the `xcode` plugin** and shows up
+as `plugin:xcode-integration:xcode`. Do not add it by hand; install the plugin
+(see [PLUGINS.md](PLUGINS.md)). Turn on Xcode's MCP support in its settings first.
 
-**Skip in a headless environment? Yes — GUI-only.** It needs Xcode installed on
-macOS. On Linux, a container, or a session without Xcode, do not install it.
-
-```sh
-claude mcp add --scope user xcode -- xcrun mcpbridge
-```
-
-Takes effect in new sessions.
+**Skip in a headless environment?** Not on the headless Mac — it connects there
+with Xcode installed and nobody at the screen. Skip it only where there is no
+Xcode: Linux, a container, or a Mac that left Xcode out.
 
 ## context7
 
