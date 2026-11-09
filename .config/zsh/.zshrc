@@ -89,6 +89,12 @@ export GPG_TTY=$(tty)
 #Private Aliases
 [ -f "$HOME/.config/paliasrc" ] && source "$HOME/.config/paliasrc"
 
+# One shared tmux session for SSH logins only. Skip inside herdr panes: they'd
+# attach a second, smaller client to ssh_tmux and shrink it for every other client.
+if [[ -n "$PS1" ]] && [[ -z "$TMUX" ]] && [[ -z "$HERDR_PANE_ID" ]] && [[ -n "$SSH_CONNECTION" ]]; then
+  tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux
+fi
+
 eval "$(zoxide init --cmd cd zsh)"
 source <(fzf --zsh)
 

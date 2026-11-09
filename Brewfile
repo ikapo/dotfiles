@@ -32,6 +32,7 @@ brew "ranger"
 brew "pillow"  # ranger image previews
 brew "television"
 brew "herdr"
+brew "tmux"  # .zshrc attaches SSH logins to one shared session
 
 # CLI utilities
 brew "bat"
@@ -89,7 +90,7 @@ cask "claude"
 cask "claude-code@latest"
 cask "grok-bot"
 cask "grok-build"
-cask "t3-code@nightly"
+cask "t3-code"
 cask "linear"
 cask "vercel"
 cask "loops-so/tap/loops"

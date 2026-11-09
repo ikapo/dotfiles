@@ -28,6 +28,7 @@ brew "neovim"  # $EDITOR, for git and Claude Code's external editor
 brew "zsh-autosuggestions"  # .zshrc sources both unconditionally
 brew "zsh-syntax-highlighting"
 brew "herdr"  # persistent agent sessions; attach with herdr --remote
+brew "tmux"  # .zshrc attaches SSH logins to one shared session
 brew "ranger"
 
 # CLI utilities
@@ -66,7 +67,7 @@ cask "claude"
 cask "claude-code@latest"
 cask "grok-bot"
 cask "grok-build"
-cask "t3-code@nightly"
+cask "t3-code"
 
 # Productivity
 cask "obsidian"  # keeps the vault synced; README.md#headless-mac

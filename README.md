@@ -155,7 +155,9 @@ security unlock-keychain ~/Library/Keychains/login.keychain-db
 
 **Sessions.** Run agents inside `herdr`, which keeps them alive when SSH
 drops. From another machine, `herdr --remote <ssh-target>` attaches straight
-to it.
+to it. A plain `ssh` login lands in one shared tmux session, `ssh_tmux`
+(prefix `C-a`), that `.zshrc` creates or reattaches; local terminals and herdr
+panes skip it.
 
 **MCP servers.** Skip the ones `.config/ai/MCP.md` marks GUI-only
 (`ios-simulator`, `xcode`); the rest work over plain HTTPS. Xcode itself is
@@ -300,7 +302,7 @@ list is curated rather than generated, see the note under it.
 | --- | --- |
 | VCS & dev tools | gh, git, git-lfs, gitu, lazygit, stow, watchman, pkgconf |
 | Languages & runtimes | bun, node, pnpm, uv |
-| Editors & shell | neovim, tree-sitter-cli, zsh-autosuggestions, zsh-syntax-highlighting, ranger, pillow, television, herdr |
+| Editors & shell | neovim, tree-sitter-cli, zsh-autosuggestions, zsh-syntax-highlighting, ranger, pillow, television, herdr, tmux |
 | CLI utilities | bat, fd, fzf, jq, lsd, ripgrep, zoxide, coreutils, gnu-sed, wget, speedtest-cli, librsync, mole, todoist-cli, skills |
 | Linters & formatters | stylua |
 | Mobile / iOS | cocoapods, fastlane, facebook/fb/idb-companion, mobai-app/tap/simslim |
@@ -335,7 +337,7 @@ than overwriting.
 | Category | Packages |
 | --- | --- |
 | Browsers & comms | helium-browser, telegram, whatsapp, zoom |
-| Dev | zed, ghostty, claude, claude-code@latest, grok-bot, grok-build, t3-code@nightly, linear, vercel, loops-so/tap/loops |
+| Dev | zed, ghostty, claude, claude-code@latest, grok-bot, grok-build, t3-code, linear, vercel, loops-so/tap/loops |
 | Productivity | obsidian, openlogi, monitorcontrol, wispr-flow, todoist-app |
 | Security | bitwarden, trezor-suite |
 | Fonts | font-mononoki-nerd-font |
