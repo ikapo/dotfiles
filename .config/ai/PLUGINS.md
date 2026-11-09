@@ -18,6 +18,9 @@ Nothing here is automated. Run the commands for what you want, skip the rest.
 | `cloudflare` | 14 | bundled marketplace |
 | `neon` | 8 | bundled marketplace |
 | `revenuecat` | toolkit + MCP | `RevenueCat` |
+| `posthog` | many + MCP | `anthropic-plugin-directory` (built in) |
+| `vercel` | many + MCP | bundled marketplace |
+| `xcode` | skills + MCP | bundled marketplace |
 
 ```sh
 claude plugin marketplace add thedotmack/claude-mem
@@ -34,9 +37,12 @@ claude plugin install ponytail@ponytail
 claude plugin install cloudflare@claude-plugins-official
 claude plugin install neon@claude-plugins-official
 claude plugin install revenuecat@RevenueCat
+claude plugin install posthog@anthropic-plugin-directory
+claude plugin install vercel@claude-plugins-official
+claude plugin install xcode@claude-plugins-official
 ```
 
-`superpowers`, `mattpocock-skills`, `context7`, `cloudflare` and `neon` come from
+`superpowers`, `mattpocock-skills`, `context7`, `cloudflare`, `neon`, `vercel` and `xcode` come from
 `claude-plugins-official`, which ships with Claude Code and needs no
 `marketplace add`.
 
@@ -49,6 +55,15 @@ ready.
 (`https://mcp.revenuecat.ai/mcp`) plus skills for RevenueCat workflows. It signs in
 with OAuth to the RevenueCat account: run `/mcp` in an interactive session and pick
 it. Don't add the raw endpoint on top; the plugin already ships it.
+
+`posthog` comes from `anthropic-plugin-directory`, the built-in Anthropic
+Directory, so it needs no `marketplace add` either. It registers PostHog's MCP
+server (`https://mcp.posthog.com/mcp`) plus PostHog skills; sign in with `/mcp`.
+
+`xcode` drives Xcode through its MCP server (build, run, previews, device and
+simulator interaction, string catalogs) and adds iOS skills (VoiceOver, Dynamic
+Type, SwiftUI, App Intents). It needs Xcode running on a Mac with a GUI session;
+skip it on a headless machine.
 
 `claude/settings.json` in this directory already lists these under
 `enabledPlugins`, and stow symlinks it into place. That setting records the

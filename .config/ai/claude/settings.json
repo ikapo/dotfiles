@@ -9,7 +9,10 @@
     "ponytail@ponytail": true,
     "cloudflare@claude-plugins-official": true,
     "neon@claude-plugins-official": true,
-    "revenuecat@RevenueCat": true
+    "revenuecat@RevenueCat": true,
+    "posthog@anthropic-plugin-directory": true,
+    "vercel@claude-plugins-official": true,
+    "xcode@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "thedotmack": {

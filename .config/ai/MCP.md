@@ -147,6 +147,26 @@ login`).
 **Skip in a headless environment?** No — plain HTTPS. The browser sign-in has
 to happen once in an interactive session.
 
+## posthog
+
+Remote, over OAuth. It arrives **with the `posthog` plugin** (from the built-in
+`anthropic-plugin-directory`) and shows up as `plugin:posthog:posthog`
+(https://mcp.posthog.com/mcp). Do not add it by hand; install the plugin (see
+[PLUGINS.md](PLUGINS.md)), then sign in with `/mcp` in an interactive session.
+
+**Skip in a headless environment?** No — plain HTTPS. The browser sign-in has
+to happen once in an interactive session.
+
+## vercel
+
+Remote, over OAuth. It arrives **with the `vercel` plugin** and shows up as
+`plugin:vercel:vercel` (https://mcp.vercel.com): docs search, projects,
+deployments and logs. Do not add it by hand; install the plugin (see
+[PLUGINS.md](PLUGINS.md)), then sign in with `/mcp` in an interactive session.
+
+**Skip in a headless environment?** No — plain HTTPS. The browser sign-in has
+to happen once in an interactive session.
+
 ## porkbun
 
 Remote, over OAuth: Porkbun's own hosted server, no API key stored here.
